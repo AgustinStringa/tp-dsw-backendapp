@@ -5,6 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "build": "tsc -p ./tsconfig.json",
+    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/AgustinStringa/tp-dsw-backendapp/issues"
   },
-  "homepage": "https://github.com/AgustinStringa/tp-dsw-backendapp#readme"
+  "homepage": "https://github.com/AgustinStringa/tp-dsw-backendapp#readme",
+  "devDependencies": {
+    "tsc-watch": "6.2.0",
+    "typescript": "5.4.3"
+  }
 }
