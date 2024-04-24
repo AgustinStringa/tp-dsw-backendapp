@@ -21,6 +21,9 @@
   },
   "homepage": "https://github.com/AgustinStringa/tp-dsw-backendapp#readme",
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7",
+    "express": "^4.19.2",
     "tsc-watch": "6.2.0",
     "typescript": "5.4.3"
   }
