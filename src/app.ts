@@ -1,4 +1,5 @@
 import { Client } from "./Clients/Client.entity.js";
+import { Trainer } from "./Trainers/Trainers.entity.js";
 console.log("hello Typescipt world");
 
 const elisito = new Client(
@@ -9,3 +10,11 @@ const elisito = new Client(
   "danteo"
 );
 console.log(elisito.email);
+const entrenador1 = new Trainer(
+  "entrenador1",
+  "fitness123",
+  "johntrainer@gmail.com",
+  "John",
+  "Johnson"
+);
+console.log(entrenador1.email);
