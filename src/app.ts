@@ -1,5 +1,7 @@
 import { Client } from "./Clients/Client.entity.js";
 import { Trainer } from "./Trainers/Trainers.entity.js";
+import { MonthlyRutine } from "./MonthlyRutines/MonthlyRutine.entity.js";
+import { DailyRutine } from "./DailyRutines/DailyRutine.entity.js";
 console.log("hello Typescipt world");
 
 const elisito = new Client(
@@ -18,3 +20,6 @@ const entrenador1 = new Trainer(
   "Johnson"
 );
 console.log(entrenador1.email);
+const rutinamensual = new MonthlyRutine([], 5, 2024);
+console.log(rutinamensual);
+console.log(rutinamensual.days);
