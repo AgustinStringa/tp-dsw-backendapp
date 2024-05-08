@@ -2,12 +2,37 @@ import { Repository } from "../shared/repository.js";
 import { MembershipType } from "./MembershipType.entity.js";
 
 const membershipTypesList = [
-  new MembershipType("Only GYM", "Membresia que incluye solo gym", 1000, new Date()),
-  new MembershipType("Only Clases", "Membresia que incluye solo clases", 500, new Date()),
+  new MembershipType(
+    "Only GYM",
+    "Membresia que incluye solo gym",
+    1000,
+    new Date()
+  ),
+  new MembershipType(
+    "Only Clases",
+    "Membresia que incluye solo clases",
+    500,
+    new Date()
+  ),
   new MembershipType("Unified Couta", "Incluye Todo", 1500, new Date()),
-  new MembershipType("Only Pool", "Membresia que incluye solo pileta", 500, new Date()),
-  new MembershipType("GYM and Pool","Membreia que incluye pileta y gimnasio",800, new Date()),
-  new MembershipType("Pool and Clases","Membresia que incluye pileta y clases",800, new Date()),
+  new MembershipType(
+    "Only Pool",
+    "Membresia que incluye solo pileta",
+    500,
+    new Date()
+  ),
+  new MembershipType(
+    "GYM and Pool",
+    "Membreia que incluye pileta y gimnasio",
+    800,
+    new Date()
+  ),
+  new MembershipType(
+    "Pool and Clases",
+    "Membresia que incluye pileta y clases",
+    800,
+    new Date()
+  ),
   new MembershipType("Null", "No posee ninguna membresia", 0, new Date()),
 ];
 
@@ -36,7 +61,6 @@ export class MembershipTypeRepository implements Repository<MembershipType> {
   public async update(
     item: MembershipType
   ): Promise<MembershipType | undefined> {
-    console.log(item);
     // const { id, ...characterInput } = item;
     // return (
     //   (await characters.findOneAndUpdate(
