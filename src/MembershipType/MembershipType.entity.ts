@@ -1,9 +1,12 @@
+import { ObjectId } from "mongodb";
 import crypto from "node:crypto";
 
 export class MembershipType {
   constructor(
-    public username: string,
+    public name: string,
     public description: string, // gym, pileta, clases
-    public id = crypto.randomUUID()
+    public price: number,
+    public id = crypto.randomUUID(),
+    public _id?: ObjectId
   ) {}
 }
