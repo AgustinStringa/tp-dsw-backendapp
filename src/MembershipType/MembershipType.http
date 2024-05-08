@@ -1,0 +1,37 @@
+### obtener todos los characters
+GET http://localhost:3000/api/membershiptypes
+
+
+### obtener un character
+GET http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
+### crear un nuevo character
+POST http://localhost:3000/api/membershiptypes/
+Content-Type: application/json
+
+{
+  "name": "PILATES",
+  "description": "No sirve",
+  "price": 1000
+}
+
+### modificar un character (PUT - recurso completo e idempotente)
+PUT http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
+Content-Type: application/json
+
+{
+  "name": "PILATES and GYM",
+  "description": "solo sirve el gym",
+  "price": 0
+}
+
+### modificar un character (PATCH - recurso parcial)
+PATCH http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
+Content-Type: application/json
+
+{
+  "name": "Pilates y natacion",
+  "price": 1
+}
+
+### borrar un character
+DELETE http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
