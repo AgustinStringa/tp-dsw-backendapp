@@ -3,7 +3,7 @@ GET http://localhost:3000/api/membershiptypes
 
 
 ### obtener un character
-GET http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
+GET http://localhost:3000/api/membershiptypes/7d8e4ca4-aa48-482a-b0a8-77a6daaef80d
 ### crear un nuevo character
 POST http://localhost:3000/api/membershiptypes/
 Content-Type: application/json
@@ -11,21 +11,24 @@ Content-Type: application/json
 {
   "name": "PILATES",
   "description": "No sirve",
-  "price": 1000
+  "price": 1000,
+  "updated_to" : "12/10/2002"
 }
 
 ### modificar un character (PUT - recurso completo e idempotente)
-PUT http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
+PUT http://localhost:3000/api/membershiptypes/7d8e4ca4-aa48-482a-b0a8-77a6daaef80d
 Content-Type: application/json
 
 {
   "name": "PILATES and GYM",
   "description": "solo sirve el gym",
-  "price": 0
+  "price": 0,
+  "updated_to" : "12/10/2002",
+  "created_to": "12/14/2024"
 }
 
 ### modificar un character (PATCH - recurso parcial)
-PATCH http://localhost:3000/api/membershiptypes/8d2b0a53-2867-4d9a-b696-daf180558331
+PATCH http://localhost:3000/api/membershiptypes/1049428a-0b23-47dc-9d15-77b1aec6839b
 Content-Type: application/json
 
 {
