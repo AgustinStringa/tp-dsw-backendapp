@@ -132,5 +132,4 @@ dist
 
 #pnpm.yaml
 
-.pnpm-lock.yaml
-.yaml
+pnpm-lock.yaml
