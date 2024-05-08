@@ -23,9 +23,9 @@ const controller = {
     }
   },
   add: async function (req: Request, res: Response) {
-    const { name, description, price, updated_to } = req.body.sanitizedInput;
+    const { name, description, price } = req.body.sanitizedInput;
     const newMembershipType = await repository.add(
-      new MembershipType(name, description, price, new Date(updated_to))
+      new MembershipType(name, description, price)
     );
     //another common response is id
     res
