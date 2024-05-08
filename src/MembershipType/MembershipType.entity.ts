@@ -6,6 +6,8 @@ export class MembershipType {
     public name: string,
     public description: string, // gym, pileta, clases
     public price: number,
+    public updated_to: Date,
+    public created_to = new Date(),
     public id = crypto.randomUUID(),
     public _id?: ObjectId
   ) {}

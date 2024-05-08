@@ -10,10 +10,14 @@ function sanitizeMembershipType(
   res: Response,
   next: NextFunction
 ) {
+  const created = req.body.created_to || undefined;
+  const updated = req.body.created_to || undefined;
   req.body.sanitizedInput = {
     name: req.body.name,
     description: req.body.description,
     price: req.body.price,
+    created_to: created ? new Date(req.body.created_to) : undefined,
+    updated_to: updated ? new Date(req.body.updated_to) : undefined,
   };
   //more checks here, data type, malicius content, operations, etc
 
