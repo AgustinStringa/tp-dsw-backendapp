@@ -10,14 +10,13 @@ function sanitizeTrainers(
   res: Response,
   next: NextFunction
 ) {
-  const created = req.body.created_to || undefined;
-  const updated = req.body.updated_to || new Date();
+
   req.body.sanitizedInput = {
-    name: req.body.name,
-    description: req.body.description,
-    price: req.body.price,
-    created_to: created ? new Date(req.body.created_to) : undefined,
-    updated_to: updated,
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
   };
   //more checks here, data type, malicius content, operations, etc
 
