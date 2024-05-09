@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import IUser from "../IUser.js";
 
-export class Trainer implements IUser {
+export class Trainers implements IUser {
   constructor(
     public username: string,
     public password: string,
