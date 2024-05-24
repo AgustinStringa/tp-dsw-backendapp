@@ -1,0 +1,35 @@
+### get all Class Types
+GET http://localhost:3000/api/classtypes
+
+### get one class type
+GET http://localhost:3000/api/classtypes/25ef41a2-2fe5-44e7-accb-91f64fbf4abf
+
+
+### create class type
+POST http://localhost:3000/api/classtypes/
+Content-Type: application/json
+
+{
+  "name": "pilates", 
+  "description": "permite trabajar los músculos en profundidad mientras los relaja, gracias al trabajo de la respiración"
+}
+
+### put class type
+PUT http://localhost:3000/api/classtypes/c1b64cb4-a9df-4e40-91fb-3ac19c1ed747
+Content-Type: application/json
+
+{
+  "name": "zumba", 
+  "description": "es baile"
+}
+
+### patch class type (parcial)
+PATCH http://localhost:3000/api/classtypes/c1b64cb4-a9df-4e40-91fb-3ac19c1ed747
+Content-Type: application/json
+
+{
+  "description": "es baile fitness"
+}
+
+### delete class type
+DELETE http://localhost:3000/api/classtypes/2e68fc1d-39fd-4d1d-9e2e-f5d7d874c73e
