@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { add, findAll, findOne, remove, update } from "./ClassType.controller.js";
+import { controller } from "./ClassType.controller.js";
 import { sanitizeClassType } from "../shared/sanitizeClassType.js";
 
-export const classtypeRouter = Router()
+export const classtypeRouter = Router();
 
-classtypeRouter.get('/', findAll)
-classtypeRouter.get('/:id', findOne)
-classtypeRouter.post('/', sanitizeClassType, add)
-classtypeRouter.put('/:id', sanitizeClassType, update)
-classtypeRouter.patch('/:id', sanitizeClassType, update)
-classtypeRouter.delete('/:id', remove)
+classtypeRouter.get("/", controller.findAll);
+classtypeRouter.get("/:id", controller.findOne);
+classtypeRouter.post("/", sanitizeClassType, controller.add);
+classtypeRouter.put("/:id", sanitizeClassType, controller.update);
+classtypeRouter.patch("/:id", sanitizeClassType, controller.update);
+classtypeRouter.delete("/:id", controller.remove);
