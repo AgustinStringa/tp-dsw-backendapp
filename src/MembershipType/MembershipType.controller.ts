@@ -9,19 +9,21 @@ const controller = {
     const data = await repository.findAll();
     res.json({ length: data?.length, data: data });
   },
+
   findOne: async function (req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const membershiptype = await repository.findOne({ id: id });
-      if (!membershiptype) {
-        res.status(404).send({ message: "membership type not found" });
+      const membershipType = await repository.findOne({ id: id });
+      if (!membershipType) {
+        res.status(404).send({ message: "Membership type not found" });
       } else {
-        res.json({ data: membershiptype }).status(200);
+        res.json({ data: membershipType }).status(200);
       }
     } catch (error) {
       res.status(500).send({ message: "Internal server error" });
     }
   },
+
   add: async function (req: Request, res: Response) {
     const { name, description, price } = req.body.sanitizedInput;
     const newMembershipType = await repository.add(
@@ -29,35 +31,40 @@ const controller = {
     );
     //another common response is id
     res
-      .json({ message: "membership type created", data: newMembershipType })
+      .json({ message: "Membership type created", data: newMembershipType })
       .status(201);
   },
+
   delete: async function (req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const membershiptype = await repository.remove({ id: id });
+      const membershipType = await repository.remove({ id: id });
 
-      if (!membershiptype) {
-        res.status(404).send("membership type not found").status(404);
+      if (!membershipType) {
+        res
+          .status(404)
+          .send({ message: "Membership type not found" })
+          .status(404);
       } else {
         res
-          .json({ message: "membership deleted", data: membershiptype })
+          .json({ message: "Membership deleted", data: membershipType })
           .status(200);
       }
     } catch (error) {
       res.status(500).send({ message: "Internal server error" });
     }
   },
+
   update: async function (req: Request, res: Response) {
     try {
       req.body.sanitizedInput.id = req.params.id;
-      const membershiptype = await repository.update(req.body.sanitizedInput);
-      if (!membershiptype) {
-        res.send({ message: "membership type not found" }).status(404);
+      const membershipType = await repository.update(req.body.sanitizedInput);
+      if (!membershipType) {
+        res.send({ message: "Membership type not found" }).status(404);
       } else {
         res
           .status(200)
-          .send({ message: "membership updated", data: membershiptype });
+          .send({ message: "Membership updated", data: membershipType });
       }
     } catch (error) {
       res.status(500).send({ message: "Internal server error" });

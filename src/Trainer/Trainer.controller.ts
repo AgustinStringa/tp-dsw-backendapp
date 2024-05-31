@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { TrainersRepository } from "./Trainers.repository.js";
-import { Trainers } from "./Trainers.entity.js";
+import { TrainerRepository } from "./Trainer.repository.js";
+import { Trainer } from "./Trainer.entity.js";
 
-const repository = new TrainersRepository();
+const repository = new TrainerRepository();
 
 const controller = {
   findAll: async function (req: Request, res: Response) {
@@ -26,7 +26,7 @@ const controller = {
     const { username, password, email, firstName, lastName } =
       req.body.sanitizedInput;
     const newTrainers = await repository.add(
-      new Trainers(username, password, email, firstName, lastName)
+      new Trainer(username, password, email, firstName, lastName)
     );
     //another common response is id
     res.json({ message: "Trainer created", data: newTrainers }).status(201);

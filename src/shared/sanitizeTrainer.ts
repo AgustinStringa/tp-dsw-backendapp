@@ -5,12 +5,7 @@ import { Response, Request, NextFunction } from "express";
  * de este modo puede reutilizarse para otras entidades
  */
 
-function sanitizeTrainers(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-
+function sanitizeTrainer(req: Request, _: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     username: req.body.username,
     password: req.body.password,
@@ -28,4 +23,4 @@ function sanitizeTrainers(
   });
   next();
 }
-export { sanitizeTrainers };
+export { sanitizeTrainer };

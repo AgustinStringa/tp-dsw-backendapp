@@ -1,5 +1,5 @@
 // import {ObjectId} from "mongo"
-export class DailyRutine {
+export class DailyRoutine {
   constructor(
     date: Date,
     id_excercise: string, // it is ObjectId

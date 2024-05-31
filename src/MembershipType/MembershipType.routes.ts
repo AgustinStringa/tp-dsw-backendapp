@@ -1,17 +1,17 @@
 import express from "express";
 import { sanitizeMembershipType } from "../shared/sanitizeMembershipType.js";
 import { controller } from "./MembershipType.controller.js";
-const membershipType_router = express.Router();
+const membershipTypeRouter = express.Router();
 
-membershipType_router.get("/:id", controller.findOne);
-membershipType_router.get("/", controller.findAll);
+membershipTypeRouter.get("/:id", controller.findOne);
+membershipTypeRouter.get("/", controller.findAll);
 
-membershipType_router.post("/", sanitizeMembershipType, controller.add);
+membershipTypeRouter.post("/", sanitizeMembershipType, controller.add);
 
-membershipType_router.put("/:id", sanitizeMembershipType, controller.update);
+membershipTypeRouter.put("/:id", sanitizeMembershipType, controller.update);
 
-membershipType_router.patch("/:id", sanitizeMembershipType, controller.update);
+membershipTypeRouter.patch("/:id", sanitizeMembershipType, controller.update);
 
-membershipType_router.delete("/:id", controller.delete);
+membershipTypeRouter.delete("/:id", controller.delete);
 
-export { membershipType_router };
+export { membershipTypeRouter };

@@ -1,15 +1,15 @@
 import { Repository } from "../shared/repository.js";
-import { Trainers } from "./Trainers.entity.js";
+import { Trainer } from "./Trainer.entity.js";
 
 const TrainersList = [
-  new Trainers(
+  new Trainer(
     "Elisito",
     "Elias",
     "elias.danteo.tomas@hotmail.com",
     "Elias",
     "Danteo"
   ),
-  new Trainers(
+  new Trainer(
     "entrenador",
     "***",
     "etrenador@hotmail.com",
@@ -18,19 +18,19 @@ const TrainersList = [
   ),
 ];
 
-export class TrainersRepository implements Repository<Trainers> {
-  public async findAll(): Promise<Trainers[] | undefined> {
+export class TrainerRepository implements Repository<Trainer> {
+  public async findAll(): Promise<Trainer[] | undefined> {
     return TrainersList;
     //   return await characters.find({}).toArray();
   }
-  public async findOne(item: { id: string }): Promise<Trainers | undefined> {
+  public async findOne(item: { id: string }): Promise<Trainer | undefined> {
     //return (
     //  (await characters.findOne({ _id: new ObjectId(item.id) })) || undefined
     //);
     const Trainers = TrainersList.find((m) => m.id === item.id);
     return Trainers;
   }
-  public async add(item: Trainers): Promise<Trainers | undefined> {
+  public async add(item: Trainer): Promise<Trainer | undefined> {
     //asumimos que el item es una entrada ya sanitizada.
     //la tarea de sanitizacion no corresponde a esta capa
     // item._id = (await characters.insertOne(item)).insertedId;
@@ -38,7 +38,7 @@ export class TrainersRepository implements Repository<Trainers> {
     TrainersList.push(item);
     return item;
   }
-  public async update(item: Trainers): Promise<Trainers | undefined> {
+  public async update(item: Trainer): Promise<Trainer | undefined> {
     // const { id, ...characterInput } = item;
     // return (
     //   (await characters.findOneAndUpdate(
@@ -62,7 +62,7 @@ export class TrainersRepository implements Repository<Trainers> {
       return undefined;
     }
   }
-  public async remove(item: { id: string }): Promise<Trainers | undefined> {
+  public async remove(item: { id: string }): Promise<Trainer | undefined> {
     // const chr = await characters.findOne({ _id: new ObjectId(item.id) });
     //return (
     //  (await characters.findOneAndDelete({ _id: new ObjectId(item.id) })) ||
