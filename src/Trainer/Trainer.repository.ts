@@ -1,7 +1,7 @@
 import { Repository } from "../shared/repository.js";
 import { Trainer } from "./Trainer.entity.js";
 
-const TrainersList = [
+const trainersList = [
   new Trainer(
     "Elisito",
     "Elias",
@@ -20,22 +20,22 @@ const TrainersList = [
 
 export class TrainerRepository implements Repository<Trainer> {
   public async findAll(): Promise<Trainer[] | undefined> {
-    return TrainersList;
+    return trainersList;
     //   return await characters.find({}).toArray();
   }
   public async findOne(item: { id: string }): Promise<Trainer | undefined> {
     //return (
     //  (await characters.findOne({ _id: new ObjectId(item.id) })) || undefined
     //);
-    const Trainers = TrainersList.find((m) => m.id === item.id);
-    return Trainers;
+    const trainers = trainersList.find((m) => m.id === item.id);
+    return trainers;
   }
   public async add(item: Trainer): Promise<Trainer | undefined> {
     //asumimos que el item es una entrada ya sanitizada.
     //la tarea de sanitizacion no corresponde a esta capa
     // item._id = (await characters.insertOne(item)).insertedId;
     //return item || undefined;
-    TrainersList.push(item);
+    trainersList.push(item);
     return item;
   }
   public async update(item: Trainer): Promise<Trainer | undefined> {
@@ -51,13 +51,13 @@ export class TrainerRepository implements Repository<Trainer> {
     //     { returnDocument: "after" }
     //   )) || undefined
     // );
-    const TrainersIdx = TrainersList.findIndex((m) => m.id === item.id);
-    if (TrainersIdx !== -1) {
-      TrainersList[TrainersIdx] = {
-        ...TrainersList[TrainersIdx],
+    const trainersIdx = trainersList.findIndex((m) => m.id === item.id);
+    if (trainersIdx !== -1) {
+      trainersList[trainersIdx] = {
+        ...trainersList[trainersIdx],
         ...item,
       };
-      return TrainersList[TrainersIdx];
+      return trainersList[trainersIdx];
     } else {
       return undefined;
     }
@@ -68,12 +68,12 @@ export class TrainerRepository implements Repository<Trainer> {
     //  (await characters.findOneAndDelete({ _id: new ObjectId(item.id) })) ||
     //  undefined
     //);
-    const TrainersIdx = TrainersList.findIndex((c) => c.id === item.id);
+    const trainerIdx = trainersList.findIndex((c) => c.id === item.id);
 
-    if (TrainersIdx !== -1) {
-      const TrainersToRemove = TrainersList[TrainersIdx];
-      TrainersList.splice(TrainersIdx, 1);
-      return TrainersToRemove;
+    if (trainerIdx !== -1) {
+      const trainerToRemove = trainersList[trainerIdx];
+      trainersList.splice(trainerIdx, 1);
+      return trainerToRemove;
     } else {
       return undefined;
     }
