@@ -1,13 +1,27 @@
-import crypto from "node:crypto";
+import {
+  Entity,
+  Property,
+  ManyToMany,
+  Cascade,
+  ManyToOne,
+  Rel,
+  Collection,
+} from "@mikro-orm/mongodb";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import IUser from "../IUser.js";
 
-export class Client implements IUser {
-  constructor(
-    public username: string,
-    public password: string,
-    public email: string,
-    public firstName: string,
-    public lastName: string,
-    public id = crypto.randomUUID()
-  ) {}
+@Entity()
+export class Client extends BaseEntity implements IUser {
+  @Property({ nullable: false })
+  username!: string;
+  @Property({ nullable: false })
+  password!: string;
+  @Property({ nullable: false })
+  email!: string;
+  @Property({ nullable: false })
+  firstName!: string;
+  @Property({ nullable: false })
+  lastName!: string;
+
+  //id is in BaseEntity. add MembershipType, etc... Relationships
 }
