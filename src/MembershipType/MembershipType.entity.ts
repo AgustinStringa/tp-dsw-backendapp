@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+//import { ObjectId } from "mongodb";
 import crypto from "node:crypto";
 
 export class MembershipType {
@@ -8,7 +8,7 @@ export class MembershipType {
     public price: number,
     public updated_to = new Date(),
     public created_to = new Date(),
-    public id = crypto.randomUUID(),
-    public _id?: ObjectId
-  ) {}
+    public id = crypto.randomUUID()
+  ) //public _id?: ObjectId
+  {}
 }

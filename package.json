@@ -24,8 +24,11 @@
     "@types/express": "4.17.21",
     "@types/node": "20.12.7",
     "express": "4.19.2",
-    "mongodb": "6.6.1",
     "tsc-watch": "6.2.0",
     "typescript": "5.4.3"
+  },
+  "dependencies": {
+    "@mikro-orm/mongodb": "6.2.9",
+    "reflect-metadata": "0.2.2"
   }
 }
