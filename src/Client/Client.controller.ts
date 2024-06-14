@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/orm.js";
+import { ObjectId } from "@mikro-orm/mongodb";
 
 const em = orm.em;
 
@@ -17,50 +18,46 @@ const controller = {
   },
 
   findOne: async function (req: Request, res: Response) {
-    const id = req.params.id;
-    /*const client = await repository.findOne({ id });
-    if (!client) return res.status(404).send({ message: "Client not found" });
-
-    res.json({ data: client });*/
+    try {
+      const _id = new ObjectId(req.params.id);
+      const client = await em.findOneOrFail(Client, { _id });
+      res.status(200).json({ message: "Client found", data: client });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
   },
 
   add: async function (req: Request, res: Response) {
     try {
-      const item = em.create(Client, req.body);
+      const client = em.create(Client, req.body.sanitizedInput);
       await em.flush();
-      res.status(201).json({ message: "item created", data: item });
+      res.status(201).json({ message: "Client created", data: client });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-
-    /*const input = req.body.sanitizedInput;
-    const clientInput = new Client(
-      input.username,
-      input.password,
-      input.email,
-      input.firstName,
-      input.lastName
-    );
-    const client = await repository.add(clientInput);
-    let client = undefined;
-
-    return res.status(201).send({ message: "Client created", data: client });*/
   },
 
   update: async function (req: Request, res: Response) {
-    req.body.sanitizedInput.id = req.params.id;
-    /*const client = await repository.update(req.body.sanitizedInput);
-
-    if (!client) return res.status(404).send({ message: "Client not found" });
-    res.send({ message: "Client updated succesfully", data: client });*/
+    try {
+      const _id = new ObjectId(req.params.id);
+      const client = await em.findOneOrFail(Client, { _id });
+      em.assign(client, req.body.sanitizedInput);
+      await em.flush();
+      res.status(200).json({ message: "Client updated", data: client });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
   },
 
   remove: async function (req: Request, res: Response) {
-    const id = req.params.id;
-    /*const client = await repository.remove({ id });
-
-    if (!client) return res.status(404).send({ message: "Client not found" });
-    res.send({ message: "Client deleted succesfully", data: client });*/
+    try {
+      const _id = new ObjectId(req.params.id);
+      const client = em.getReference(Client, _id);
+      await em.removeAndFlush(client);
+      res.status(200).json({ message: "Client deleted" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
   },
 
   sanitizeClient: function (req: Request, res: Response, next: NextFunction) {

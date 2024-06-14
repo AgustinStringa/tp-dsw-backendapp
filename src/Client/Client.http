@@ -3,8 +3,7 @@ GET http://localhost:3000/api/clients
 
 
 ### get one client
-GET http://localhost:3000/api/clients/3c4db1ad-236e-43b7-8d37-c83160501134
-
+GET http://localhost:3000/api/clients/666cd30a68b1b03168a170a
 
 ### create client
 POST http://localhost:3000/api/clients/
@@ -15,12 +14,12 @@ Content-Type: application/json
   "password": "mil123",
   "email": "borsatomilton@gmail.com",
   "firstName": "Milton Rubén",
-  "lastName": "Borsato Giménez"
+  "lastName": "BorsatoGiménez"
 }
 
 
 ### put client
-PUT http://localhost:3000/api/clients/3c4db1ad-236e-43b7-8d37-c83160501134
+PUT http://localhost:3000/api/clients/666cc6e2280240a5542a472a
 Content-Type: application/json
 
 {
@@ -33,13 +32,13 @@ Content-Type: application/json
 
 
 ### patch client
-PATCH http://localhost:3000/api/clients/f4cc9795-70b7-421c-b066-ab1cb852ad30
+PATCH http://localhost:3000/api/clients/666ccf0da12840b4bdc20261
 Content-Type: application/json
 
 {
-  "password": "ghd134Adfdakl464ARts"
+  "firstName": "Mariana"
 }
 
 
 ### delete client
-DELETE http://localhost:3000/api/clients/f4cc9795-70b7-421c-b066-ab1cb852ad30
+DELETE http://localhost:3000/api/clients/666cd63d8b5604d0d0c1f199

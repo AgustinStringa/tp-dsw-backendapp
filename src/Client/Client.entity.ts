@@ -23,5 +23,5 @@ export class Client extends BaseEntity implements IUser {
   @Property({ nullable: false })
   lastName!: string;
 
-  //id is in BaseEntity. add MembershipType, etc... Relationships
+  //id is in BaseEntity. Add MembershipType, etc... Relationships
 }
