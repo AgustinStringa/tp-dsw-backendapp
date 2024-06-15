@@ -17,10 +17,11 @@ Content-Type: application/json
 }
 
 ### patch
-PATCH http://localhost:3000/api/progress/666dd5f0e54ba86485903106
+PATCH http://localhost:3000/api/progress/666dd6e171a2159e73f4dec3
 Content-Type: application/json
 
 {
+  "fatPercentage": "10",
   "client": "666dd5f0e54ba86485903106"
 }
 

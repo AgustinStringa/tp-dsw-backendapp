@@ -8,7 +8,11 @@ const em = orm.em;
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const clients = await em.find(Client, {}, { populate: ["progresses"] });
+      const clients = await em.find(
+        Client,
+        {},
+        { populate: ["progresses", "goals"] }
+      );
       res
         .status(200)
         .json({ message: "All clients were found", data: clients });
@@ -23,7 +27,7 @@ const controller = {
       const client = await em.findOneOrFail(
         Client,
         { _id },
-        { populate: ["progresses"] }
+        { populate: ["progresses", "goals"] }
       );
       res.status(200).json({ message: "Client found", data: client });
     } catch (error: any) {

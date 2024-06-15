@@ -31,11 +31,11 @@ Content-Type: application/json
 
 
 ### patch client
-PATCH http://localhost:3000/api/clients/666ceccce78c57fdd2b33cf2
+PATCH http://localhost:3000/api/clients/666dd5dae54ba86485903105
 Content-Type: application/json
 
 {
-  "progresses": ["666ceccce78c57fdd2b33cf2"]
+  "firstName": "Alejo"
 }
 
 
