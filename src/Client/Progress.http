@@ -1,0 +1,28 @@
+### get all
+GET http://localhost:3000/api/progress
+
+### get one
+GET http://localhost:3000/api/progress/666dd45b97e7879bea53369f
+
+### create
+POST http://localhost:3000/api/progress/
+Content-Type: application/json
+
+{
+  "date": "2024-04-01",
+  "weight": "70",
+  "fatPercentage": "8",
+  "bodyMeasurements": "",
+  "client":"666dd5dae54ba86485903105"
+}
+
+### patch
+PATCH http://localhost:3000/api/progress/666dd5f0e54ba86485903106
+Content-Type: application/json
+
+{
+  "client": "666dd5f0e54ba86485903106"
+}
+
+### delete
+DELETE http://localhost:3000/api/progress/666dd6f271a2159e73f4dec4
