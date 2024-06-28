@@ -40,9 +40,9 @@ const controller = {
       .send({ message: "Class Type updated successfully", data: classtype });
   },
 
-  remove: async function (req: Request, res: Response) {
+  delete: async function (req: Request, res: Response) {
     const id = req.params.id;
-    const classtype = await repository.remove({ id });
+    const classtype = await repository.delete({ id });
 
     if (!classtype) {
       return res.status(404).send({ message: "Class Type not Found" });

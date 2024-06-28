@@ -9,4 +9,4 @@ classTypeRouter.get("/:id", controller.findOne);
 classTypeRouter.post("/", sanitizeClassType, controller.add);
 classTypeRouter.put("/:id", sanitizeClassType, controller.update);
 classTypeRouter.patch("/:id", sanitizeClassType, controller.update);
-classTypeRouter.delete("/:id", controller.remove);
+classTypeRouter.delete("/:id", controller.delete);

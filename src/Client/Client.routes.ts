@@ -8,4 +8,4 @@ clientRouter.get("/:id", controller.findOne);
 clientRouter.post("/", controller.sanitizeClient, controller.add);
 clientRouter.put("/:id", controller.sanitizeClient, controller.update);
 clientRouter.patch("/:id", controller.sanitizeClient, controller.update);
-clientRouter.delete("/:id", controller.remove);
+clientRouter.delete("/:id", controller.delete);

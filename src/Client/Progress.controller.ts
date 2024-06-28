@@ -76,7 +76,7 @@ const controller = {
     }
   },
 
-  remove: async function (req: Request, res: Response) {
+  delete: async function (req: Request, res: Response) {
     try {
       const _id = new ObjectId(req.params.id);
       const progress = em.getReference(Progress, _id); //tener en cuenta que no verifica si existe el objeto antes de eliminarlo

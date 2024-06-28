@@ -57,7 +57,7 @@ const controller = {
     }
   },
 
-  remove: async function (req: Request, res: Response) {
+  delete: async function (req: Request, res: Response) {
     try {
       const _id = new ObjectId(req.params.id);
       const client = em.getReference(Client, _id);

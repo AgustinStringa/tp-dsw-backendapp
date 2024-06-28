@@ -8,4 +8,4 @@ goalRouter.get("/:id", controller.findOne);
 goalRouter.post("/", controller.sanitizeGoal, controller.add);
 goalRouter.put("/:id", controller.sanitizeGoal, controller.update);
 goalRouter.patch("/:id", controller.sanitizeGoal, controller.update);
-goalRouter.delete("/:id", controller.remove);
+goalRouter.delete("/:id", controller.delete);

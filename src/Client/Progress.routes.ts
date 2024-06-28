@@ -8,4 +8,4 @@ progressRouter.get("/:id", controller.findOne);
 progressRouter.post("/", controller.sanitizeProgress, controller.add);
 progressRouter.put("/:id", controller.sanitizeProgress, controller.update);
 progressRouter.patch("/:id", controller.sanitizeProgress, controller.update);
-progressRouter.delete("/:id", controller.remove);
+progressRouter.delete("/:id", controller.delete);
