@@ -1,15 +1,16 @@
 import { MikroORM } from "@mikro-orm/core";
-import { MongoDriver } from "@mikro-orm/mongodb";
-
-export const orm = await MikroORM.init({
+import { defineConfig, MongoDriver } from "@mikro-orm/mongodb";
+import { MongoHighlighter } from "@mikro-orm/mongo-highlighter";
+const config = defineConfig({
   entities: ["dist/**/*.entity.js"],
   entitiesTs: ["src/**/*.entity.ts"],
-  dbName: "gimnasio",
+  dbName: "example-mikro",
+  highlighter: new MongoHighlighter(),
+  debug: true,
+  driver: MongoDriver,
   clientUrl: `mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
     "roota"
   )}@cluster0.asqcnur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
-
-  // clientUrl: "mongodb://localhost:27017/gimnasio", //la conexión a Atlas no está funcionando
-  driver: MongoDriver,
-  debug: true,
 });
+
+export const orm = await MikroORM.init(config);
