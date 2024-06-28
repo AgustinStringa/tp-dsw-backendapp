@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Progress } from "./Progress.entity.js";
-import { orm } from "../shared/db/orm.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { ObjectId } from "@mikro-orm/mongodb";
 import { Client } from "./Client.entity.js";
 import { Goal } from "./Goal.entity.js";
@@ -19,10 +19,10 @@ const controller = {
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
+      const id = req.params.id;
       const goal = await em.findOneOrFail(
         Goal,
-        { _id },
+        { id },
         { populate: ["client"] }
       );
       res.status(200).json({ message: "Goal found", data: goal });
@@ -33,8 +33,8 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const _id = ObjectId.createFromHexString(req.body.sanitizedInput.client);
-      const client = await em.findOne(Client, { _id });
+      const clientId = req.body.sanitizedInput.client;
+      const client = await em.findOne(Client, { id: clientId });
 
       if (!client) return res.status(404).json({ message: "Client not found" });
 
@@ -51,19 +51,17 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       if (req.body.sanitizedInput.client) {
-        const _id = ObjectId.createFromHexString(
-          req.body.sanitizedInput.client
-        );
-        const client = await em.findOne(Client, { _id });
+        const idClient = req.body.sanitizedInput.client;
+        const client = await em.findOne(Client, { id: idClient });
         if (!client)
           return res.status(404).json({ message: "Client not found" });
         req.body.sanitizedInput.client = client;
       }
 
-      const _id = new ObjectId(req.params.id);
+      const id = req.params.id;
       const goal = await em.findOneOrFail(
         Goal,
-        { _id },
+        { id },
         { populate: ["client"] }
       );
       em.assign(goal, req.body.sanitizedInput);
@@ -76,8 +74,8 @@ const controller = {
 
   delete: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
-      const goal = em.getReference(Goal, _id); //tener en cuenta que no verifica si existe el objeto antes de eliminarlo
+      const id = req.params.id;
+      const goal = em.getReference(Goal, id); //tener en cuenta que no verifica si existe el objeto antes de eliminarlo
       await em.removeAndFlush(goal);
       res.status(200).json({ message: "Goal deleted" });
     } catch (error: any) {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Trainer } from "./Trainer.entity.js";
-import { orm } from "../shared/db/orm.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { ObjectId } from "@mikro-orm/mongodb";
 const em = orm.em;
 

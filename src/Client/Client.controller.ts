@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Client } from "./Client.entity.js";
-import { orm } from "../shared/db/orm.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { ObjectId } from "@mikro-orm/mongodb";
 
 const em = orm.em;
@@ -23,10 +23,10 @@ const controller = {
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
+      const id = req.params.id;
       const client = await em.findOneOrFail(
         Client,
-        { _id },
+        { id },
         { populate: ["progresses", "goals"] }
       );
       res.status(200).json({ message: "Client found", data: client });
@@ -47,8 +47,8 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
-      const client = await em.findOneOrFail(Client, { _id });
+      const id = req.params.id;
+      const client = await em.findOneOrFail(Client, { id });
       em.assign(client, req.body.sanitizedInput);
       await em.flush();
       res.status(200).json({ message: "Client updated", data: client });
@@ -59,8 +59,8 @@ const controller = {
 
   delete: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
-      const client = em.getReference(Client, _id);
+      const id = req.params.id;
+      const client = em.getReference(Client, id);
       await em.removeAndFlush(client);
       res.status(200).json({ message: "Client deleted" });
     } catch (error: any) {

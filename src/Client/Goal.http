@@ -2,7 +2,7 @@
 GET http://localhost:3000/api/goal/
 
 ### get one
-GET http://localhost:3000/api/goal/313593195
+GET http://localhost:3000/api/goal/667f48579899199c6a75c763
 
 ### añadir uno
 POST  http://localhost:3000/api/goal/
@@ -11,15 +11,15 @@ Content-Type: application/json
 {
   "fatPercentage": "8",
   "bodyMeasurements": "",
-  "client": "666dd5dae54ba86485903105",
+  "client": "667f4692dd0e068972898abc"
 }
 
 ### modificación parcial
-PATCH http://localhost:3000/api/goal/666dde787e10844d9ae57049
+PATCH http://localhost:3000/api/goal/667f48579899199c6a75c763
 Content-Type: application/json
 
 {
-  "client": "666dd5f0e514a86485903106"
+  "fatPercentage": "123"
 }
 
 ### modificación parcial
@@ -31,4 +31,4 @@ Content-Type: application/json
 }
 
 ### borrar una meta
-DELETE http://localhost:3000/api/goal/666dde5f7e10844d9ae57048
+DELETE http://localhost:3000/api/goal/667f48579899199c6a75c763
