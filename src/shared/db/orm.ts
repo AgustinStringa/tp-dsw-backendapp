@@ -5,11 +5,11 @@ export const orm = await MikroORM.init({
   entities: ["dist/**/*.entity.js"],
   entitiesTs: ["src/**/*.entity.ts"],
   dbName: "gimnasio",
-  /*clientUrl: `mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
+  clientUrl: `mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
     "roota"
   )}@cluster0.asqcnur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
-  */
-  clientUrl: "mongodb://localhost:27017/gimnasio", //la conexión a Atlas no está funcionando
+
+  // clientUrl: "mongodb://localhost:27017/gimnasio", //la conexión a Atlas no está funcionando
   driver: MongoDriver,
   debug: true,
 });

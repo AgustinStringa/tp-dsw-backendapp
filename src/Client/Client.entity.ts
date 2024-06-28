@@ -8,7 +8,7 @@ import {
   Collection,
 } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import IUser from "../IUser.js";
+import IUser from "../shared/IUser.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
 

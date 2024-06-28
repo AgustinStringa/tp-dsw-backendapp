@@ -1,18 +1,22 @@
 import { Request, Response } from "express";
-import { TrainerRepository } from "./Trainer.repository.js";
 import { Trainer } from "./Trainer.entity.js";
-
-const repository = new TrainerRepository();
+import { orm } from "../shared/db/orm.js";
+import { ObjectId } from "@mikro-orm/mongodb";
+const em = orm.em;
 
 const controller = {
   findAll: async function (req: Request, res: Response) {
-    const data = await repository.findAll();
-    res.json({ length: data?.length, data: data });
+    try {
+      const trainers = await em.find(Trainer, {});
+      res.json({ length: trainers?.length, data: trainers });
+    } catch (error) {
+      res.status(500).json({ message: "internal error" });
+    }
   },
   findOne: async function (req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      const trainer = await repository.findOne({ id: id });
+      const _id = new ObjectId(req.params.id);
+      const trainer = await em.find(Trainer, { _id });
       if (!trainer) {
         res.status(404).send({ message: "Trainer not found" });
       } else {
@@ -23,39 +27,33 @@ const controller = {
     }
   },
   add: async function (req: Request, res: Response) {
-    const { username, password, email, firstName, lastName } =
-      req.body.sanitizedInput;
-    const newTrainer = await repository.add(
-      new Trainer(username, password, email, firstName, lastName)
-    );
-    //another common response is id
-    res.json({ message: "Trainer created", data: newTrainer }).status(201);
+    try {
+      const trainer = await em.create(Trainer, req.body.sanitizedInput);
+      await em.flush();
+      res.status(201).json({ message: "Client created", data: trainer });
+    } catch (error) {
+      res.status(500).json({ message: "internal error" });
+    }
   },
   delete: async function (req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      const trainer = await repository.remove({ id: id });
-
-      if (!trainer) {
-        res.status(404).send("Trainer not found").status(404);
-      } else {
-        res.json({ message: "Trainer deleted", data: trainer }).status(200);
-      }
-    } catch (error) {
-      res.status(500).send({ message: "Internal server error" });
+      const _id = new ObjectId(req.params.id);
+      const trainer = em.getReference(Trainer, _id);
+      await em.removeAndFlush(trainer);
+      res.status(200).json({ message: "Trainer deleted" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   },
   update: async function (req: Request, res: Response) {
     try {
-      req.body.sanitizedInput.id = req.params.id;
-      const trainer = await repository.update(req.body.sanitizedInput);
-      if (!trainer) {
-        res.send({ message: "Trainer not found" }).status(404);
-      } else {
-        res.status(200).send({ message: "Trainer updated", data: trainer });
-      }
-    } catch (error) {
-      res.status(500).send({ message: "Internal server error" });
+      const _id = new ObjectId(req.params.id);
+      const trainer = await em.findOneOrFail(Trainer, { _id });
+      em.assign(trainer, req.body.sanitizedInput);
+      await em.flush();
+      res.status(200).json({ message: "Trainer updated", data: trainer });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   },
 };
