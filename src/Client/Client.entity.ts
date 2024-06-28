@@ -11,6 +11,7 @@ import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import IUser from "../shared/IUser.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
+import { CurrentMembership } from "../Membership/CurrentMembership.entity.js";
 
 @Entity()
 export class Client extends BaseEntity implements IUser {
@@ -43,5 +44,10 @@ export class Client extends BaseEntity implements IUser {
   })
   goals = new Collection<Goal>(this);
 
-  //id is in BaseEntity. Add more relationships
+  @OneToMany({
+    entity: () => CurrentMembership,
+    mappedBy: "client",
+    orphanRemoval: true,
+  })
+  memberships = new Collection<CurrentMembership>(this);
 }
