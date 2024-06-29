@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Progress } from "./Progress.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { ObjectId } from "@mikro-orm/mongodb";
 import { Client } from "./Client.entity.js";
 
 const em = orm.em;
@@ -39,7 +38,7 @@ const controller = {
 
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      req.body.sanitizedInput.client = client;
+      // req.body.sanitizedInput.client = client;
       const progress = em.create(Progress, req.body.sanitizedInput);
       await em.flush();
 
@@ -77,7 +76,7 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const progress = em.getReference(Progress, id); //tener en cuenta que no verifica si existe el objeto antes de eliminarlo
+      const progress = em.getReference(Progress, id);
       await em.removeAndFlush(progress);
       res.status(200).json({ message: "Progress deleted" });
     } catch (error: any) {

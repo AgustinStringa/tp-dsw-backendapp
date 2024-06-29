@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Progress } from "./Progress.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { ObjectId } from "@mikro-orm/mongodb";
 import { Client } from "./Client.entity.js";
 import { Goal } from "./Goal.entity.js";
 

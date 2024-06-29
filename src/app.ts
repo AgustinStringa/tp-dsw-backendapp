@@ -20,8 +20,8 @@ app.use(express.json());
 app.use("/api/clients", clientRouter);
 app.use("/api/classtypes", classTypeRouter);
 app.use("/api/trainers", trainerRouter);
-app.use("/api/progress", progressRouter);
-app.use("/api/goal", goalRouter);
+app.use("/api/progresses", progressRouter);
+app.use("/api/goals", goalRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });
