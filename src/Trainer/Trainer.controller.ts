@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Trainer } from "./Trainer.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 const em = orm.em;
@@ -60,6 +60,21 @@ const controller = {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
+  },
+  sanitizeTrainer: function (req: Request, _: Response, next: NextFunction) {
+    req.body.sanitizedInput = {
+      username: req.body.username,
+      password: req.body.password,
+      email: req.body.email,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+    };
+    Object.keys(req.body.sanitizedInput).forEach((key) => {
+      if (req.body.sanitizedInput[key] === undefined) {
+        delete req.body.sanitizedInput[key];
+      }
+    });
+    next();
   },
 };
 
