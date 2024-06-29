@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { ObjectId } from "@mikro-orm/mongodb";
 
 const em = orm.em;
 
@@ -75,7 +74,6 @@ const controller = {
       email: req.body.email,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      //progresses: req.body.progresses,
     };
     //more checks about malicious content, sql injections, data type...
 
