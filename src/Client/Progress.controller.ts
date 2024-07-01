@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Progress } from "./Progress.entity.js";
-import { orm } from "../shared/db/orm.js";
-import { ObjectId } from "@mikro-orm/mongodb";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { Client } from "./Client.entity.js";
 
 const em = orm.em;
@@ -20,10 +19,10 @@ const controller = {
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
+      const id = req.params.id;
       const progress = await em.findOneOrFail(
         Progress,
-        { _id },
+        { id },
         { populate: ["client"] }
       );
       res.status(200).json({ message: "Progress found", data: progress });
@@ -34,12 +33,11 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const _id = ObjectId.createFromHexString(req.body.sanitizedInput.client);
-      const client = await em.findOne(Client, { _id });
+      const clientId = req.body.sanitizedInput.client;
+      const client = await em.findOne(Client, { id: clientId });
 
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      req.body.sanitizedInput.client = client;
       const progress = em.create(Progress, req.body.sanitizedInput);
       await em.flush();
 
@@ -52,20 +50,16 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       if (req.body.sanitizedInput.client) {
-        const _id = ObjectId.createFromHexString(
-          req.body.sanitizedInput.client
-        );
-        const client = await em.findOne(Client, { _id });
+        const clientId = req.body.sanitizedInput.client;
+        const client = await em.findOne(Client, { id: clientId });
         if (!client)
           return res.status(404).json({ message: "Client not found" });
-
-        req.body.sanitizedInput.client = client;
       }
 
-      const _id = new ObjectId(req.params.id);
+      const id = req.params.id;
       const progress = await em.findOneOrFail(
         Progress,
-        { _id },
+        { id },
         { populate: ["client"] }
       );
       em.assign(progress, req.body.sanitizedInput);
@@ -78,8 +72,8 @@ const controller = {
 
   delete: async function (req: Request, res: Response) {
     try {
-      const _id = new ObjectId(req.params.id);
-      const progress = em.getReference(Progress, _id); //tener en cuenta que no verifica si existe el objeto antes de eliminarlo
+      const id = req.params.id;
+      const progress = em.getReference(Progress, id);
       await em.removeAndFlush(progress);
       res.status(200).json({ message: "Progress deleted" });
     } catch (error: any) {

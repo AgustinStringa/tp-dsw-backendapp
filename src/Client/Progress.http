@@ -2,7 +2,7 @@
 GET http://localhost:3000/api/progress
 
 ### get one
-GET http://localhost:3000/api/progress/666dd45b97e7879bea53369f
+GET http://localhost:3000/api/progress/667f4b73a78079beb55aa5fa
 
 ### create
 POST http://localhost:3000/api/progress/
@@ -13,17 +13,16 @@ Content-Type: application/json
   "weight": "70",
   "fatPercentage": "8",
   "bodyMeasurements": "",
-  "client":"666dd5dae54ba86485903105"
+  "client":"667f4692dd0e068972898abc"
 }
 
 ### patch
-PATCH http://localhost:3000/api/progress/666dd6e171a2159e73f4dec3
+PATCH http://localhost:3000/api/progress/667f4b73a78079beb55aa5fa
 Content-Type: application/json
 
 {
-  "fatPercentage": "10",
-  "client": "666dd5f0e54ba86485903106"
+  "fatPercentage": "10"
 }
 
 ### delete
-DELETE http://localhost:3000/api/progress/666dd6f271a2159e73f4dec4
+DELETE http://localhost:3000/api/progress/667f4b73a78079beb55aa5fa
