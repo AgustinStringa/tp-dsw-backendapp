@@ -36,7 +36,6 @@ const controller = {
 
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      req.body.sanitizedInput.client = client;
       const goal = em.create(Goal, req.body.sanitizedInput);
       await em.flush();
 
@@ -53,7 +52,6 @@ const controller = {
         const client = await em.findOne(Client, { id: idClient });
         if (!client)
           return res.status(404).json({ message: "Client not found" });
-        req.body.sanitizedInput.client = client;
       }
 
       const id = req.params.id;

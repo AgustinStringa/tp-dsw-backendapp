@@ -38,7 +38,6 @@ const controller = {
 
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      // req.body.sanitizedInput.client = client;
       const progress = em.create(Progress, req.body.sanitizedInput);
       await em.flush();
 
@@ -55,8 +54,6 @@ const controller = {
         const client = await em.findOne(Client, { id: clientId });
         if (!client)
           return res.status(404).json({ message: "Client not found" });
-
-        req.body.sanitizedInput.client = client;
       }
 
       const id = req.params.id;
