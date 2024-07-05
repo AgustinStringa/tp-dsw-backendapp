@@ -8,6 +8,7 @@ import { trainerRouter } from "./Trainer/Trainer.routes.js";
 import { classTypeRouter } from "./ClassType/ClassType.routes.js";
 import { progressRouter } from "./Client/Progress.routes.js";
 import { goalRouter } from "./Client/Goal.routes.js";
+import { excerciseRouter } from "./Exercise/Excercise.routes.js";
 
 const PORT = 3000;
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/classtypes", classTypeRouter);
 app.use("/api/trainers", trainerRouter);
 app.use("/api/progresses", progressRouter);
 app.use("/api/goals", goalRouter);
+app.use("/api/excercises", excerciseRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });
