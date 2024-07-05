@@ -34,9 +34,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const clientId = req.body.sanitizedInput.client;
-      const client = await em.findOne(Client, { id: clientId });
-
-      if (!client) return res.status(404).json({ message: "Client not found" });
+      await em.findOneOrFail(Client, clientId);
 
       const progress = em.create(Progress, req.body.sanitizedInput);
       await em.flush();
@@ -49,19 +47,12 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      if (req.body.sanitizedInput.client) {
-        const clientId = req.body.sanitizedInput.client;
-        const client = await em.findOne(Client, { id: clientId });
-        if (!client)
-          return res.status(404).json({ message: "Client not found" });
-      }
+      if (req.body.sanitizedInput.client !== undefined)
+        await em.findOneOrFail(Client, req.body.sanitizedInput.client);
 
       const id = req.params.id;
-      const progress = await em.findOneOrFail(
-        Progress,
-        { id },
-        { populate: ["client"] }
-      );
+      const progress = await em.findOneOrFail(Progress, { id });
+
       em.assign(progress, req.body.sanitizedInput);
       await em.flush();
       res.status(200).json({ message: "Progress updated", data: progress });
@@ -89,7 +80,7 @@ const controller = {
       bodyMeasurements: req.body.bodyMeasurements,
       client: req.body.client,
     };
-    //more checks about malicious content, sql injections, data type...
+    //more checks about data type...
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {

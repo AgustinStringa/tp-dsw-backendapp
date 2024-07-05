@@ -14,16 +14,18 @@ Content-Type: application/json
   "client": "667f4692dd0e068972898abc"
 }
 
-### modificación parcial
-PATCH http://localhost:3000/api/goals/667f48579899199c6a75c763
+### modificación total
+PUT http://localhost:3000/api/goals/667ad85f462b348eed0715eb
 Content-Type: application/json
 
 {
-  "fatPercentage": "123"
+  "fatPercentage": "22",
+  "bodyMeasurements": "",
+  "client": "667f4692dd0e068972898abc"
 }
 
 ### modificación parcial
-PATCH http://localhost:3000/api/goals/666dde787e10844d9ae57049
+PATCH http://localhost:3000/api/goals/667ad85f462b348eed0715eb
 Content-Type: application/json
 
 {

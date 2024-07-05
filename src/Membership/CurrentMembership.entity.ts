@@ -17,7 +17,7 @@ export class CurrentMembership extends BaseEntity {
   dateFrom? = new Date();
 
   @Property({ nullable: true })
-  dateTo: Date | undefined = undefined;
+  dateTo: Date | null = null;
 
   @ManyToOne(() => MembershipType)
   type!: Rel<MembershipType>;

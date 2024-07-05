@@ -31,11 +31,7 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const clientId = req.body.sanitizedInput.client;
-      const client = await em.findOne(Client, { id: clientId });
-
-      if (!client) return res.status(404).json({ message: "Client not found" });
-
+      await em.findOneOrFail(Client, req.body.sanitizedInput.client);
       const goal = em.create(Goal, req.body.sanitizedInput);
       await em.flush();
 
@@ -47,21 +43,14 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      if (req.body.sanitizedInput.client) {
-        const idClient = req.body.sanitizedInput.client;
-        const client = await em.findOne(Client, { id: idClient });
-        if (!client)
-          return res.status(404).json({ message: "Client not found" });
-      }
+      if (req.body.sanitizedInput.client !== undefined)
+        await em.findOneOrFail(Client, req.body.sanitizedInput.client);
 
       const id = req.params.id;
-      const goal = await em.findOneOrFail(
-        Goal,
-        { id },
-        { populate: ["client"] }
-      );
+      const goal = await em.findOneOrFail(Goal, id);
       em.assign(goal, req.body.sanitizedInput);
       await em.flush();
+
       res.status(200).json({ message: "Goal updated", data: goal });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -71,7 +60,7 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const goal = em.getReference(Goal, id); //tener en cuenta que no verifica si existe el objeto antes de eliminarlo
+      const goal = em.getReference(Goal, id);
       await em.removeAndFlush(goal);
       res.status(200).json({ message: "Goal deleted" });
     } catch (error: any) {
@@ -86,7 +75,7 @@ const controller = {
       done: req.body.done,
       client: req.body.client,
     };
-    //more checks about malicious content, sql injections, data type...
+    //more checks about data type...
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {

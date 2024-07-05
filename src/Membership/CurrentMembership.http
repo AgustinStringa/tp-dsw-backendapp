@@ -9,7 +9,6 @@ POST http://localhost:3000/api/currentmemberships/
 Content-Type: application/json
 
 {
-  "dateTo": "",
   "type": "66880b57ce8ccd39d9fe9085",
   "client": "666c45e6b7de20e525df8d1e"
 }
@@ -20,7 +19,6 @@ PUT http://localhost:3000/api/currentmemberships/66881354094fb79b203582e0
 Content-Type: application/json
 
 {
-  "dateTo": "",
   "type": "66880b57ce8ccd39d9fe9085",
   "client": "666c45e6b7de20e525df8d1e"
 }
