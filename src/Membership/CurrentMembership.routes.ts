@@ -1,4 +1,4 @@
-import Router from "express";
+import { Router } from "express";
 import { controller } from "./CurrentMembership.controller.js";
 
 export const currentMembershipRouter = Router();
