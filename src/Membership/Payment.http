@@ -1,0 +1,39 @@
+### get all payments
+GET http://localhost:3000/api/payments/
+
+### get one payment
+GET http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+
+### create a payment
+POST http://localhost:3000/api/payments/
+Content-Type: application/json
+
+{
+  "payMethod": "Efectivo",
+  "amount": "15500",
+  "membership": "66881354094fb79b203582e0"
+}
+
+
+### put payment
+PUT http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+Content-Type: application/json
+
+{
+  "payMethod": "Tarjeta",
+  "amount": "15500",
+  "membership": "66881354094fb79b203582e0"
+}
+
+
+### patch payment
+PATCH http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+Content-Type: application/json
+
+{
+    "payMethod": "Billetera Santa Fe"
+}
+
+
+### delete payment
+DELETE http://localhost:3000/api/payments/66882f671494414a2a03f2e9
