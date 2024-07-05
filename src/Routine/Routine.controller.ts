@@ -54,6 +54,12 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      if (req.body.trainer !== undefined) {
+        await em.findOneOrFail(Trainer, { id: req.body.trainer });
+      }
+      if (req.body.client) {
+        await em.findOneOrFail(Client, { id: req.body.client });
+      }
       const id = req.params.id;
       const routine = await em.findOneOrFail(Routine, { id });
       em.assign(routine, req.body.sanitizedInput);

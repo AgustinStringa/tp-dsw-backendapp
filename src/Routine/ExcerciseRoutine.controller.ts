@@ -64,8 +64,12 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      await em.findOneOrFail(Excercise, { id: req.body.excercise });
-      await em.findOneOrFail(Routine, { id: req.body.routine });
+      if (req.body.excercise !== undefined) {
+        await em.findOneOrFail(Excercise, { id: req.body.excercise });
+      }
+      if (req.body.routine !== undefined) {
+        await em.findOneOrFail(Routine, { id: req.body.routine });
+      }
       const excerciseRoutine = await em.findOneOrFail(ExcerciseRoutine, { id });
       em.assign(excerciseRoutine, req.body.sanitizedInput);
       await em.flush();
