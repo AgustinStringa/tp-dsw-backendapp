@@ -1,22 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import { DailyRoutine } from "./DailyRoutine.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-
+import { Routine } from "./Routine.entity.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
+import { Client } from "../Client/Client.entity.js";
 const em = orm.em;
 
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const dailyRoutines = await em.find(
-        DailyRoutine,
+      const routines = await em.find(
+        Routine,
         {},
         {
-          populate: ["monthlyRoutine"],
+          populate: ["client", "trainer", "excercisesRoutine"],
         }
       );
       res.status(200).json({
-        message: "All daily routines were found",
-        data: dailyRoutines,
+        message: "All routines were found",
+        data: routines,
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -26,10 +27,14 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const dailyRoutine = await em.findOneOrFail(DailyRoutine, { id });
-      res
-        .status(200)
-        .json({ message: "Daily routine found", data: dailyRoutine });
+      const routine = await em.findOneOrFail(
+        Routine,
+        { id },
+        {
+          populate: ["client", "trainer", "excercisesRoutine"],
+        }
+      );
+      res.status(200).json({ message: "Routine found", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -37,11 +42,11 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const dailyRoutine = em.create(DailyRoutine, req.body.sanitizedInput);
+      await em.findOneOrFail(Trainer, { id: req.body.trainer });
+      await em.findOneOrFail(Client, { id: req.body.client });
+      const routine = em.create(Routine, req.body.sanitizedInput);
       await em.flush();
-      res
-        .status(201)
-        .json({ message: "Daily routine created", data: dailyRoutine });
+      res.status(201).json({ message: "Routine created", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -50,12 +55,10 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const dailyRoutine = await em.findOneOrFail(DailyRoutine, { id });
-      em.assign(dailyRoutine, req.body.sanitizedInput);
+      const routine = await em.findOneOrFail(Routine, { id });
+      em.assign(routine, req.body.sanitizedInput);
       await em.flush();
-      res
-        .status(200)
-        .json({ message: "Daily routine updated", data: dailyRoutine });
+      res.status(200).json({ message: "Routine updated", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -64,22 +67,20 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const dailyRoutine = em.getReference(DailyRoutine, id);
-      await em.removeAndFlush(dailyRoutine);
-      res.status(200).json({ message: "Daily routine deleted" });
+      const routine = em.getReference(Routine, id);
+      await em.removeAndFlush(routine);
+      res.status(200).json({ message: "Routine deleted" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
 
-  sanitizeDailyRoutine: function (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  sanitizeRoutine: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      day: req.body.day,
-      monthlyRoutine: req.body.monthlyRoutine,
+      month: req.body.month,
+      year: req.body.year,
+      trainer: req.body.trainer,
+      client: req.body.client,
     };
     //more checks about malicious content, sql injections, data type...
 

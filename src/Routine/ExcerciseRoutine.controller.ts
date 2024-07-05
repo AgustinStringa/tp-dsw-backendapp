@@ -1,22 +1,24 @@
 import { Request, Response, NextFunction } from "express";
+import { ExcerciseRoutine } from "./ExcerciseRoutine.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { DailyRoutine } from "../DailyRoutine/DailyRoutine.entity.js";
-import { MonthlyRoutine } from "./MonthlyRoutine.entity.js";
+import { Excercise } from "./Exercise.entity.js";
+import { Routine } from "./Routine.entity.js";
+
 const em = orm.em;
 
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const monthlyRoutines = await em.find(
-        MonthlyRoutine,
+      const excercisesRoutine = await em.find(
+        ExcerciseRoutine,
         {},
         {
-          populate: ["client", "trainer", "days"],
+          populate: ["excercise", "routine"],
         }
       );
       res.status(200).json({
-        message: "All monthly routines were found",
-        data: monthlyRoutines,
+        message: "All excercises routine were found",
+        data: excercisesRoutine,
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -26,16 +28,16 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const monthlyRoutine = await em.findOneOrFail(
-        MonthlyRoutine,
+      const excerciseRoutine = await em.findOneOrFail(
+        ExcerciseRoutine,
         { id },
         {
-          populate: ["client", "trainer", "days"],
+          populate: ["excercise", "routine"],
         }
       );
       res
         .status(200)
-        .json({ message: "Monthly routine found", data: monthlyRoutine });
+        .json({ message: "Excercise routine found", data: excerciseRoutine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -43,11 +45,17 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const monthlyRoutine = em.create(MonthlyRoutine, req.body.sanitizedInput);
+      await em.findOneOrFail(Excercise, { id: req.body.excercise });
+      await em.findOneOrFail(Routine, { id: req.body.routine });
+
+      const excerciseRoutine = em.create(
+        ExcerciseRoutine,
+        req.body.sanitizedInput
+      );
       await em.flush();
       res
         .status(201)
-        .json({ message: "Monthly routine created", data: monthlyRoutine });
+        .json({ message: "Excercise routine created", data: excerciseRoutine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -56,12 +64,14 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const monthlyRoutine = await em.findOneOrFail(MonthlyRoutine, { id });
-      em.assign(monthlyRoutine, req.body.sanitizedInput);
+      await em.findOneOrFail(Excercise, { id: req.body.excercise });
+      await em.findOneOrFail(Routine, { id: req.body.routine });
+      const excerciseRoutine = await em.findOneOrFail(ExcerciseRoutine, { id });
+      em.assign(excerciseRoutine, req.body.sanitizedInput);
       await em.flush();
       res
         .status(200)
-        .json({ message: "Monthly routine updated", data: monthlyRoutine });
+        .json({ message: "Excercise routine updated", data: excerciseRoutine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -70,24 +80,27 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const monthlyRoutine = em.getReference(MonthlyRoutine, id);
-      await em.removeAndFlush(monthlyRoutine);
-      res.status(200).json({ message: "Monthly routine deleted" });
+      const excerciseRoutine = em.getReference(ExcerciseRoutine, id);
+      await em.removeAndFlush(excerciseRoutine);
+      res.status(200).json({ message: "Excercise routine deleted" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
 
-  sanitizeMonthlyRoutine: function (
+  sanitizeExcerciseRoutine: function (
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
-      month: req.body.month,
-      year: req.body.year,
-      trainer: req.body.trainer,
-      client: req.body.client,
+      day: req.body.day,
+      week: req.body.week,
+      series: req.body.series,
+      repetitions: req.body.repetitions,
+      weight: req.body.weight,
+      routine: req.body.routine,
+      excercise: req.body.excercise,
     };
     //more checks about malicious content, sql injections, data type...
 

@@ -7,12 +7,12 @@ import {
   ManyToOne,
   Rel,
 } from "@mikro-orm/core";
-import { DailyRoutine } from "../DailyRoutine/DailyRoutine.entity.js";
+import { ExcerciseRoutine } from "./ExcerciseRoutine.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
-@Entity({ tableName: "monthlyRoutines" })
-export class MonthlyRoutine extends BaseEntity {
+@Entity({ tableName: "routine" })
+export class Routine extends BaseEntity {
   @Property()
   month!: number;
 
@@ -25,8 +25,8 @@ export class MonthlyRoutine extends BaseEntity {
   @ManyToOne(() => Client, { nullable: false })
   client!: Rel<Trainer>;
 
-  @OneToMany(() => DailyRoutine, (dRoutine) => dRoutine.monthlyRoutine, {
+  @OneToMany(() => ExcerciseRoutine, (eRoutine) => eRoutine.routine, {
     cascade: [Cascade.ALL],
   })
-  days = new Collection<DailyRoutine>(this);
+  excercisesRoutine = new Collection<ExcerciseRoutine>(this);
 }

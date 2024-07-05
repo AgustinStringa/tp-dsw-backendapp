@@ -11,7 +11,7 @@ const controller = {
         Excercise,
         {},
         {
-          populate: ["trainer", "excercisesDone"],
+          populate: [],
         }
       );
       res.json({ message: "All Excercises were found", data: excercises });
@@ -26,7 +26,7 @@ const controller = {
         Excercise,
         { id },
         {
-          populate: ["trainer", "excercisesDone"],
+          populate: [],
         }
       );
       if (!excercise) {
