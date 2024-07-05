@@ -1,11 +1,11 @@
 ### get all
-GET http://localhost:3000/api/goal/
+GET http://localhost:3000/api/goals/
 
 ### get one
-GET http://localhost:3000/api/goal/667f48579899199c6a75c763
+GET http://localhost:3000/api/goals/667f48579899199c6a75c763
 
 ### añadir uno
-POST  http://localhost:3000/api/goal/
+POST  http://localhost:3000/api/goals/
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### modificación parcial
-PATCH http://localhost:3000/api/goal/667f48579899199c6a75c763
+PATCH http://localhost:3000/api/goals/667f48579899199c6a75c763
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ### modificación parcial
-PATCH http://localhost:3000/api/goal/666dde787e10844d9ae57049
+PATCH http://localhost:3000/api/goals/666dde787e10844d9ae57049
 Content-Type: application/json
 
 {
@@ -31,4 +31,4 @@ Content-Type: application/json
 }
 
 ### borrar una meta
-DELETE http://localhost:3000/api/goal/667f48579899199c6a75c763
+DELETE http://localhost:3000/api/goals/667f48579899199c6a75c763

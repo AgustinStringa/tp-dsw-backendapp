@@ -1,0 +1,40 @@
+### get all types
+GET http://localhost:3000/api/membershiptypes
+
+### get one type
+GET http://localhost:3000/api/membershiptypes/66880b57ce8ccd39d9fe9085
+
+### crear type
+POST http://localhost:3000/api/membershiptypes/
+Content-Type: application/json
+
+{
+  "name": "Musculación + Pileta",
+  "description": "Permite acceder todos los días de la semana al gimnasio de pesas y a también a la pileta.",
+  "price": 28000
+}
+
+
+### put type
+PUT http://localhost:3000/api/membershiptypes/66880b57ce8ccd39d9fe9085
+Content-Type: application/json
+
+{
+  "name": "Pilates + Musculación",
+  "description": "3 clases de pilates por semana y 2 días de musculación.",
+  "price": 15000
+}
+
+
+### patch type
+PATCH http://localhost:3000/api/membershiptypes/66880b57ce8ccd39d9fe9085
+Content-Type: application/json
+
+{
+  "name": "Pilates y natacion",
+  "price": 1
+}
+
+
+### delete type
+DELETE http://localhost:3000/api/membershiptypes/66880a2e92ac25be35322db7

@@ -1,11 +1,11 @@
 ### get all
-GET http://localhost:3000/api/progress
+GET http://localhost:3000/api/progresses/
 
 ### get one
-GET http://localhost:3000/api/progress/667f4b73a78079beb55aa5fa
+GET http://localhost:3000/api/progresses/667f4b73a78079beb55aa5fa
 
 ### create
-POST http://localhost:3000/api/progress/
+POST http://localhost:3000/api/progresses/
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 }
 
 ### patch
-PATCH http://localhost:3000/api/progress/667f4b73a78079beb55aa5fa
+PATCH http://localhost:3000/api/progresses/667f4b73a78079beb55aa5fa
 Content-Type: application/json
 
 {
@@ -25,4 +25,4 @@ Content-Type: application/json
 }
 
 ### delete
-DELETE http://localhost:3000/api/progress/667f4b73a78079beb55aa5fa
+DELETE http://localhost:3000/api/progresses/667f4b73a78079beb55aa5fa
