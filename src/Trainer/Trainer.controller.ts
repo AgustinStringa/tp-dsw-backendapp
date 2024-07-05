@@ -19,7 +19,7 @@ const controller = {
         Trainer,
         { id },
         {
-          populate: ["excercises"],
+          populate: [],
         }
       );
       if (!trainer) {

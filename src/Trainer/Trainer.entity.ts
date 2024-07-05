@@ -9,7 +9,6 @@ import {
 } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import IUser from "../shared/IUser.js";
-import { Excercise } from "../Exercise/Exercise.entity.js";
 
 @Entity()
 export class Trainer extends BaseEntity implements IUser {
@@ -27,11 +26,4 @@ export class Trainer extends BaseEntity implements IUser {
 
   @Property({ nullable: false })
   lastName!: string;
-
-  @OneToMany({
-    entity: () => Excercise,
-    mappedBy: "trainer",
-    orphanRemoval: true,
-  })
-  excercises = new Collection<Excercise>(this);
 }
