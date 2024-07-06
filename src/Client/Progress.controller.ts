@@ -27,7 +27,9 @@ const controller = {
       );
       res.status(200).json({ message: "Progress found", data: progress });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -41,7 +43,9 @@ const controller = {
 
       res.status(201).json({ message: "Progress created", data: progress });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -57,7 +61,9 @@ const controller = {
       await em.flush();
       res.status(200).json({ message: "Progress updated", data: progress });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -80,7 +86,6 @@ const controller = {
       bodyMeasurements: req.body.bodyMeasurements,
       client: req.body.client,
     };
-    //more checks about data type...
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {

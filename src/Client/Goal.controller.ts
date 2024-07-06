@@ -25,7 +25,9 @@ const controller = {
       );
       res.status(200).json({ message: "Goal found", data: goal });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -37,7 +39,9 @@ const controller = {
 
       res.status(201).json({ message: "Goal created", data: goal });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -53,7 +57,9 @@ const controller = {
 
       res.status(200).json({ message: "Goal updated", data: goal });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -75,7 +81,6 @@ const controller = {
       done: req.body.done,
       client: req.body.client,
     };
-    //more checks about data type...
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {

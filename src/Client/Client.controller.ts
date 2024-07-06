@@ -30,7 +30,9 @@ const controller = {
       );
       res.status(200).json({ message: "Client found", data: client });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -52,7 +54,9 @@ const controller = {
       await em.flush();
       res.status(200).json({ message: "Client updated", data: client });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -75,13 +79,13 @@ const controller = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
     };
-    //more checks about malicious content, sql injections, data type...
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
         delete req.body.sanitizedInput[key];
       }
     });
+
     next();
   },
 };

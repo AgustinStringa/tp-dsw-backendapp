@@ -34,7 +34,9 @@ const controller = {
         data: membType,
       });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -61,7 +63,9 @@ const controller = {
         .status(200)
         .json({ message: "Membership type updated", data: membType });
     } catch (error: any) {
-      res.status(500).send({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 

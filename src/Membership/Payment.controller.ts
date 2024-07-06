@@ -29,7 +29,9 @@ const controller = {
       });
       res.status(200).json({ message: "Payment found", data: payment });
     } catch (error: any) {
-      res.status(500).send({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -42,7 +44,9 @@ const controller = {
       await em.flush();
       res.status(200).json({ message: "Payment created", data: payment });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -60,7 +64,9 @@ const controller = {
       await em.flush();
       res.status(200).json({ message: "Payment updated", data: payment });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 

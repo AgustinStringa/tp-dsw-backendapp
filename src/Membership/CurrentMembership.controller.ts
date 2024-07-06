@@ -35,7 +35,9 @@ const controller = {
         .status(200)
         .json({ message: "Current membership found", data: currentMemb });
     } catch (error: any) {
-      res.status(500).send({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -56,7 +58,9 @@ const controller = {
         .status(201)
         .json({ message: "New membership created", data: currentMemb });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
@@ -80,7 +84,9 @@ const controller = {
         .status(200)
         .json({ message: "Current membership updated", data: currentMemb });
     } catch (error: any) {
-      res.status(500).send({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
