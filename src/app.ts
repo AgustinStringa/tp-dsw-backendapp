@@ -8,8 +8,8 @@ import { trainerRouter } from "./Trainer/Trainer.routes.js";
 import { classTypeRouter } from "./ClassType/ClassType.routes.js";
 import { progressRouter } from "./Client/Progress.routes.js";
 import { goalRouter } from "./Client/Goal.routes.js";
-import { excerciseRouter } from "./Routine/Excercise.routes.js";
-import { excerciseRoutineRouter } from "./Routine/ExcerciseRoutine.routes.js";
+import { exerciseRouter } from "./Routine/Exercise.routes.js";
+import { exerciseRoutineRouter } from "./Routine/ExerciseRoutine.routes.js";
 import { routineRouter } from "./Routine/Routine.routes.js";
 import { currentMembershipRouter } from "./Membership/CurrentMembership.routes.js";
 import { paymentRouter } from "./Membership/Payment.routes.js";
@@ -30,8 +30,8 @@ app.use("/api/classtypes", classTypeRouter);
 app.use("/api/trainers", trainerRouter);
 app.use("/api/progresses", progressRouter);
 app.use("/api/goals", goalRouter);
-app.use("/api/excercises", excerciseRouter);
-app.use("/api/excercisesRoutine", excerciseRoutineRouter);
+app.use("/api/exercises", exerciseRouter);
+app.use("/api/exercisesRoutine", exerciseRoutineRouter);
 app.use("/api/routines", routineRouter);
 
 app.use((_, res) => {

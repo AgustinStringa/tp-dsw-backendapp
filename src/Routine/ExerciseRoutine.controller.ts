@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ExcerciseRoutine } from "./ExcerciseRoutine.entity.js";
+import { ExerciseRoutine } from "./ExerciseRoutine.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { Excercise } from "./Exercise.entity.js";
+import { Exercise } from "./Exercise.entity.js";
 import { Routine } from "./Routine.entity.js";
 
 const em = orm.em;
@@ -9,16 +9,16 @@ const em = orm.em;
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const excercisesRoutine = await em.find(
-        ExcerciseRoutine,
+      const exercisesRoutine = await em.find(
+        ExerciseRoutine,
         {},
         {
-          populate: ["excercise", "routine"],
+          populate: ["exercise", "routine"],
         }
       );
       res.status(200).json({
-        message: "All excercises routine were found",
-        data: excercisesRoutine,
+        message: "All exercises routine were found",
+        data: exercisesRoutine,
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -28,16 +28,16 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const excerciseRoutine = await em.findOneOrFail(
-        ExcerciseRoutine,
+      const exerciseRoutine = await em.findOneOrFail(
+        ExerciseRoutine,
         { id },
         {
-          populate: ["excercise", "routine"],
+          populate: ["exercise", "routine"],
         }
       );
       res
         .status(200)
-        .json({ message: "Excercise routine found", data: excerciseRoutine });
+        .json({ message: "Exercise routine found", data: exerciseRoutine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -45,17 +45,17 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(Excercise, { id: req.body.excercise });
+      await em.findOneOrFail(Exercise, { id: req.body.exercise });
       await em.findOneOrFail(Routine, { id: req.body.routine });
 
-      const excerciseRoutine = em.create(
-        ExcerciseRoutine,
+      const exerciseRoutine = em.create(
+        ExerciseRoutine,
         req.body.sanitizedInput
       );
       await em.flush();
       res
         .status(201)
-        .json({ message: "Excercise routine created", data: excerciseRoutine });
+        .json({ message: "Exercise routine created", data: exerciseRoutine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -64,18 +64,18 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      if (req.body.excercise !== undefined) {
-        await em.findOneOrFail(Excercise, { id: req.body.excercise });
+      if (req.body.exercise !== undefined) {
+        await em.findOneOrFail(Exercise, { id: req.body.exercise });
       }
       if (req.body.routine !== undefined) {
         await em.findOneOrFail(Routine, { id: req.body.routine });
       }
-      const excerciseRoutine = await em.findOneOrFail(ExcerciseRoutine, { id });
-      em.assign(excerciseRoutine, req.body.sanitizedInput);
+      const exerciseRoutine = await em.findOneOrFail(ExerciseRoutine, { id });
+      em.assign(exerciseRoutine, req.body.sanitizedInput);
       await em.flush();
       res
         .status(200)
-        .json({ message: "Excercise routine updated", data: excerciseRoutine });
+        .json({ message: "Exercise routine updated", data: exerciseRoutine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -84,15 +84,15 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const excerciseRoutine = em.getReference(ExcerciseRoutine, id);
-      await em.removeAndFlush(excerciseRoutine);
-      res.status(200).json({ message: "Excercise routine deleted" });
+      const exerciseRoutine = em.getReference(ExerciseRoutine, id);
+      await em.removeAndFlush(exerciseRoutine);
+      res.status(200).json({ message: "Exercise routine deleted" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
 
-  sanitizeExcerciseRoutine: function (
+  sanitizeExerciseRoutine: function (
     req: Request,
     res: Response,
     next: NextFunction
@@ -104,7 +104,7 @@ const controller = {
       repetitions: req.body.repetitions,
       weight: req.body.weight,
       routine: req.body.routine,
-      excercise: req.body.excercise,
+      exercise: req.body.exercise,
     };
     //more checks about malicious content, sql injections, data type...
 

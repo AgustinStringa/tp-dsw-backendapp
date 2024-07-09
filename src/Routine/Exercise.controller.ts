@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Excercise } from "./Exercise.entity.js";
+import { Exercise } from "./Exercise.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 const em = orm.em;
@@ -7,14 +7,14 @@ const em = orm.em;
 const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const excercises = await em.find(
-        Excercise,
+      const exercises = await em.find(
+        Exercise,
         {},
         {
           populate: [],
         }
       );
-      res.json({ message: "All Excercises were found", data: excercises });
+      res.json({ message: "All Exercises were found", data: exercises });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -22,17 +22,17 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const excercise = await em.findOneOrFail(
-        Excercise,
+      const exercise = await em.findOneOrFail(
+        Exercise,
         { id },
         {
           populate: [],
         }
       );
-      if (!excercise) {
-        res.status(404).send({ message: "Excercise not found" });
+      if (!exercise) {
+        res.status(404).send({ message: "Exercise not found" });
       } else {
-        res.json({ data: excercise }).status(200);
+        res.json({ data: exercise }).status(200);
       }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -40,9 +40,9 @@ const controller = {
   },
   add: async function (req: Request, res: Response) {
     try {
-      const excercise = em.create(Excercise, req.body.sanitizedInput);
+      const exercise = em.create(Exercise, req.body.sanitizedInput);
       await em.flush();
-      res.status(201).json({ message: "Excercise created", data: excercise });
+      res.status(201).json({ message: "Exercise created", data: exercise });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -50,9 +50,9 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const excercise = em.getReference(Excercise, id);
-      await em.removeAndFlush(excercise);
-      res.status(200).json({ message: "Excercise deleted" });
+      const exercise = em.getReference(Exercise, id);
+      await em.removeAndFlush(exercise);
+      res.status(200).json({ message: "Exercise deleted" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -68,21 +68,21 @@ const controller = {
         }
       }
       const id = req.params.id;
-      const excercise = await em.findOneOrFail(Excercise, { id });
-      em.assign(excercise, req.body.sanitizedInput);
+      const exercise = await em.findOneOrFail(Exercise, { id });
+      em.assign(exercise, req.body.sanitizedInput);
       await em.flush();
-      res.status(200).json({ message: "Excercise updated", data: excercise });
+      res.status(200).json({ message: "Exercise updated", data: exercise });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
-  sanitizeExcercise: function (req: Request, _: Response, next: NextFunction) {
+  sanitizeExercise: function (req: Request, _: Response, next: NextFunction) {
     req.body.sanitizedInput = {
       name: req.body.name,
       description: req.body.description,
       urlVideo: req.body.urlVideo,
       trainer: req.body.trainer,
-      excercisesDone: req.body.excercisesDone,
+      exercisesDone: req.body.exercisesDone,
     };
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
