@@ -1,7 +1,7 @@
 import { Entity, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 @Entity()
-export class Excercise extends BaseEntity {
+export class Exercise extends BaseEntity {
   @Property({ nullable: false })
   name!: string;
 

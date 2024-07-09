@@ -12,7 +12,7 @@ const controller = {
         Routine,
         {},
         {
-          populate: ["client", "trainer", "excercisesRoutine"],
+          populate: ["client", "trainer", "exercisesRoutine"],
         }
       );
       res.status(200).json({
@@ -31,7 +31,7 @@ const controller = {
         Routine,
         { id },
         {
-          populate: ["client", "trainer", "excercisesRoutine"],
+          populate: ["client", "trainer", "exercisesRoutine"],
         }
       );
       res.status(200).json({ message: "Routine found", data: routine });

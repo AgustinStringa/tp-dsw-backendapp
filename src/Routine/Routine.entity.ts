@@ -7,7 +7,7 @@ import {
   ManyToOne,
   Rel,
 } from "@mikro-orm/core";
-import { ExcerciseRoutine } from "./ExcerciseRoutine.entity.js";
+import { ExerciseRoutine } from "./ExerciseRoutine.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
@@ -25,8 +25,8 @@ export class Routine extends BaseEntity {
   @ManyToOne(() => Client, { nullable: false })
   client!: Rel<Trainer>;
 
-  @OneToMany(() => ExcerciseRoutine, (eRoutine) => eRoutine.routine, {
+  @OneToMany(() => ExerciseRoutine, (eRoutine) => eRoutine.routine, {
     cascade: [Cascade.ALL],
   })
-  excercisesRoutine = new Collection<ExcerciseRoutine>(this);
+  exercisesRoutine = new Collection<ExerciseRoutine>(this);
 }
