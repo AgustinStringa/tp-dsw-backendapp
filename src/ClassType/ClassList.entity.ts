@@ -25,6 +25,15 @@ export class ClassList extends BaseEntity {
   @Property({ nullable: false })
   state!: string;  // active, disable, suspended
 
+  @Property({ nullable: false })
+  classDuration!: number;  // 30min, 45min, 60min, 90min, 120min
+
+  @Property({ nullable: false })
+  maxCapacity!: number;  // 10, 15, 20, 25, 30, 35, 40, 45, 50 people
+
+  @Property({ nullable: false })
+  place!: string;  // gym, sum, park, beach, online
+
   @ManyToOne(() => ClassType, { nullable: false })
   classType!: Rel<ClassType>;
 

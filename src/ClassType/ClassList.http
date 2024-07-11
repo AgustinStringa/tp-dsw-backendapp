@@ -1,0 +1,48 @@
+### get all Class Types
+GET http://localhost:3000/api/classLists
+
+### get one class type
+GET http://localhost:3000/api/classLists/id
+
+
+### create class type
+POST http://localhost:3000/api/classLists/
+Content-Type: application/json
+
+{
+  "classHour" : "8:00PM",
+  "classDay": "Tuesday",
+  "state": "active",
+  "classDuraton": "60min",
+  "maxCapacity": 20,
+  "place": "gym",
+
+
+}
+
+### put class type
+PUT http://localhost:3000/api/classLists/id
+Content-Type: application/json
+
+{
+  "classHour" : "9:00PM",
+  "classDay": "Wednesday",
+  "state": "active",
+  "classDuraton": "120min",
+  "maxCapacity": 60,
+  "place": "summer park",
+
+
+}
+
+### patch class type (parcial)
+PATCH http://localhost:3000/api/classLists/id
+Content-Type: application/json
+
+{
+
+  "state": "disable",
+
+}
+### delete class type
+DELETE http://localhost:3000/api/classLists/id

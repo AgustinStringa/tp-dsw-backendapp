@@ -13,7 +13,7 @@ import { exerciseRoutineRouter } from "./Routine/ExerciseRoutine.routes.js";
 import { routineRouter } from "./Routine/Routine.routes.js";
 import { currentMembershipRouter } from "./Membership/CurrentMembership.routes.js";
 import { paymentRouter } from "./Membership/Payment.routes.js";
-
+import { classListRouter } from "./ClassType/ClassList.routes.js";
 
 const PORT = 3000;
 const app = express();
@@ -33,6 +33,7 @@ app.use("/api/goals", goalRouter);
 app.use("/api/exercises", exerciseRouter);
 app.use("/api/exercisesRoutine", exerciseRoutineRouter);
 app.use("/api/routines", routineRouter);
+app.use("/api/classLists", classListRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });
