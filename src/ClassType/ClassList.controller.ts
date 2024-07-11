@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { ClassList } from "./ClassList.entity.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
+import { ClassType } from "./ClassType.entity.js";
 
 const em = orm.em;
 
@@ -32,8 +34,8 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(ClassList, req.body.sanitizedInput.classType);
-      await em.findOneOrFail(ClassList, req.body.sanitizedInput.trainer);
+      await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
+      await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
       const classList = em.create(ClassList, req.body.sanitizedInput);
       await em.flush();
 
@@ -48,10 +50,10 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       if (req.body.sanitizedInput.classType !== undefined)
-        await em.findOneOrFail(ClassList, req.body.sanitizedInput.classType);
+        await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
 
       if (req.body.sanitizedInput.trainer !== undefined)
-        await em.findOneOrFail(ClassList, req.body.sanitizedInput.trainer);
+        await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
 
       const id = req.params.id;
       const classList = await em.findOneOrFail(ClassList, id);
@@ -86,6 +88,9 @@ const controller = {
       classHour: req.body.classHour,
       classDay: req.body.classDay,
       state: req.body.state,
+      classDuration: req.body.classDuration,
+      maxCapacity: req.body.maxCapacity,
+      place: req.body.place,
       classType: req.body.classType,
       trainer: req.body.trainer,
     };
