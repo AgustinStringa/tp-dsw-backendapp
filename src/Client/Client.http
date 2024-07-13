@@ -2,7 +2,7 @@
 GET http://localhost:3000/api/clients
 
 ### get one client
-GET http://localhost:3000/api/clients/667f4692dd0e068972898abc
+GET http://localhost:3000/api/clients/666c45e6b7de20e525df8d1e
 
 ### create client
 POST http://localhost:3000/api/clients/
