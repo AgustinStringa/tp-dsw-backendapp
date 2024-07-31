@@ -12,12 +12,19 @@ import { routineRouter } from "./Routine/Routine.routes.js";
 import { currentMembershipRouter } from "./Membership/CurrentMembership.routes.js";
 import { paymentRouter } from "./Membership/Payment.routes.js";
 import { classListRouter } from "./ClassType/ClassList.routes.js";
+import cors from "cors";
 
 const PORT = 3000;
 const app = express();
 app.use((req, res, next) => {
   RequestContext.create(orm.em, next);
 });
+app.use(
+  cors({
+    origin: "http://localhost:4200",
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(express.json());
 
 app.use("/api/membershiptypes", membershipTypeRouter);
