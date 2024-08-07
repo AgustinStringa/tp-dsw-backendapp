@@ -1,0 +1,27 @@
+GET http://localhost:3000/api/classassigns
+
+GET http://localhost:3000/api/classassigns/id
+
+POST http://localhost:3000/api/classassigns/
+Content-Type: application/json
+
+{
+  "dateAssigned" : "2024-08-06",
+  //"clients", "classLists"
+}
+
+PUT http://localhost:3000/api/classassigns/
+Content-Type: application/json
+
+{
+  "dateAssigned" : "2024-08-05",
+  //"clients", "classLists"
+}
+
+PATCH http://localhost:3000/api/classassigns/
+
+{
+  "dateAssigned" : "2024-07-05",
+}
+
+DELETE http://localhost:3000/api/classassigns/

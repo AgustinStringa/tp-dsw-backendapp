@@ -11,6 +11,7 @@ import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import IUser from "../shared/IUser.js";
 import { ClassType } from "./ClassType.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
+import { ClassAssign } from "./ClassAssign.entity.js";
 
 @Entity()
 export class ClassList extends BaseEntity {
@@ -39,5 +40,11 @@ export class ClassList extends BaseEntity {
 
   @ManyToOne(() => Trainer  , { nullable: false })
   trainer!: Rel<Trainer>;
+
+  @OneToMany({
+    entity: () => ClassAssign, 
+    mappedBy: "classList"
+  })
+  classAssigns = new Collection<ClassAssign>(this);
 
 }

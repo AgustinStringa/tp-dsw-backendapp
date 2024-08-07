@@ -6,12 +6,14 @@ import {
   ManyToOne,
   Rel,
   Collection,
+  ManyToMany,
 } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import IUser from "../shared/IUser.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { CurrentMembership } from "../Membership/CurrentMembership.entity.js";
+import { ClassAssign } from "../ClassType/ClassAssign.entity.js";
 
 @Entity()
 export class Client extends BaseEntity implements IUser {
@@ -50,4 +52,9 @@ export class Client extends BaseEntity implements IUser {
     orphanRemoval: true,
   })
   memberships = new Collection<CurrentMembership>(this);
+
+  @ManyToMany({
+    entity: () => ClassAssign
+  }) //,owner=true este o el otro
+  classAssigns = new Collection<ClassAssign>(this);
 }
