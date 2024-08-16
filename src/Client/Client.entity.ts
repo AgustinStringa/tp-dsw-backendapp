@@ -12,6 +12,7 @@ import IUser from "../shared/IUser.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { CurrentMembership } from "../Membership/CurrentMembership.entity.js";
+import { Routine } from "../Routine/Routine.entity.js";
 
 @Entity()
 export class Client extends BaseEntity implements IUser {
@@ -50,4 +51,10 @@ export class Client extends BaseEntity implements IUser {
     orphanRemoval: true,
   })
   memberships = new Collection<CurrentMembership>(this);
+  @OneToMany({
+    entity: () => Routine,
+    mappedBy: "client",
+    orphanRemoval: true,
+  })
+  routines = new Collection<Routine>(this);
 }

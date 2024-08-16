@@ -10,7 +10,7 @@ const controller = {
       const clients = await em.find(
         Client,
         {},
-        { populate: ["progresses", "goals"] }
+        { populate: ["progresses", "goals", "memberships", "routines"] }
       );
       res
         .status(200)

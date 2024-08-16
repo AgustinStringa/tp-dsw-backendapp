@@ -31,7 +31,7 @@ const controller = {
         Routine,
         { id },
         {
-          populate: ["client", "trainer", "exercisesRoutine"],
+          populate: ["client", "trainer", "exercisesRoutine", "exercisesRoutine.exercise"],
         }
       );
       res.status(200).json({ message: "Routine found", data: routine });
@@ -83,10 +83,11 @@ const controller = {
 
   sanitizeRoutine: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      month: req.body.month,
-      year: req.body.year,
+      start: req.body.start,
+      end: req.body.end,
       trainer: req.body.trainer,
       client: req.body.client,
+      exercisesRoutine: req.body.exercisesRoutine,
     };
     //more checks about malicious content, sql injections, data type...
 
