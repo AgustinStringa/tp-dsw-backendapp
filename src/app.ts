@@ -12,6 +12,7 @@ import { routineRouter } from "./Routine/Routine.routes.js";
 import { currentMembershipRouter } from "./Membership/CurrentMembership.routes.js";
 import { paymentRouter } from "./Membership/Payment.routes.js";
 import { classListRouter } from "./ClassType/ClassList.routes.js";
+import { authRouter } from "./Auth/Auth.routes.js";
 import cors from "cors";
 
 const PORT = 3000;
@@ -37,6 +38,7 @@ app.use("/api/exercises", exerciseRouter);
 app.use("/api/exercisesRoutine", exerciseRoutineRouter);
 app.use("/api/routines", routineRouter);
 app.use("/api/classLists", classListRouter);
+app.use("/api/auth", authRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });
