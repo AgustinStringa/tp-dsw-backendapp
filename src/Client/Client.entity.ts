@@ -1,20 +1,12 @@
-import {
-  Entity,
-  Property,
-  OneToMany,
-  Cascade,
-  ManyToOne,
-  Rel,
-  Collection,
-} from "@mikro-orm/core";
+import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
+import User from "../shared/interfaces/user.interface.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import IUser from "../shared/IUser.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { CurrentMembership } from "../Membership/CurrentMembership.entity.js";
 
 @Entity()
-export class Client extends BaseEntity implements IUser {
+export class Client extends BaseEntity implements User {
   @Property({ nullable: false })
   username!: string;
 
