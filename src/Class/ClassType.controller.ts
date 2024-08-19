@@ -7,7 +7,7 @@ const em = orm.em;
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const classtypes = await em.find(ClassType, {} , {populate: ["classLists"]}); // TO DO: Make sure to populate an related entitites if necessary
+      const classtypes = await em.find(ClassType, {} , {populate: ["classes"]}); // TO DO: Make sure to populate an related entitites if necessary
       res
         .status(200)
         .json({ message: "All class types were found", data: classtypes });

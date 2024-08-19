@@ -5,13 +5,14 @@ import { orm } from "./shared/db/mikro-orm.config.js";
 import { clientRouter } from "./Client/Client.routes.js";
 import { membershipTypeRouter } from "./Membership/MembershipType.routes.js";
 import { trainerRouter } from "./Trainer/Trainer.routes.js";
-import { classTypeRouter } from "./ClassType/ClassType.routes.js";
+import { classTypeRouter } from "./Class/ClassType.routes.js";
 import { exerciseRouter } from "./Routine/Exercise.routes.js";
 import { exerciseRoutineRouter } from "./Routine/ExerciseRoutine.routes.js";
 import { routineRouter } from "./Routine/Routine.routes.js";
 import { currentMembershipRouter } from "./Membership/CurrentMembership.routes.js";
 import { paymentRouter } from "./Membership/Payment.routes.js";
-import { classListRouter } from "./ClassType/ClassList.routes.js";
+import { classRouter } from "./Class/Class.routes.js";
+import { registrationRouter } from "./Class/Registration.routes.js";
 import cors from "cors";
 
 const PORT = 3000;
@@ -36,7 +37,8 @@ app.use("/api/trainers", trainerRouter);
 app.use("/api/exercises", exerciseRouter);
 app.use("/api/exercisesRoutine", exerciseRoutineRouter);
 app.use("/api/routines", routineRouter);
-app.use("/api/classLists", classListRouter);
+app.use("/api/classes", classRouter);
+app.use("/api/registrations", registrationRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });

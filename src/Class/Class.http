@@ -1,0 +1,48 @@
+### get all Classes
+GET http://localhost:3000/api/classes
+
+### get one class
+GET http://localhost:3000/api/classes/id
+
+
+### create class
+POST http://localhost:3000/api/classes/
+Content-Type: application/json
+
+{
+  "day" : 4,
+  "startTime": "8:00PM",
+  "endTime": "9:00PM",
+  "maxCapacity": 20,
+  "location": "gym",
+  "active": true,
+  "classType": "66c3c83acacb77c1b26afe9e",
+  "trainer": "66c3c84ccacb77c1b26afe9f"
+}
+
+### put class
+PUT http://localhost:3000/api/classes/668f2cc8513f00900b178594
+Content-Type: application/json
+
+{
+  "day" : 4,
+  "startTime": "8:00PM",
+  "endTime": "10:00PM",
+  "maxCapacity": 10,
+  "location": "sum",
+  "active": false,
+  "classType": "668f29b1d26bd5198daac426",
+  "trainer": "667ecacbb3067b3bacc87c8e"
+}
+
+### patch class (parcial)
+PATCH http://localhost:3000/api/classes/668f2cc8513f00900b178594
+Content-Type: application/json
+
+{
+  "active": false,
+}
+
+
+### delete class
+DELETE http://localhost:3000/api/classes/668f2cc8513f00900b178594

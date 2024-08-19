@@ -2,13 +2,10 @@ import {
   Entity,
   Property,
   OneToMany,
-  Cascade,
-  ManyToOne,
-  Rel,
   Collection,
 } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { ClassList } from "./ClassList.entity.js";
+import { Class } from "./Class.entity.js";
 
 
 @Entity()
@@ -20,11 +17,11 @@ export class ClassType extends BaseEntity {
   description!: string;
 
   @OneToMany({
-    entity: () => ClassList,
+    entity: () => Class,
     mappedBy: "classType",
     orphanRemoval: true,
   })
-  classLists = new Collection<ClassList>(this);
+  classes = new Collection<Class>(this);
 
 }
 

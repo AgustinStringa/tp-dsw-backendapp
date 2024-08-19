@@ -1,0 +1,34 @@
+### get all registrations
+GET http://localhost:3000/api/registrations
+
+### get one registration
+GET http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+
+### post one registration
+POST http://localhost:3000/api/registrations/
+Content-Type: application/json
+
+{
+  "client": "66c3c81bcacb77c1b26afe9d", 
+  "class": "66c3c85ecacb77c1b26afea0"
+}
+
+### update one registration
+PUT http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+Content-Type: application/json
+
+{
+  "client": "666cc6e2280240a5542a472a", 
+  "class": "668f2cc8513f00900b178594",
+}
+
+### update(parcial) one registration
+PATCH http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+Content-Type: application/json
+
+{
+  "client": "",
+}
+
+### delete one registration
+DELETE http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1

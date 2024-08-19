@@ -9,7 +9,7 @@ import {
 } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import IUser from "../shared/IUser.js";
-import { ClassList } from "../ClassType/ClassList.entity.js";
+import { Class } from "../Class/Class.entity.js";
 
 
 @Entity()
@@ -30,9 +30,9 @@ export class Trainer extends BaseEntity implements IUser {
   lastName!: string;
 
   @OneToMany({
-    entity: () => ClassList,
+    entity: () => Class,
     mappedBy: "trainer",
     orphanRemoval: true,
   })
-  classlist = new Collection<ClassList>(this);
+  class = new Collection<Class>(this);
 }
