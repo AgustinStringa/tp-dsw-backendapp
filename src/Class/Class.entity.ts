@@ -7,7 +7,6 @@ import {
   Collection,
 } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import IUser from "../shared/IUser.js";
 import { ClassType } from "./ClassType.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Registration } from "./Registration.entity.js";
@@ -23,8 +22,9 @@ export class Class extends BaseEntity {
   @Property({ nullable: false })
   endTime !: string;  // Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
 
+
   @Property({ nullable: false })
-  maxCapacity!: number;  // 10, 15, 20, 25, 30, 35, 40, 45, 50 people
+  maxCapacity!: number; // 10, 15, 20, 25, 30, 35, 40, 45, 50 people
 
   @Property({ nullable: false })
   location !: string;  // gym, sum, park, beach, online
@@ -35,7 +35,7 @@ export class Class extends BaseEntity {
   @ManyToOne(() => ClassType, { nullable: false })
   classType!: Rel<ClassType>;
 
-  @ManyToOne(() => Trainer  , { nullable: false })
+  @ManyToOne(() => Trainer, { nullable: false })
   trainer!: Rel<Trainer>;
 
   @OneToMany({
@@ -45,3 +45,4 @@ export class Class extends BaseEntity {
   })
   registrations = new Collection<Registration>(this);
 }
+
