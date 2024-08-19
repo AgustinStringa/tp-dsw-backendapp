@@ -1,0 +1,39 @@
+### get all news
+GET http://localhost:3000/api/news/
+
+### get one news
+GET http://localhost:3000/api/news/66c3a55a7fc788188da26d18
+
+### create a news
+POST http://localhost:3000/api/news/
+Content-Type: application/json
+
+{
+  "expirationDateTime": "2024-07-14T14:30:00Z",
+  "title": "Descuentos de primavera",
+  "body": "-.-.-"
+}
+
+
+### put news
+PUT http://localhost:3000/api/news/66c3b1f298fa3938dab12c19
+Content-Type: application/json
+
+{
+  "expirationDateTime": "2024-11-14T14:30:00Z",
+  "title": "Descuentos de verano",
+  "body": "Ya vienen!"
+}
+
+
+### patch payment
+PATCH http://localhost:3000/api/news/66c3a5de7fc788188da26d1a
+Content-Type: application/json
+
+{
+  "title": "Aumentos septiembre 2024"
+}
+
+
+### delete news
+DELETE http://localhost:3000/api/news/66c3a5d47fc788188da26d19

@@ -1,21 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { Payment } from "./Payment.entity.js";
-import { CurrentMembership } from "./CurrentMembership.entity.js";
+import { News } from "./News.entity.js";
 
 const em = orm.em;
 
 const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const payments = await em.find(
-        Payment,
-        {},
-        { populate: ["membership", "membership.client", "membership.type"] }
-      );
-      res
-        .status(200)
-        .json({ message: "All payments were found", data: payments });
+      const news = await em.find(News, {});
+      res.status(200).json({ message: "All news were found", data: news });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -24,10 +17,8 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const payment = await em.findOneOrFail(Payment, id, {
-        populate: ["membership"],
-      });
-      res.status(200).json({ message: "Payment found", data: payment });
+      const news = await em.findOneOrFail(News, id);
+      res.status(200).json({ message: "News found", data: news });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -37,12 +28,9 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const id = req.body.sanitizedInput.membership;
-      await em.findOneOrFail(CurrentMembership, { id });
-
-      const payment = em.create(Payment, req.body.sanitizedInput);
+      const news = em.create(News, req.body.sanitizedInput);
       await em.flush();
-      res.status(200).json({ message: "Payment created", data: payment });
+      res.status(200).json({ message: "News created", data: news });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -53,16 +41,13 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const payment = await em.findOneOrFail(Payment, { id });
-      if (req.body.sanitizedInput.membership !== undefined)
-        await em.findOneOrFail(
-          CurrentMembership,
-          req.body.sanitizedInput.membership
-        );
+      const news = await em.findOneOrFail(News, { id });
+      em.assign(news, req.body.sanitizedInput);
 
-      em.assign(payment, req.body.sanitizedInput);
+      news.checkExpirationDate();
       await em.flush();
-      res.status(200).json({ message: "Payment updated", data: payment });
+
+      res.status(200).json({ message: "News updated", data: news });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -73,19 +58,19 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const payment = em.getReference(Payment, id);
-      await em.removeAndFlush(payment);
-      res.status(200).json({ message: "Payment deleted", data: payment });
+      const news = em.getReference(News, id);
+      await em.removeAndFlush(news);
+      res.status(200).json({ message: "News deleted", data: news });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
 
-  sanitizePayment: function (req: Request, res: Response, next: NextFunction) {
+  sanitizeNews: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      payMethod: req.body.payMethod,
-      amount: req.body.amount,
-      membership: req.body.membership,
+      expirationDateTime: req.body.expirationDateTime,
+      title: req.body.title,
+      body: req.body.body,
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
