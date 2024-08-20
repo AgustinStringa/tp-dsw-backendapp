@@ -2,7 +2,7 @@
 GET http://localhost:3000/api/registrations
 
 ### get one registration
-GET http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+GET http://localhost:3000/api/registrations/66c3e3535f6f028235485e3b
 
 ### post one registration
 POST http://localhost:3000/api/registrations/
@@ -14,21 +14,21 @@ Content-Type: application/json
 }
 
 ### update one registration
-PUT http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+PUT http://localhost:3000/api/registrations/66c3e112e12ac3e83ceee86c
 Content-Type: application/json
 
 {
-  "client": "666cc6e2280240a5542a472a", 
-  "class": "668f2cc8513f00900b178594",
+  "client": "66c3c81bcacb77c1b26afe9d", 
+  "class": "66c3d93e1393c6b1791f1a8c"
 }
 
 ### update(parcial) one registration
-PATCH http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+PATCH http://localhost:3000/api/registrations/66c3e112e12ac3e83ceee86c
 Content-Type: application/json
 
 {
-  "client": "",
+  "class": "66c3c85ecacb77c1b26afea0"
 }
 
 ### delete one registration
-DELETE http://localhost:3000/api/registrations/66c3cba63696d1362b12abe1
+DELETE http://localhost:3000/api/registrations/66c3e3535f6f028235485e3b

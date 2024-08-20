@@ -7,7 +7,11 @@ const em = orm.em;
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const classtypes = await em.find(ClassType, {} , {populate: ["classes"]}); // TO DO: Make sure to populate an related entitites if necessary
+      const classtypes = await em.find(
+        ClassType,
+        {},
+        { populate: ["classes"] }
+      ); // TO DO: Make sure to populate an related entitites if necessary
       res
         .status(200)
         .json({ message: "All class types were found", data: classtypes });
@@ -51,9 +55,7 @@ const controller = {
       res.status(errorCode).json({ message: error.message });
     }
 
-
-        // TO DO: Sanitize input or it is on shared/sanitizeClassType.ts
-
+    // TO DO: Sanitize input or it is on shared/sanitizeClassType.ts
   },
 
   delete: async function (req: Request, res: Response) {
@@ -67,10 +69,13 @@ const controller = {
       if (error.message.match("not found")) errorCode = 404;
       res.status(errorCode).json({ message: error.message });
     }
-
   },
 
-  sanitizeClassType: function (req: Request, res: Response, next: NextFunction) {
+  sanitizeClassType: function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     req.body.sanitizedInput = {
       name: req.body.name,
       description: req.body.description,
@@ -84,7 +89,6 @@ const controller = {
 
     next();
   },
-
 };
 
 export { controller };

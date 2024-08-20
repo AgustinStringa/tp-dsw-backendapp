@@ -9,8 +9,14 @@ const em = orm.em;
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const classes = await em.find(Class, {}, { populate: ["classType", "trainer"] }); // QUESTION: Should we populate also with "ClassAssigned?"
-      res.status(200).json({ message: "All classes  were found", data: classes });
+      const classes = await em.find(
+        Class,
+        {},
+        { populate: ["classType", "trainer"] }
+      ); // QUESTION: Should we populate also with "ClassAssigned?"
+      res
+        .status(200)
+        .json({ message: "All classes  were found", data: classes });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -19,7 +25,11 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const class_a = await em.findOneOrFail( Class, { id }, { populate: ["classType", "trainer"] }); //class_a porque class no se peude
+      const class_a = await em.findOneOrFail(
+        Class,
+        { id },
+        { populate: ["classType", "trainer"] }
+      ); //class_a porque class no se peude
       res.status(200).json({ message: "Class found", data: class_a });
     } catch (error: any) {
       let errorCode = 500;
@@ -90,10 +100,15 @@ const controller = {
       classType: req.body.classType,
       trainer: req.body.trainer,
     };
+
+    Object.keys(req.body.sanitizedInput).forEach((key) => {
+      if (req.body.sanitizedInput[key] === undefined) {
+        delete req.body.sanitizedInput[key];
+      }
+    });
+
     next();
   },
-
-
 };
 
 export { controller };
