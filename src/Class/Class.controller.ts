@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { ClassList } from "./ClassList.entity.js";
+import { Class } from "./Class.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { ClassType } from "./ClassType.entity.js";
 
@@ -9,8 +9,14 @@ const em = orm.em;
 const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const classLists = await em.find(ClassList, {}, { populate: ["classType", "trainer"] }); // QUESTION: Should we populate also with "ClassAssigned?"
-      res.status(200).json({ message: "All class lists were found", data: classLists });
+      const classes = await em.find(
+        Class,
+        {},
+        { populate: ["classType", "trainer"] }
+      ); // QUESTION: Should we populate also with "ClassAssigned?"
+      res
+        .status(200)
+        .json({ message: "All classes  were found", data: classes });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -19,12 +25,12 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const classList = await em.findOneOrFail(
-        ClassList,
+      const class_a = await em.findOneOrFail(
+        Class,
         { id },
         { populate: ["classType", "trainer"] }
-      );
-      res.status(200).json({ message: "Class list found", data: classList });
+      ); //class_a porque el nombre de variable class no está permitido
+      res.status(200).json({ message: "Class found", data: class_a });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -36,10 +42,10 @@ const controller = {
     try {
       await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
       await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
-      const classList = em.create(ClassList, req.body.sanitizedInput);
+      const class_a = em.create(Class, req.body.sanitizedInput);
       await em.flush();
 
-      res.status(201).json({ message: "Class list created", data: classList });
+      res.status(201).json({ message: "Class created", data: class_a });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -56,11 +62,11 @@ const controller = {
         await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
 
       const id = req.params.id;
-      const classList = await em.findOneOrFail(ClassList, id);
-      em.assign(classList, req.body.sanitizedInput);
+      const class_a = await em.findOneOrFail(Class, id);
+      em.assign(class_a, req.body.sanitizedInput);
       await em.flush();
 
-      res.status(200).json({ message: "Class list updated", data: classList });
+      res.status(200).json({ message: "Class updated", data: class_a });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -71,33 +77,35 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const classList = await em.findOneOrFail(ClassList, id);
-      em.remove(classList);
-      await em.flush();
+      const class_a = em.getReference(Class, id);
+      await em.removeAndFlush(class_a);
 
-      res.status(200).json({ message: "Class list deleted", data: classList });
+      res.status(200).json({ message: "Class deleted", data: class_a });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
-  sanitizeClassList: function (req: Request, res: Response, next: NextFunction) {
+  sanitizeClass: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      classHour: req.body.classHour,
-      classDay: req.body.classDay,
-      state: req.body.state,
-      classDuration: req.body.classDuration,
+      day: req.body.day,
+      startTime: req.body.startTime,
+      endTime: req.body.endTime,
       maxCapacity: req.body.maxCapacity,
-      place: req.body.place,
+      location: req.body.location,
+      active: req.body.active,
       classType: req.body.classType,
       trainer: req.body.trainer,
     };
+
+    Object.keys(req.body.sanitizedInput).forEach((key) => {
+      if (req.body.sanitizedInput[key] === undefined) {
+        delete req.body.sanitizedInput[key];
+      }
+    });
+
     next();
   },
-
-
 };
 
 export { controller };

@@ -1,9 +1,10 @@
-import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import User from "../shared/interfaces/user.interface.js";
+import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { CurrentMembership } from "../Membership/CurrentMembership.entity.js";
+import { Registration } from "../Class/Registration.entity.js";
 
 @Entity()
 export class Client extends BaseEntity implements User {
@@ -42,4 +43,11 @@ export class Client extends BaseEntity implements User {
     orphanRemoval: true,
   })
   memberships = new Collection<CurrentMembership>(this);
+
+  @OneToMany({
+    entity: () => Registration,
+    mappedBy: "client",
+    orphanRemoval: true,
+  })
+  registrations = new Collection<Registration>(this);
 }
