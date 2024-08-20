@@ -62,10 +62,13 @@ const controller = {
         await em.findOneOrFail(Client, req.body.sanitizedInput.client);
       if (req.body.sanitizedInput.class !== undefined)
         await em.findOneOrFail(Class, req.body.sanitizedInput.class);
+
       const id = req.params.id;
       const registration = await em.findOneOrFail(Registration, id);
       em.assign(registration, req.body.sanitizedInput);
+      registration.checkCancelDateTime();
       await em.flush();
+
       res
         .status(200)
         .json({ message: "Registration updated", data: registration });
@@ -79,7 +82,7 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const registration = await em.getReference(Registration, id);
+      const registration = em.getReference(Registration, id);
       await em.removeAndFlush(registration);
       res
         .status(200)
@@ -95,7 +98,6 @@ const controller = {
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
-      dateTime: req.body.dateTime,
       cancelDateTime: req.body.cancelDateTime,
       client: req.body.client,
       class: req.body.class,

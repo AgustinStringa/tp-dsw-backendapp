@@ -54,20 +54,16 @@ const controller = {
       if (error.message.match("not found")) errorCode = 404;
       res.status(errorCode).json({ message: error.message });
     }
-
-    // TO DO: Sanitize input or it is on shared/sanitizeClassType.ts
   },
 
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const classtype = await em.getReference(ClassType, id);
+      const classtype = em.getReference(ClassType, id);
       await em.removeAndFlush(classtype);
       res.status(200).json({ message: "Class Type deleted", data: classtype });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 

@@ -29,7 +29,7 @@ const controller = {
         Class,
         { id },
         { populate: ["classType", "trainer"] }
-      ); //class_a porque class no se peude
+      ); //class_a porque el nombre de variable class no está permitido
       res.status(200).json({ message: "Class found", data: class_a });
     } catch (error: any) {
       let errorCode = 500;
@@ -77,15 +77,12 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const class_a = await em.findOneOrFail(Class, id);
-      em.remove(class_a);
-      await em.flush();
+      const class_a = em.getReference(Class, id);
+      await em.removeAndFlush(class_a);
 
       res.status(200).json({ message: "Class deleted", data: class_a });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
