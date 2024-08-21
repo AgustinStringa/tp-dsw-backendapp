@@ -1,12 +1,12 @@
 ### get all Class Types
-GET http://localhost:3000/api/classtypes
+GET http://localhost:3000/api/classes/types
 
 ### get one class type
-GET http://localhost:3000/api/classtypes/668f2966d26bd5198daac425
+GET http://localhost:3000/api/classes/types/668f2966d26bd5198daac425
 
 
 ### create class type
-POST http://localhost:3000/api/classtypes/
+POST http://localhost:3000/api/classes/types/
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### put class type
-PUT http://localhost:3000/api/classtypes/668f2966d26bd5198daac425
+PUT http://localhost:3000/api/classes/types/668f2966d26bd5198daac425
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### patch class type (parcial)
-PATCH http://localhost:3000/api/classtypes/668f2966d26bd5198daac425
+PATCH http://localhost:3000/api/classes/types/668f2966d26bd5198daac425
 Content-Type: application/json
 
 {
@@ -32,4 +32,4 @@ Content-Type: application/json
 }
 
 ### delete class type
-DELETE http://localhost:3000/api/classtypes/668f2966d26bd5198daac425
+DELETE http://localhost:3000/api/classes/types/668f2966d26bd5198daac425

@@ -1,11 +1,11 @@
 ### get all current memberships
-GET http://localhost:3000/api/currentmemberships/
+GET http://localhost:3000/api/memberships/currentmemberships/
 
 ### get one current membership
-GET http://localhost:3000/api/currentmemberships/66881354094fb79b203582e0
+GET http://localhost:3000/api/memberships/currentmemberships/66881354094fb79b203582e0
 
 ### create current membership
-POST http://localhost:3000/api/currentmemberships/
+POST http://localhost:3000/api/memberships/currentmemberships/
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 
 
 ### put current membership
-PUT http://localhost:3000/api/currentmemberships/66881354094fb79b203582e0
+PUT http://localhost:3000/api/memberships/currentmemberships/66881354094fb79b203582e0
 Content-Type: application/json
 
 {
@@ -25,13 +25,13 @@ Content-Type: application/json
 
 
 ### patch current membership
-PATCH http://localhost:3000/api/currentmemberships/668817edd51fc4600353eaf6
+PATCH http://localhost:3000/api/memberships/currentmemberships/668817edd51fc4600353eaf6
 Content-Type: application/json
 
 {
-    "client": "667ad97c462b348eed0715ed"
+  "client": "667ad97c462b348eed0715ed"
 }
 
 
 ### delete current membership
-DELETE http://localhost:3000/api/currentmemberships/6688149f1248ffd919ac105d
+DELETE http://localhost:3000/api/memberships/currentmemberships/6688149f1248ffd919ac105d
