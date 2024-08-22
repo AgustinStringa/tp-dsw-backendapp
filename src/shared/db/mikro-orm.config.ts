@@ -7,9 +7,10 @@ const config = defineConfig({
   dbName: "gimnasio",
   highlighter: new MongoHighlighter(),
   debug: true,
-  clientUrl: `mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
+  clientUrl: 'mongodb://localhost:27017/gimnasio',
+  /*`mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
     "roota"
-  )}@cluster0.asqcnur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
+  )}@cluster0.asqcnur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,*/
 });
 
 export const orm = await MikroORM.init(config);

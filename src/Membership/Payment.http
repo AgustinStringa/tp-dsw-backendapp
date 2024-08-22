@@ -1,11 +1,11 @@
 ### get all payments
-GET http://localhost:3000/api/payments/
+GET http://localhost:3000/api/memberships/payments/
 
 ### get one payment
-GET http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+GET http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
 
 ### create a payment
-POST http://localhost:3000/api/payments/
+POST http://localhost:3000/api/memberships/payments/
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 
 
 ### put payment
-PUT http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+PUT http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 
 
 ### patch payment
-PATCH http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+PATCH http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
 Content-Type: application/json
 
 {
@@ -36,4 +36,4 @@ Content-Type: application/json
 
 
 ### delete payment
-DELETE http://localhost:3000/api/payments/66882f671494414a2a03f2e9
+DELETE http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9

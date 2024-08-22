@@ -1,19 +1,10 @@
-import {
-  Entity,
-  Property,
-  OneToMany,
-  Cascade,
-  ManyToOne,
-  Rel,
-  Collection,
-} from "@mikro-orm/core";
+import User from "../shared/interfaces/user.interface.js";
+import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import IUser from "../shared/IUser.js";
-import { ClassList } from "../ClassType/ClassList.entity.js";
-
+import { Class } from "../Class/Class.entity.js";
 
 @Entity()
-export class Trainer extends BaseEntity implements IUser {
+export class Trainer extends BaseEntity implements User {
   @Property({ nullable: false })
   username!: string;
 
@@ -30,9 +21,9 @@ export class Trainer extends BaseEntity implements IUser {
   lastName!: string;
 
   @OneToMany({
-    entity: () => ClassList,
+    entity: () => Class,
     mappedBy: "trainer",
     orphanRemoval: true,
   })
-  classlist = new Collection<ClassList>(this);
+  class = new Collection<Class>(this);
 }

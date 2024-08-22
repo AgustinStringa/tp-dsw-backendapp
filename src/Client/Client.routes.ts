@@ -1,10 +1,8 @@
 import { Router } from "express";
 import { controller } from "./Client.controller.js";
-import { goalRouter } from "./Goal.routes.js";
-import { progressRouter } from "./Progress.routes.js";
+
 export const clientRouter = Router();
-clientRouter.use("/goals", goalRouter);
-clientRouter.use("/progresses", progressRouter);
+
 clientRouter.get("/", controller.findAll);
 clientRouter.get("/:id", controller.findOne);
 clientRouter.post("/", controller.sanitizeClient, controller.hashPassword, controller.add);

@@ -1,21 +1,14 @@
-import {
-  Entity,
-  Property,
-  OneToMany,
-  Cascade,
-  ManyToOne,
-  Rel,
-  Collection,
-} from "@mikro-orm/core";
+import User from "../shared/interfaces/user.interface.js";
+import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import IUser from "../shared/IUser.js";
 import { Progress } from "./Progress.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { CurrentMembership } from "../Membership/CurrentMembership.entity.js";
 import { Routine } from "../Routine/Routine.entity.js";
+import { Registration } from "../Class/Registration.entity.js";
 
 @Entity()
-export class Client extends BaseEntity implements IUser {
+export class Client extends BaseEntity implements User {
   @Property({ nullable: false })
   username!: string;
 
@@ -57,4 +50,11 @@ export class Client extends BaseEntity implements IUser {
     orphanRemoval: true,
   })
   routines = new Collection<Routine>(this);
+
+  @OneToMany({
+    entity: () => Registration,
+    mappedBy: "client",
+    orphanRemoval: true,
+  })
+  registrations = new Collection<Registration>(this);
 }
