@@ -10,7 +10,7 @@ const controller = {
       const clients = await em.find(
         Client,
         {},
-        { fields: ["lastName", "firstName", "dni"] } //parametrizar filtros según requerimientos
+        { fields: ["lastName", "firstName", "dni", "email"] } //parametrizar filtros según requerimientos
       );
       res
         .status(200)
@@ -75,7 +75,7 @@ const controller = {
     req.body.sanitizedInput = {
       lastName: req.body.lastName,
       firstName: req.body.firstName,
-      dni: req.body.dni,
+      dni: req.body.dni.toString(),
       email: req.body.email,
       password: req.body.password,
     };
