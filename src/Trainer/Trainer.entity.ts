@@ -6,19 +6,19 @@ import { Class } from "../Class/Class.entity.js";
 @Entity()
 export class Trainer extends BaseEntity implements User {
   @Property({ nullable: false })
-  username!: string;
-
-  @Property({ nullable: false })
-  password!: string;
-
-  @Property({ nullable: false })
-  email!: string;
+  lastName!: string;
 
   @Property({ nullable: false })
   firstName!: string;
 
   @Property({ nullable: false })
-  lastName!: string;
+  dni!: string;
+
+  @Property({ nullable: false })
+  email!: string;
+
+  @Property({ nullable: false })
+  password!: string;
 
   @OneToMany({
     entity: () => Class,

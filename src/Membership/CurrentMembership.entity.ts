@@ -10,14 +10,15 @@ import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { MembershipType } from "./MembershipType.entity.js";
 import { Client } from "../Client/Client.entity.js";
 import { Payment } from "./Payment.entity.js";
+import { addMonths, startOfDay } from "date-fns";
 
 @Entity()
 export class CurrentMembership extends BaseEntity {
-  @Property({ type: Date })
-  dateFrom? = new Date();
+  @Property()
+  dateFrom = startOfDay(new Date());
 
-  @Property({ nullable: true })
-  dateTo: Date | null = null;
+  @Property()
+  dateTo = addMonths(this.dateFrom, 1);
 
   @ManyToOne(() => MembershipType)
   type!: Rel<MembershipType>;
