@@ -31,7 +31,12 @@ const controller = {
         Routine,
         { id },
         {
-          populate: ["client", "trainer", "exercisesRoutine", "exercisesRoutine.exercise"],
+          populate: [
+            "client",
+            "trainer",
+            "exercisesRoutine",
+            "exercisesRoutine.exercise",
+          ],
         }
       );
       res.status(200).json({ message: "Routine found", data: routine });
@@ -42,11 +47,36 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(Trainer, { id: req.body.trainer });
-      await em.findOneOrFail(Client, { id: req.body.client });
-      const routine = em.create(Routine, req.body.sanitizedInput);
-      await em.flush();
-      res.status(201).json({ message: "Routine created", data: routine });
+      if (req.body.start > req.body.end) {
+        return res.status(400).json({
+          message:
+            "La fecha de fin de la rutina debe ser mayor a la fecha de inicio de la rutina",
+        });
+      }
+      if (new Date(req.body.start) < new Date()) {
+        return res.status(400).json({
+          message:
+            "La fecha de inicio de la rutina debe ser mayor a la fecha de hoy",
+        });
+      }
+      const trainer = await em.findOneOrFail(Trainer, { id: req.body.trainer });
+      //validacion??
+      const client = await em.findOneOrFail(
+        Client,
+        { id: req.body.client },
+        { populate: ["routines"] }
+      );
+      const lastRoutine = client.getLastRoutine();
+      if (!(new Date(req.body.end) > lastRoutine.end)) {
+        const routine = em.create(Routine, req.body.sanitizedInput);
+        await em.flush();
+        res.status(201).json({ message: "Routine created", data: routine });
+      } else {
+        return res.status(400).json({
+          message: "Hay solapamiento de fechas entre rutinas",
+          data: lastRoutine,
+        });
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

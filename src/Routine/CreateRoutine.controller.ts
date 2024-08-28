@@ -3,7 +3,7 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 import { Client } from "../Client/Client.entity.js";
 const em = orm.em;
 
-const controller = {
+const createRoutineController = {
   findClientsWithMemembership: async function (_: Request, res: Response) {
     try {
       const clients = await em.find(
@@ -43,4 +43,4 @@ const controller = {
   },
 };
 
-export { controller };
+export { createRoutineController };
