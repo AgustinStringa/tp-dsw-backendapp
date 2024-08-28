@@ -63,11 +63,11 @@ const controller = {
   },
   sanitizeTrainer: function (req: Request, _: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      firstName: req.body.firstName,
       lastName: req.body.lastName,
+      firstName: req.body.firstName,
+      dni: req.body.dni,
+      email: req.body.email,
+      password: req.body.password,
     };
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
