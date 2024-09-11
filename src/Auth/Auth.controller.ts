@@ -9,7 +9,7 @@ const controller = {
     try {
       const client = await em.findOneOrFail(
         Client,
-        { username: req.body.sanitizedInput.username },
+        { email: req.body.sanitizedInput.email },
         { populate: ["progresses", "goals"] }
       );
       if (client != null) {
