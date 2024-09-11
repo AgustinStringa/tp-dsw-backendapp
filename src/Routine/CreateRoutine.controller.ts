@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Client } from "../Client/Client.entity.js";
+import { startOfDay } from "date-fns";
 const em = orm.em;
 
 const createRoutineController = {
@@ -10,11 +11,17 @@ const createRoutineController = {
         Client,
         {},
         {
-          populate: ["memberships"],
+          populate: ["memberships", "memberships.type"],
         }
       );
+      const today = startOfDay(new Date());
       const clientsWithMembership = clients.filter((c) =>
-        c.memberships.toArray().some((m) => m.dateTo == null)
+        c.memberships
+          .toArray()
+          .some(
+            (m) =>
+              today >= startOfDay(m.dateFrom) && startOfDay(m.dateTo) >= today
+          )
       );
       res.status(200).json({
         message: "All clients with membership were found",
@@ -23,23 +30,6 @@ const createRoutineController = {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-  },
-
-  sanitizeRoutine: function (req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-      month: req.body.month,
-      year: req.body.year,
-      trainer: req.body.trainer,
-      client: req.body.client,
-    };
-    //more checks about malicious content, sql injections, data type...
-
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined) {
-        delete req.body.sanitizedInput[key];
-      }
-    });
-    next();
   },
 };
 

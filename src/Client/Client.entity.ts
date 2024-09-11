@@ -59,32 +59,40 @@ export class Client extends BaseEntity implements User {
   registrations = new Collection<Registration>(this);
 
   getLastRoutine() {
-    const arrayRoutines = Array.from(this.routines).sort((a, b) => {
-      if (a.end > b.end) {
-        return 1;
-      }
-      if (a.end < b.end) {
-        return -1;
-      }
-      return 0;
-    });
-    return arrayRoutines[0];
-  }
-
-  getCurrentMembership() {
-    const arrayMemberships = Array.from(this.memberships).sort((a, b) => {
-      if (a.dateTo != null && b.dateTo != null) {
-        if (a.dateTo > b.dateTo) {
+    if (this.routines.length > 0) {
+      const arrayRoutines = Array.from(this.routines).sort((a, b) => {
+        if (a.end > b.end) {
           return 1;
         }
-        if (a.dateTo < b.dateTo) {
+        if (a.end < b.end) {
           return -1;
         }
         return 0;
-      } else {
-        return 0;
-      }
-    });
-    return arrayMemberships[0];
+      });
+      return arrayRoutines[0];
+    } else {
+      return null;
+    }
+  }
+
+  getCurrentMembership() {
+    if (this.memberships.length > 0) {
+      const arrayMemberships = Array.from(this.memberships).sort((a, b) => {
+        if (a.dateTo != null && b.dateTo != null) {
+          if (a.dateTo > b.dateTo) {
+            return 1;
+          }
+          if (a.dateTo < b.dateTo) {
+            return -1;
+          }
+          return 0;
+        } else {
+          return 0;
+        }
+      });
+      return arrayMemberships[0];
+    } else {
+      return null;
+    }
   }
 }

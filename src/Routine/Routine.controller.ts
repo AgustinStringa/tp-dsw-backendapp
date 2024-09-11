@@ -67,7 +67,7 @@ const controller = {
         { populate: ["routines"] }
       );
       const lastRoutine = client.getLastRoutine();
-      if (!(new Date(req.body.end) > lastRoutine.end)) {
+      if (lastRoutine == null || !(new Date(req.body.end) > lastRoutine.end)) {
         const routine = em.create(Routine, req.body.sanitizedInput);
         await em.flush();
         res.status(201).json({ message: "Routine created", data: routine });
