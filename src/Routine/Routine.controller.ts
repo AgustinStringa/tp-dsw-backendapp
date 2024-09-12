@@ -3,6 +3,7 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 import { Routine } from "./Routine.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
+import { lightFormat, addDays, startOfWeek } from "date-fns";
 const em = orm.em;
 
 const controller = {
@@ -49,23 +50,31 @@ const controller = {
     try {
       if (req.body.start > req.body.end) {
         return res.status(400).json({
-          message:
-            "La fecha de fin de la rutina debe ser mayor a la fecha de inicio de la rutina",
+          message: "End date must be greather than start date",
         });
       }
-      if (new Date(req.body.start) < new Date()) {
+      const firstMonday = addDays(startOfWeek(new Date()), 1);
+      if (new Date(req.body.start) < firstMonday) {
         return res.status(400).json({
-          message:
-            "La fecha de inicio de la rutina debe ser mayor a la fecha de hoy",
+          message: "Routine's start date must be greater than last monday",
         });
       }
       const trainer = await em.findOneOrFail(Trainer, { id: req.body.trainer });
-      //validacion??
+      if (!trainer) {
+        return res.status(400).json({
+          message: "Trainer not found",
+        });
+      }
       const client = await em.findOneOrFail(
         Client,
         { id: req.body.client },
         { populate: ["routines"] }
       );
+      if (!client) {
+        return res.status(400).json({
+          message: "Client not found",
+        });
+      }
       const lastRoutine = client.getLastRoutine();
       if (lastRoutine == null || !(new Date(req.body.end) > lastRoutine.end)) {
         const routine = em.create(Routine, req.body.sanitizedInput);
@@ -73,7 +82,7 @@ const controller = {
         res.status(201).json({ message: "Routine created", data: routine });
       } else {
         return res.status(400).json({
-          message: "Hay solapamiento de fechas entre rutinas",
+          message: "There is overlap between routines",
           data: lastRoutine,
         });
       }
