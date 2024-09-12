@@ -15,7 +15,7 @@ const createRoutineController = {
         }
       );
       const today = startOfDay(new Date());
-      const clientsWithMembership = clients.filter((c) =>
+      let clientsWithMembership = clients.filter((c) =>
         c.memberships
           .toArray()
           .some(
@@ -23,9 +23,21 @@ const createRoutineController = {
               today >= startOfDay(m.dateFrom) && startOfDay(m.dateTo) >= today
           )
       );
+      let clientsWithLastMembership = clientsWithMembership.map((c) => {
+        const client = {
+          id: c._id,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          email: c.email,
+          dni: c.dni,
+          currentMembership: c.getCurrentMembership(),
+        };
+
+        return client;
+      });
       res.status(200).json({
         message: "All clients with membership were found",
-        data: clientsWithMembership,
+        data: clientsWithLastMembership,
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
