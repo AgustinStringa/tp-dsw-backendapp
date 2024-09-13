@@ -9,23 +9,7 @@ clientRouter.get(
   createRoutineController.findClientsWithMemembership
 );
 clientRouter.get("/:id", controller.findOne);
-clientRouter.post(
-  "/",
-  controller.sanitizeClient,
-  controller.hashPassword,
-  controller.add
-);
-clientRouter.put(
-  "/:id",
-  controller.sanitizeClient,
-  controller.hashPassword,
-  controller.update
-);
-clientRouter.patch(
-  "/:id",
-  controller.sanitizeClient,
-  controller.hashPassword,
-  controller.update
-);
+clientRouter.post("/", controller.sanitizeClient, controller.add);
+clientRouter.put("/:id", controller.sanitizeClient, controller.update);
+clientRouter.patch("/:id", controller.sanitizeClient, controller.update);
 clientRouter.delete("/:id", controller.delete);
-clientRouter.post("/login/", controller.sanitizeLogin, controller.login);

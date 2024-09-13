@@ -12,8 +12,8 @@ Content-Type: application/json
   "lastName": "Hernández",
   "firstName": "Gastón",
   "dni": "45868745",
-  "email": "gasti@hotmail.com.ar",
-  "password": "******"
+  "email": "gasti123@hotmail.com.ar",
+  "password": "abcde"
 }
 
 

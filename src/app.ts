@@ -8,6 +8,7 @@ import { membershipsRouter } from "./Membership/Module.routes.js";
 import { classesRouter } from "./Class/Module.routes.js";
 import { clientsRouter } from "./Client/Module.routes.js";
 import { routinesRouter } from "./Routine/Module.routes.js";
+import { authRouter } from "./Auth/Auth.routes.js";
 
 const PORT = 3000;
 const app = express();
@@ -22,6 +23,7 @@ app.use(
 );
 app.use(express.json());
 
+app.use("/api/auth", authRouter);
 app.use("/api/classes", classesRouter);
 app.use("/api/clients", clientsRouter);
 app.use("/api/memberships", membershipsRouter);

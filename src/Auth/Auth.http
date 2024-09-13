@@ -1,0 +1,28 @@
+### login client
+POST http://localhost:3000/api/auth/
+Content-Type: application/json
+
+{
+  "email": "gasti123@hotmail.com.ar",
+  "password": "abcde"
+}
+
+
+### login trainer
+POST http://localhost:3000/api/auth/
+Content-Type: application/json
+
+{
+  "email": "agu.stringa141@gmail.com",
+  "password": "stri"
+}
+
+
+### login wrong
+POST http://localhost:3000/api/auth/
+Content-Type: application/json
+
+{
+  "email": "hernantarabella@hotmail.com.ar",
+  "password": "1234"
+}

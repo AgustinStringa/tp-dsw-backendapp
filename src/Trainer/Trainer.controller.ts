@@ -1,6 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import { Trainer } from "./Trainer.entity.js";
+import bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { Trainer } from "./Trainer.entity.js";
+
 const em = orm.em;
 
 const controller = {
@@ -12,6 +14,7 @@ const controller = {
       res.status(500).json({ message: error.message });
     }
   },
+
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
@@ -31,6 +34,7 @@ const controller = {
       res.status(500).json({ message: error.message });
     }
   },
+
   add: async function (req: Request, res: Response) {
     try {
       const trainer = em.create(Trainer, req.body.sanitizedInput);
@@ -40,6 +44,7 @@ const controller = {
       res.status(500).json({ message: error.message });
     }
   },
+
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
@@ -50,6 +55,7 @@ const controller = {
       res.status(500).json({ message: error.message });
     }
   },
+
   update: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
@@ -61,6 +67,7 @@ const controller = {
       res.status(500).json({ message: error.message });
     }
   },
+
   sanitizeTrainer: function (req: Request, _: Response, next: NextFunction) {
     req.body.sanitizedInput = {
       lastName: req.body.lastName,
@@ -69,11 +76,20 @@ const controller = {
       email: req.body.email,
       password: req.body.password,
     };
+
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
         delete req.body.sanitizedInput[key];
       }
     });
+
+    if (req.body.sanitizedInput.password) {
+      req.body.sanitizedInput.password = bcrypt.hashSync(
+        req.body.sanitizedInput.password,
+        10
+      );
+    }
+
     next();
   },
 };
