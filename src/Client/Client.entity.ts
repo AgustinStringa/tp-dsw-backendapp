@@ -15,10 +15,10 @@ export class Client extends BaseEntity implements User {
   @Property({ nullable: false })
   firstName!: string;
 
-  @Property({ nullable: false })
+  @Property({ nullable: false, unique: true })
   dni!: string;
 
-  @Property({ nullable: false })
+  @Property({ nullable: false, unique: true })
   email!: string;
 
   @Property({ nullable: false })
