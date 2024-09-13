@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
 
 const em = orm.em;
 
@@ -38,6 +39,14 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
+      const email = req.body.sanitizedInput.email;
+      const trainer = await em.findOne(Trainer, { email });
+      if (trainer !== null) {
+        return res
+          .status(409)
+          .send({ message: "There is already a trainer with the same email" });
+      }
+
       const client = em.create(Client, req.body.sanitizedInput);
       await em.flush();
       res.status(201).json({ message: "Client created", data: client });
@@ -48,6 +57,18 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      const email = req.body.sanitizedInput.email;
+      if (email !== undefined) {
+        const trainer = await em.findOne(Trainer, { email });
+        if (trainer !== null) {
+          return res
+            .status(409)
+            .send({
+              message: "There is already a trainer with the same email",
+            });
+        }
+      }
+
       const id = req.params.id;
       const client = await em.findOneOrFail(Client, { id });
       em.assign(client, req.body.sanitizedInput);

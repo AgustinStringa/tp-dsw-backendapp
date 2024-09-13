@@ -7,7 +7,8 @@ const config = defineConfig({
   dbName: "gimnasio",
   highlighter: new MongoHighlighter(),
   debug: true,
-  clientUrl: 'mongodb://localhost:27017/gimnasio',
+  clientUrl: "mongodb://localhost:27017/gimnasio",
+  ensureIndexes: true, //preguntar al profe si es apto para producción
   /*`mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
     "roota"
   )}@cluster0.asqcnur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,*/
