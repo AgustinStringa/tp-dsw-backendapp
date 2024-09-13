@@ -3,11 +3,12 @@ import { CurrentMembership } from "./CurrentMembership.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Client } from "../Client/Client.entity.js";
 import { MembershipType } from "./MembershipType.entity.js";
+import { startOfDay } from "date-fns";
 
 const em = orm.em;
 
 const controller = {
-  findAll: async function (req: Request, res: Response) {
+  findAll: async function (_req: Request, res: Response) {
     try {
       const currentMembs = await em.find(
         CurrentMembership,
@@ -51,12 +52,23 @@ const controller = {
         id: req.body.sanitizedInput.type,
       });
 
-      const currentMemb = em.create(CurrentMembership, req.body.sanitizedInput);
+      const today = startOfDay(new Date());
+      let currentMemb = await em.findOne(CurrentMembership, {
+        dateTo: { $gt: today },
+        client: req.body.sanitizedInput.client,
+      }); //revisar que sea la sintaxis correcta
+
+      if (currentMemb === null) {
+        currentMemb = em.create(CurrentMembership, req.body.sanitizedInput);
+      } else {
+        currentMemb.type = req.body.sanitizedInput.type; //Si invoco al método "update" se realizan otra vez las validaciones.
+      }
+
       await em.flush();
 
       res
         .status(201)
-        .json({ message: "New membership created", data: currentMemb });
+        .json({ message: "Membership assigned to client", data: currentMemb });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -103,11 +115,10 @@ const controller = {
 
   sanitizeCurrentMembership: function (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
-      dateTo: req.body.dateTo,
       type: req.body.type,
       client: req.body.client,
     };

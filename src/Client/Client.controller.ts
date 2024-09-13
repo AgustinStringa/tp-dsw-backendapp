@@ -5,12 +5,12 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 const em = orm.em;
 
 const controller = {
-  findAll: async function (_: Request, res: Response) {
+  findAll: async function (_req: Request, res: Response) {
     try {
       const clients = await em.find(
         Client,
         {},
-        { populate: ["progresses", "goals"] }
+        { fields: ["lastName", "firstName", "dni", "email"] } //parametrizar filtros según requerimientos
       );
       res
         .status(200)
@@ -73,11 +73,11 @@ const controller = {
 
   sanitizeClient: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      firstName: req.body.firstName,
       lastName: req.body.lastName,
+      firstName: req.body.firstName,
+      dni: req.body.dni.toString(),
+      email: req.body.email,
+      password: req.body.password,
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {

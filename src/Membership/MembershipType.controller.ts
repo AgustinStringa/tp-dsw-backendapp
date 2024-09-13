@@ -5,15 +5,12 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 const em = orm.em;
 
 const controller = {
-  findAll: async function (req: Request, res: Response) {
+  findAll: async function (_req: Request, res: Response) {
     try {
-      const membTypes = await em.find(
-        MembershipType,
-        {},
-        { populate: ["memberships"] }
-      );
+      const membTypes = await em.find(MembershipType, {});
+
       res.status(200).json({
-        message: "All types of membership  were found",
+        message: "All membership types were found",
         data: membTypes,
       });
     } catch (error: any) {

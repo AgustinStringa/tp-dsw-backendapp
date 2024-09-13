@@ -1,19 +1,19 @@
 ### obtener todos los trainers
 GET http://localhost:3000/api/trainers
 
-
 ### obtener un trainer
 GET http://localhost:3000/api/trainers/25967e44-73b3-4187-af93-3903d206ec21
+
 ### crear un nuevo trainer
 POST http://localhost:3000/api/trainers/
 Content-Type: application/json
 
 {
-  "username" : "Stringuita",
-  "password" : "stri",
-  "email": "agu.stringa@gmail.com",
+  "lastName" : "Stringa",
   "firstName": "Agustin",
-  "lastName" : "Stringa"
+  "dni": "44854963",
+  "email": "agu.stringa@gmail.com",
+  "password" : "stri"
 }
 
 ### modificar un trainer (PUT - recurso completo e idempotente)
@@ -21,11 +21,11 @@ PUT http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
 Content-Type: application/json
 
 {
-  "username" : "Agus De Ber",
-  "password" : "agus",
-  "email ": "deebernardo@gmail.com",
-  "firstName": "Aaron",
-  "lastName" : "De Bernardo"
+  "lastName" : "Stringa",
+  "firstName": "Valentina",
+  "dni": "47854963",
+  "email": "vale.stringa@gmail.com",
+  "password" : "stri"
 }
 
 ### modificar un trainer (PATCH - recurso parcial)
