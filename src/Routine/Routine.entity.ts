@@ -14,10 +14,10 @@ import { Client } from "../Client/Client.entity.js";
 @Entity({ tableName: "routine" })
 export class Routine extends BaseEntity {
   @Property()
-  month!: number;
+  start!: Date;
 
   @Property()
-  year!: number;
+  end!: Date;
 
   @ManyToOne(() => Trainer, { nullable: false })
   trainer!: Rel<Trainer>;

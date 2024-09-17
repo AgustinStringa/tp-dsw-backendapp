@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { controller } from "./Client.controller.js";
-
+import { createRoutineController } from "../Routine/CreateRoutine.controller.js";
 export const clientRouter = Router();
 
 clientRouter.get("/", controller.findAll);
+//TODO para AD -> cambiar a ruta de membership/active
+clientRouter.get(
+  "/membership-active/",
+  createRoutineController.findClientsWithMemembership
+);
 clientRouter.get("/:id", controller.findOne);
 clientRouter.post("/", controller.sanitizeClient, controller.add);
 clientRouter.put("/:id", controller.sanitizeClient, controller.update);

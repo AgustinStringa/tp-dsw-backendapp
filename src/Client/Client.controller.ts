@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
 import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
@@ -11,7 +12,10 @@ const controller = {
       const clients = await em.find(
         Client,
         {},
-        { fields: ["lastName", "firstName", "dni", "email"] } //parametrizar filtros según requerimientos
+        {
+          populate: ["progresses", "goals", "memberships", "routines"],
+          fields: ["lastName", "firstName", "dni", "email"],
+        } //parametrizar filtros según requerimientos
       );
       res
         .status(200)
@@ -106,6 +110,13 @@ const controller = {
         delete req.body.sanitizedInput[key];
       }
     });
+
+    if (req.body.sanitizedInput.password) {
+      req.body.sanitizedInput.password = bcrypt.hashSync(
+        req.body.sanitizedInput.password,
+        10
+      );
+    }
 
     next();
   },

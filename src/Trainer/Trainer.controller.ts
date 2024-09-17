@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
 import { Client } from "../Client/Client.entity.js";
-import { Trainer } from "./Trainer.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { Trainer } from "./Trainer.entity.js";
 
 const em = orm.em;
 
@@ -100,6 +101,13 @@ const controller = {
         delete req.body.sanitizedInput[key];
       }
     });
+
+    if (req.body.sanitizedInput.password) {
+      req.body.sanitizedInput.password = bcrypt.hashSync(
+        req.body.sanitizedInput.password,
+        10
+      );
+    }
 
     next();
   },
