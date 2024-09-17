@@ -23,7 +23,7 @@ export class Routine extends BaseEntity {
   trainer!: Rel<Trainer>;
 
   @ManyToOne(() => Client, { nullable: false })
-  client!: Rel<Trainer>;
+  client!: Rel<Client>;
 
   @OneToMany(() => ExerciseRoutine, (eRoutine) => eRoutine.routine, {
     cascade: [Cascade.ALL],
