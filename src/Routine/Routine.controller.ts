@@ -128,18 +128,17 @@ const controller = {
       console.log('Today:', today);
       console.log('Query Parameters:', {
         client: userId,
-        //start: { $lte: today },
-        //end: { $gte: today },
       });
       console.log('Today:', today.toISOString());
 
-      const routine = await em.findOneOrFail(
+      const routine = await em.findOne(
         Routine,
         {
-          client: userId,
-          //TO DO: no puedo validar que este dentro de esta semana
-          //start: { $lte: today.toISOString() },
-          //end: { $gte: today.toISOString() },
+          $and: [
+            { client: userId },
+            { start: { $lt: today } },
+            { end: { $gt: today } },
+          ],
         },
         {
           populate: [
