@@ -1,10 +1,10 @@
-import User from "../shared/interfaces/user.interface.js";
 import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Class } from "../Class/Class.entity.js";
+import { IUser } from "../shared/interfaces/user.interface.js";
 
 @Entity()
-export class Trainer extends BaseEntity implements User {
+export class Trainer extends BaseEntity implements IUser {
   @Property({ nullable: false })
   lastName!: string;
 

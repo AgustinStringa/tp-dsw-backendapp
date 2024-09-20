@@ -1,6 +1,6 @@
 import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { CurrentMembership } from "./CurrentMembership.entity.js";
+import { Membership } from "./Membership.entity.js";
 
 @Entity()
 export class MembershipType extends BaseEntity {
@@ -14,9 +14,9 @@ export class MembershipType extends BaseEntity {
   price!: number;
 
   @OneToMany({
-    entity: () => CurrentMembership,
+    entity: () => Membership,
     mappedBy: "type",
     orphanRemoval: true,
   })
-  memberships = new Collection<CurrentMembership>(this);
+  memberships = new Collection<Membership>(this);
 }

@@ -1,11 +1,11 @@
 ### get all types
-GET http://localhost:3000/api/memberships/membershiptypes
+GET http://localhost:3000/api/memberships/types
 
 ### get one type
-GET http://localhost:3000/api/memberships/membershiptypes/66880b57ce8ccd39d9fe9085
+GET http://localhost:3000/api/memberships/types/66ed837132fc51c4357e75c4
 
 ### crear type
-POST http://localhost:3000/api/memberships/membershiptypes/
+POST http://localhost:3000/api/memberships/types/
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 
 
 ### put type
-PUT http://localhost:3000/api/memberships/membershiptypes/66880b57ce8ccd39d9fe9085
+PUT http://localhost:3000/api/memberships/types/66880b57ce8ccd39d9fe9085
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 
 
 ### patch type
-PATCH http://localhost:3000/api/memberships/membershiptypes/66880b57ce8ccd39d9fe9085
+PATCH http://localhost:3000/api/memberships/types/66880b57ce8ccd39d9fe9085
 Content-Type: application/json
 
 {
@@ -37,4 +37,4 @@ Content-Type: application/json
 
 
 ### delete type
-DELETE http://localhost:3000/api/memberships/membershiptypes/66880a2e92ac25be35322db7
+DELETE http://localhost:3000/api/memberships/types/66880a2e92ac25be35322db7

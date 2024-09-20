@@ -1,0 +1,37 @@
+### get all memberships
+GET http://localhost:3000/api/memberships/
+
+### get one membership
+GET http://localhost:3000/api/memberships/66881354094fb79b203582e0
+
+### create membership
+POST http://localhost:3000/api/memberships/
+Content-Type: application/json
+
+{
+  "type": "66c522a366f91e5d87dca9a8",
+  "client": "66c8abd8cfede278ccb4edc1"
+}
+
+
+### put membership
+PUT http://localhost:3000/api/memberships/66881354094fb79b203582e0
+Content-Type: application/json
+
+{
+  "type": "66880b57ce8ccd39d9fe9085",
+  "client": "666c45e6b7de20e525df8d1e"
+}
+
+
+### patch membership
+PATCH http://localhost:3000/api/memberships/668817edd51fc4600353eaf6
+Content-Type: application/json
+
+{
+  "client": "667ad97c462b348eed0715ed"
+}
+
+
+### delete membership
+DELETE http://localhost:3000/api/memberships/6688149f1248ffd919ac105d
