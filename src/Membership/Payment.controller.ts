@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { Membership } from "./Membership.entity.js";
 import { Payment } from "./Payment.entity.js";
-import { CurrentMembership } from "./CurrentMembership.entity.js";
 
 const em = orm.em;
 
@@ -38,7 +38,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const id = req.body.sanitizedInput.membership;
-      await em.findOneOrFail(CurrentMembership, { id });
+      await em.findOneOrFail(Membership, { id });
 
       const payment = em.create(Payment, req.body.sanitizedInput);
       await em.flush();
@@ -55,10 +55,7 @@ const controller = {
       const id = req.params.id;
       const payment = await em.findOneOrFail(Payment, { id });
       if (req.body.sanitizedInput.membership !== undefined)
-        await em.findOneOrFail(
-          CurrentMembership,
-          req.body.sanitizedInput.membership
-        );
+        await em.findOneOrFail(Membership, req.body.sanitizedInput.membership);
 
       em.assign(payment, req.body.sanitizedInput);
       await em.flush();
