@@ -3,7 +3,7 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 import { Routine } from "./Routine.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
-import { lightFormat, addDays, startOfWeek } from "date-fns";
+import { lightFormat, addDays, startOfWeek, startOfDay } from "date-fns";
 const em = orm.em;
 
 const controller = {
@@ -75,15 +75,33 @@ const controller = {
           message: "Client not found",
         });
       }
-      const lastRoutine = client.getLastRoutine();
-      if (lastRoutine == null || !(new Date(req.body.end) > lastRoutine.end)) {
+      //TO DO: HABRIA Q REVISAR SI ALGUNA DE TODAS COINCIDE
+      // NO SOLO LA ULTIMA
+      const today = startOfDay(new Date());
+      const routinesOverlap = await orm.em.find(Routine, {
+        $and: [
+          {
+            client: { $eq: req.body.client },
+          },
+          {
+            $or: [
+              {
+                start: { $lt: new Date(req.body.end) },
+                end: { $gt: new Date(req.body.start) },
+              },
+            ],
+          },
+        ],
+      });
+
+      if (routinesOverlap.length <= 0) {
         const routine = em.create(Routine, req.body.sanitizedInput);
         await em.flush();
         res.status(201).json({ message: "Routine created", data: routine });
       } else {
         return res.status(400).json({
           message: "There is overlap between routines",
-          data: lastRoutine,
+          data: routinesOverlap[0],
         });
       }
     } catch (error: any) {
