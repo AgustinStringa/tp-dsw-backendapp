@@ -125,13 +125,6 @@ const controller = {
     try {
       const userId = req.params.userId;
       const today: Date = new Date();
-
-      console.log("Today:", today);
-      console.log("Query Parameters:", {
-        client: userId,
-      });
-      console.log("Today:", today.toISOString());
-
       const routine = await em.findOne(
         Routine,
         {
