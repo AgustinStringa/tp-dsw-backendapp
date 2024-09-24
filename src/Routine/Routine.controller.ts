@@ -3,7 +3,7 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 import { Routine } from "./Routine.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
-import { lightFormat, addDays, startOfWeek, startOfDay } from "date-fns";
+import { addDays, startOfWeek, startOfDay } from "date-fns";
 const em = orm.em;
 
 const controller = {
