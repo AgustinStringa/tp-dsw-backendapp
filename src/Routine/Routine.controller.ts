@@ -4,6 +4,7 @@ import { Routine } from "./Routine.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
 import { addDays, startOfWeek, startOfDay } from "date-fns";
+import { NotFoundError } from "@mikro-orm/core";
 const em = orm.em;
 
 const controller = {
@@ -54,30 +55,19 @@ const controller = {
         });
       }
       const firstMonday = addDays(startOfWeek(new Date()), 1);
-      if (new Date(req.body.start) < firstMonday) {
+      if (req.body.start < firstMonday) {
         return res.status(400).json({
           message: "Routine's start date must be greater than last monday",
         });
       }
       const trainer = await em.findOneOrFail(Trainer, { id: req.body.trainer });
-      if (!trainer) {
-        return res.status(400).json({
-          message: "Trainer not found",
-        });
-      }
       const client = await em.findOneOrFail(
         Client,
         { id: req.body.client },
         { populate: ["routines"] }
       );
-      if (!client) {
-        return res.status(400).json({
-          message: "Client not found",
-        });
-      }
-      //TO DO: HABRIA Q REVISAR SI ALGUNA DE TODAS COINCIDE
-      // NO SOLO LA ULTIMA
-      const today = startOfDay(new Date());
+      //new date es necesario para la comparacion exitosa de fechas
+      // de otro modo no funciona
       const routinesOverlap = await orm.em.find(Routine, {
         $and: [
           {
@@ -105,7 +95,11 @@ const controller = {
         });
       }
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      if (error instanceof NotFoundError) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: error.message });
+      }
     }
   },
 
@@ -140,8 +134,8 @@ const controller = {
 
   sanitizeRoutine: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      start: req.body.start,
-      end: req.body.end,
+      start: startOfDay(req.body.start),
+      end: startOfDay(req.body.end),
       trainer: req.body.trainer,
       client: req.body.client,
       exercisesRoutine: req.body.exercisesRoutine,
