@@ -9,24 +9,24 @@ POST http://localhost:3000/api/clients/
 Content-Type: application/json
 
 {
-  "username": "gasti1234",
-  "password": "******",
-  "email": "gasti@hotmail.com.ar",
+  "lastName": "Hernández",
   "firstName": "Gastón",
-  "lastName": "Hernández"
+  "dni": "45868745",
+  "email": "gasti123@hotmail.com.ar",
+  "password": "abcde"
 }
 
 
 ### put client
-PUT http://localhost:3000/api/clients/666cc6e2280240a5542a472a
+PUT http://localhost:3000/api/clients/66c8abd8cfede278ccb4edc1
 Content-Type: application/json
 
 {
-  "username": "Salvador",
-  "password": "salvi1234",
-  "email": "notiene@gmail.com",
-  "firstName": "Carlos Salvador",
-  "lastName": "Bilardo"
+  "lastName": "Marchesín",
+  "firstName": "Agustín",
+  "dni": "14758963",
+  "email": "agus@lanus.com.ar",
+  "password": "encriptar"
 }
 
 

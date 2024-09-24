@@ -1,6 +1,6 @@
 import { Entity, Property, ManyToOne, Rel } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { CurrentMembership } from "./CurrentMembership.entity.js";
+import { Membership } from "./Membership.entity.js";
 
 @Entity()
 export class Payment extends BaseEntity {
@@ -13,6 +13,6 @@ export class Payment extends BaseEntity {
   @Property({ nullable: true })
   amount!: number;
 
-  @ManyToOne(() => CurrentMembership)
-  membership!: Rel<CurrentMembership>;
+  @ManyToOne(() => Membership)
+  membership!: Rel<Membership>;
 }

@@ -1,22 +1,23 @@
-import { Request, Response, NextFunction } from "express";
-import { CurrentMembership } from "./CurrentMembership.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { Request, Response, NextFunction } from "express";
+import { startOfDay } from "date-fns";
 import { Client } from "../Client/Client.entity.js";
+import { Membership } from "./Membership.entity.js";
 import { MembershipType } from "./MembershipType.entity.js";
 
 const em = orm.em;
 
 const controller = {
-  findAll: async function (req: Request, res: Response) {
+  findAll: async function (_req: Request, res: Response) {
     try {
-      const currentMembs = await em.find(
-        CurrentMembership,
+      const memberships = await em.find(
+        Membership,
         {},
         { populate: ["type", "client", "payments"] }
       );
       res.status(200).json({
-        message: "All current memberships were found",
-        data: currentMembs,
+        message: "All memberships were found",
+        data: memberships,
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -26,14 +27,12 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const currentMemb = await em.findOneOrFail(
-        CurrentMembership,
+      const membership = await em.findOneOrFail(
+        Membership,
         { id },
         { populate: ["type", "client", "payments"] }
       );
-      res
-        .status(200)
-        .json({ message: "Current membership found", data: currentMemb });
+      res.status(200).json({ message: "Membership found", data: membership });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -51,12 +50,23 @@ const controller = {
         id: req.body.sanitizedInput.type,
       });
 
-      const currentMemb = em.create(CurrentMembership, req.body.sanitizedInput);
+      const today = startOfDay(new Date());
+      let membership = await em.findOne(Membership, {
+        dateTo: { $gt: today },
+        client: req.body.sanitizedInput.client,
+      }); //revisar que sea la sintaxis correcta
+
+      if (membership === null) {
+        membership = em.create(Membership, req.body.sanitizedInput);
+      } else {
+        membership.type = req.body.sanitizedInput.type; //Si invoco al método "update" se realizan otra vez las validaciones.
+      }
+
       await em.flush();
 
       res
         .status(201)
-        .json({ message: "New membership created", data: currentMemb });
+        .json({ message: "Membership assigned to client", data: membership });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -66,7 +76,7 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const currentMemb = await em.findOneOrFail(CurrentMembership, {
+      const membership = await em.findOneOrFail(Membership, {
         id: req.params.id,
       });
 
@@ -78,11 +88,9 @@ const controller = {
           id: req.body.sanitizedInput.type,
         });
 
-      em.assign(currentMemb, req.body.sanitizedInput);
+      em.assign(membership, req.body.sanitizedInput);
       await em.flush();
-      res
-        .status(200)
-        .json({ message: "Current membership updated", data: currentMemb });
+      res.status(200).json({ message: "Membership updated", data: membership });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -93,21 +101,20 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const currentMemb = em.getReference(CurrentMembership, id);
-      await em.removeAndFlush(currentMemb);
-      res.status(200).json({ message: "Current membership deleted" });
+      const membership = em.getReference(Membership, id);
+      await em.removeAndFlush(membership);
+      res.status(200).json({ message: "Membership deleted" });
     } catch (error: any) {
       res.status(500).send({ message: error.message });
     }
   },
 
-  sanitizeCurrentMembership: function (
+  sanitizeMembership: function (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
-      dateTo: req.body.dateTo,
       type: req.body.type,
       client: req.body.client,
     };

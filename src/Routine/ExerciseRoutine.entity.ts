@@ -2,7 +2,7 @@ import { Entity, ManyToOne, Property, Rel } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Routine } from "./Routine.entity.js";
 import { Exercise } from "./Exercise.entity.js";
-@Entity({ tableName: "dailyRoutine" })
+@Entity({ tableName: "exerciseRoutine" })
 export class ExerciseRoutine extends BaseEntity {
   @Property()
   week!: number;
@@ -23,5 +23,5 @@ export class ExerciseRoutine extends BaseEntity {
   routine!: Rel<Routine>;
 
   @ManyToOne(() => Exercise, { nullable: false })
-  exercise!: Rel<Routine>;
+  exercise!: Rel<Exercise>;
 }

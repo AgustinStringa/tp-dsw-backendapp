@@ -1,8 +1,8 @@
-export default interface User {
-  username: string;
-  password: string;
-  email: string;
-  firstName: string;
+export interface IUser {
   lastName: string;
+  firstName: string;
+  dni: string;
+  email: string;
+  password: string;
   //id is inherited from baseEntity
 }

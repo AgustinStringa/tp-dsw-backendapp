@@ -1,16 +1,21 @@
-import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
 import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
 
 const em = orm.em;
 
 const controller = {
-  findAll: async function (_: Request, res: Response) {
+  findAll: async function (_req: Request, res: Response) {
     try {
       const clients = await em.find(
         Client,
         {},
-        { populate: ["progresses", "goals"] }
+        {
+          populate: ["progresses", "goals", "memberships", "routines"],
+          fields: ["lastName", "firstName", "dni", "email"],
+        } //parametrizar filtros según requerimientos
       );
       res
         .status(200)
@@ -38,6 +43,14 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
+      const email = req.body.sanitizedInput.email;
+      const trainer = await em.findOne(Trainer, { email });
+      if (trainer !== null) {
+        return res
+          .status(409)
+          .send({ message: "There is already a trainer with the same email" });
+      }
+
       const client = em.create(Client, req.body.sanitizedInput);
       await em.flush();
       res.status(201).json({ message: "Client created", data: client });
@@ -48,6 +61,18 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      const email = req.body.sanitizedInput.email;
+      if (email !== undefined) {
+        const trainer = await em.findOne(Trainer, { email });
+        if (trainer !== null) {
+          return res
+            .status(409)
+            .send({
+              message: "There is already a trainer with the same email",
+            });
+        }
+      }
+
       const id = req.params.id;
       const client = await em.findOneOrFail(Client, { id });
       em.assign(client, req.body.sanitizedInput);
@@ -73,11 +98,11 @@ const controller = {
 
   sanitizeClient: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      firstName: req.body.firstName,
       lastName: req.body.lastName,
+      firstName: req.body.firstName,
+      dni: req.body.dni.toString(),
+      email: req.body.email,
+      password: req.body.password,
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -85,6 +110,13 @@ const controller = {
         delete req.body.sanitizedInput[key];
       }
     });
+
+    if (req.body.sanitizedInput.password) {
+      req.body.sanitizedInput.password = bcrypt.hashSync(
+        req.body.sanitizedInput.password,
+        10
+      );
+    }
 
     next();
   },
