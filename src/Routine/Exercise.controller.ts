@@ -59,14 +59,6 @@ const controller = {
   },
   update: async function (req: Request, res: Response) {
     try {
-      if (req.body.trainer) {
-        const trainer = await em.findOneOrFail(Trainer, {
-          id: req.body.trainer,
-        });
-        if (!trainer) {
-          res.status(404).json({ message: "Trainer not fund" });
-        }
-      }
       const id = req.params.id;
       const exercise = await em.findOneOrFail(Exercise, { id });
       em.assign(exercise, req.body.sanitizedInput);
@@ -81,8 +73,6 @@ const controller = {
       name: req.body.name,
       description: req.body.description,
       urlVideo: req.body.urlVideo,
-      trainer: req.body.trainer,
-      exercisesDone: req.body.exercisesDone,
     };
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
