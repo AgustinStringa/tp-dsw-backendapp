@@ -3,8 +3,10 @@ import { NextFunction, Request, Response } from "express";
 import { Client } from "../Client/Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
+import jwt from "jsonwebtoken";
 
 const em = orm.em;
+const JWT_SECRET = "your_jwt_secret";
 
 const controller = {
   login: async function (req: Request, res: Response) {
@@ -29,9 +31,13 @@ const controller = {
       );
 
       if (auth) {
-        return res
-          .status(200)
-          .json({ message: "Logged in successfully", data: { user, client } }); //no debería devolver la contraseña
+        const token = jwt.sign({ id: user.id }, JWT_SECRET, {
+          expiresIn: "1h",
+        });
+        return res.status(200).json({
+          message: "Logged in successfully",
+          data: { user, client, token },
+        }); //no debería devolver la contraseña
       } else {
         return res.status(401).json({ message: "Wrong email or password" });
       }
@@ -55,6 +61,35 @@ const controller = {
     });
 
     next();
+  },
+
+  verifyToken: async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const token = req.header("Authorization")?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Acceso denegado" });
+    }
+    try {
+      const verified = jwt.verify(token, JWT_SECRET);
+      if (typeof verified !== "string") {
+        // client o trainer
+        const user = await em.findOneOrFail(Client, { _id: verified.id });
+        console.log(user);
+      }
+      next();
+    } catch (error: any) {
+      console.log(error);
+      res
+        .status(400)
+        .json({ message: "Token no válido", error_message: error.message });
+    }
+  },
+
+  getSomething: function (req: Request, res: Response, next: NextFunction) {
+    res.json({ somehting: "somehting" });
   },
 };
 
