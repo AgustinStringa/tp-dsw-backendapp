@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { orm } from '../shared/db/mikro-orm.config.js';
-import { Routine } from './Routine.entity.js';
-import { Trainer } from '../Trainer/Trainer.entity.js';
-import { Client } from '../Client/Client.entity.js';
-import { lightFormat, addDays, startOfWeek } from 'date-fns';
+import { addDays, startOfWeek } from "date-fns";
+import { Request, Response, NextFunction } from "express";
+import { Client } from "../Client/Client.entity.js";
+import { Routine } from "./Routine.entity.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
+
 const em = orm.em;
 
 const controller = {
@@ -13,11 +14,11 @@ const controller = {
         Routine,
         {},
         {
-          populate: ['client', 'trainer', 'exercisesRoutine'],
+          populate: ["client", "trainer", "exercisesRoutine"],
         }
       );
       res.status(200).json({
-        message: 'All routines were found',
+        message: "All routines were found",
         data: routines,
       });
     } catch (error: any) {
@@ -33,14 +34,14 @@ const controller = {
         { id },
         {
           populate: [
-            'client',
-            'trainer',
-            'exercisesRoutine',
-            'exercisesRoutine.exercise',
+            "client",
+            "trainer",
+            "exercisesRoutine",
+            "exercisesRoutine.exercise",
           ],
         }
       );
-      res.status(200).json({ message: 'Routine found', data: routine });
+      res.status(200).json({ message: "Routine found", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -50,7 +51,7 @@ const controller = {
     try {
       if (req.body.start > req.body.end) {
         return res.status(400).json({
-          message: 'End date must be greather than start date',
+          message: "End date must be greather than start date",
         });
       }
       const firstMonday = addDays(startOfWeek(new Date()), 1);
@@ -62,27 +63,27 @@ const controller = {
       const trainer = await em.findOneOrFail(Trainer, { id: req.body.trainer });
       if (!trainer) {
         return res.status(400).json({
-          message: 'Trainer not found',
+          message: "Trainer not found",
         });
       }
       const client = await em.findOneOrFail(
         Client,
         { id: req.body.client },
-        { populate: ['routines'] }
+        { populate: ["routines"] }
       );
       if (!client) {
         return res.status(400).json({
-          message: 'Client not found',
+          message: "Client not found",
         });
       }
       const lastRoutine = client.getLastRoutine();
       if (lastRoutine == null || !(new Date(req.body.end) > lastRoutine.end)) {
         const routine = em.create(Routine, req.body.sanitizedInput);
         await em.flush();
-        res.status(201).json({ message: 'Routine created', data: routine });
+        res.status(201).json({ message: "Routine created", data: routine });
       } else {
         return res.status(400).json({
-          message: 'There is overlap between routines',
+          message: "There is overlap between routines",
           data: lastRoutine,
         });
       }
@@ -103,7 +104,7 @@ const controller = {
       const routine = await em.findOneOrFail(Routine, { id });
       em.assign(routine, req.body.sanitizedInput);
       await em.flush();
-      res.status(200).json({ message: 'Routine updated', data: routine });
+      res.status(200).json({ message: "Routine updated", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -114,7 +115,7 @@ const controller = {
       const id = req.params.id;
       const routine = em.getReference(Routine, id);
       await em.removeAndFlush(routine);
-      res.status(200).json({ message: 'Routine deleted' });
+      res.status(200).json({ message: "Routine deleted" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -125,11 +126,11 @@ const controller = {
       const userId = req.params.userId;
       const today: Date = new Date();
 
-      console.log('Today:', today);
-      console.log('Query Parameters:', {
+      console.log("Today:", today);
+      console.log("Query Parameters:", {
         client: userId,
       });
-      console.log('Today:', today.toISOString());
+      console.log("Today:", today.toISOString());
 
       const routine = await em.findOne(
         Routine,
@@ -142,19 +143,19 @@ const controller = {
         },
         {
           populate: [
-            'client',
-            'trainer',
-            'exercisesRoutine',
-            'exercisesRoutine.exercise',
+            "client",
+            "trainer",
+            "exercisesRoutine",
+            "exercisesRoutine.exercise",
           ],
         }
       );
 
       if (!routine) {
-        return res.status(404).json({ message: 'Routine not found' });
+        return res.status(404).json({ message: "Routine not found" });
       }
 
-      res.status(200).json({ message: 'Routine found', data: routine });
+      res.status(200).json({ message: "Routine found", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
