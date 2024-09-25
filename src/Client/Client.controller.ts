@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
+import { validate } from "class-validator";
 
 const em = orm.em;
 
@@ -43,15 +44,18 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const email = req.body.sanitizedInput.email;
-      const trainer = await em.findOne(Trainer, { email });
+      const client = em.create(Client, req.body.sanitizedInput);
+      const errors = await validate(client);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
+      const trainer = await em.findOne(Trainer, { email: client.email });
       if (trainer !== null) {
         return res
           .status(409)
           .send({ message: "There is already a trainer with the same email" });
       }
 
-      const client = em.create(Client, req.body.sanitizedInput);
       await em.flush();
       res.status(201).json({ message: "Client created", data: client });
     } catch (error: any) {
@@ -65,17 +69,20 @@ const controller = {
       if (email !== undefined) {
         const trainer = await em.findOne(Trainer, { email });
         if (trainer !== null) {
-          return res
-            .status(409)
-            .send({
-              message: "There is already a trainer with the same email",
-            });
+          return res.status(409).send({
+            message: "There is already a trainer with the same email",
+          });
         }
       }
 
       const id = req.params.id;
       const client = await em.findOneOrFail(Client, { id });
       em.assign(client, req.body.sanitizedInput);
+
+      const errors = await validate(client);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       await em.flush();
       res.status(200).json({ message: "Client updated", data: client });
     } catch (error: any) {
@@ -98,10 +105,10 @@ const controller = {
 
   sanitizeClient: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      lastName: req.body.lastName,
-      firstName: req.body.firstName,
-      dni: req.body.dni.toString(),
-      email: req.body.email,
+      lastName: req.body.lastName?.trim(),
+      firstName: req.body.firstName?.trim(),
+      dni: req.body.dni?.toString().trim(),
+      email: req.body.email?.trim(),
       password: req.body.password,
     };
 
@@ -112,10 +119,14 @@ const controller = {
     });
 
     if (req.body.sanitizedInput.password) {
-      req.body.sanitizedInput.password = bcrypt.hashSync(
-        req.body.sanitizedInput.password,
-        10
-      );
+      if (req.body.sanitizedInput.password.length >= 4) {
+        req.body.sanitizedInput.password = bcrypt.hashSync(
+          req.body.sanitizedInput.password,
+          10
+        );
+      } else {
+        req.body.sanitizedInput.password = "";
+      }
     }
 
     next();

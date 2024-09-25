@@ -1,0 +1,9 @@
+### create exercise
+POST http://localhost:3000/api/routines/exercises
+Content-Type: application/json
+
+{
+  "name" : "Dominadas",
+  "description": "En la barra del patio",
+  "urlVideo": ""
+}
