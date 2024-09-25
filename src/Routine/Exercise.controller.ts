@@ -74,7 +74,7 @@ const controller = {
     req.body.sanitizedInput = {
       name: req.body.name?.trim(),
       description: req.body.description?.trim(),
-      urlVideo: req.body.urlVideo.trim(),
+      urlVideo: req.body.urlVideo?.trim(),
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {

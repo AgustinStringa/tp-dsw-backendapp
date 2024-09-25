@@ -5,6 +5,8 @@ import { Trainer } from "../Trainer/Trainer.entity.js";
 import { Client } from "../Client/Client.entity.js";
 import { addDays, startOfWeek, startOfDay } from "date-fns";
 import { NotFoundError } from "@mikro-orm/core";
+import { Exercise } from "./Exercise.entity.js";
+
 const em = orm.em;
 
 const controller = {
@@ -54,21 +56,18 @@ const controller = {
           message: "End date must be greather than start date",
         });
       }
-      const firstMonday = addDays(startOfWeek(new Date()), 1);
-      if (req.body.start < firstMonday) {
+
+      const thisWeekMonday = addDays(startOfWeek(new Date()), 1);
+      if (req.body.start < thisWeekMonday) {
         return res.status(400).json({
           message: "Routine's start date must be greater than last monday",
         });
       }
-      const trainer = await em.findOneOrFail(Trainer, { id: req.body.trainer });
-      const client = await em.findOneOrFail(
-        Client,
-        { id: req.body.client },
-        { populate: ["routines"] }
-      );
-      //new date es necesario para la comparacion exitosa de fechas
-      // de otro modo no funciona
-      const routinesOverlap = await orm.em.find(Routine, {
+
+      await em.findOneOrFail(Trainer, { id: req.body.trainer });
+      await em.findOneOrFail(Client, { id: req.body.client });
+
+      const routineOverlap = await orm.em.findOne(Routine, {
         $and: [
           {
             client: { $eq: req.body.client },
@@ -76,24 +75,34 @@ const controller = {
           {
             $or: [
               {
-                start: { $lt: new Date(req.body.end) },
-                end: { $gt: new Date(req.body.start) },
+                start: { $lt: new Date(req.body.sanitizedInput.end) },
+                end: { $gt: new Date(req.body.sanitizedInput.start) },
               },
             ],
           },
         ],
       });
 
-      if (routinesOverlap.length <= 0) {
-        const routine = em.create(Routine, req.body.sanitizedInput);
-        await em.flush();
-        res.status(201).json({ message: "Routine created", data: routine });
-      } else {
+      if (routineOverlap) {
         return res.status(400).json({
           message: "There is overlap between routines",
-          data: routinesOverlap[0],
+          data: routineOverlap,
         });
       }
+
+      const routine = em.create(Routine, req.body.sanitizedInput);
+      const exercisesIds = [
+        ...new Set(routine.exercisesRoutine.map((er) => er.exercise.id)),
+      ];
+      const exercises = await em.find(Exercise, { id: { $in: exercisesIds } });
+
+      if (exercises.length !== exercisesIds.length)
+        return res.status(400).json({
+          message: "Some exercises were not found",
+        });
+
+      await em.flush();
+      res.status(201).json({ message: "Routine created", data: routine });
     } catch (error: any) {
       if (error instanceof NotFoundError) {
         res.status(400).json({ message: error.message });
@@ -111,6 +120,9 @@ const controller = {
       if (req.body.client) {
         await em.findOneOrFail(Client, { id: req.body.client });
       }
+
+      //hay que realizar validaciones similares a las del método add
+
       const id = req.params.id;
       const routine = await em.findOneOrFail(Routine, { id });
       em.assign(routine, req.body.sanitizedInput);
@@ -133,20 +145,24 @@ const controller = {
   },
 
   sanitizeRoutine: function (req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-      start: startOfDay(req.body.start),
-      end: startOfDay(req.body.end),
-      trainer: req.body.trainer,
-      client: req.body.client,
-      exercisesRoutine: req.body.exercisesRoutine,
-    };
-    //more checks about malicious content, sql injections, data type...
+    try {
+      req.body.sanitizedInput = {
+        start: startOfDay(req.body.start),
+        end: startOfDay(req.body.end),
+        trainer: req.body.trainer,
+        client: req.body.client,
+        exercisesRoutine: req.body.exercisesRoutine, //en un post weight debe ser nulo
+      };
+    } catch {
+      res.status(400).json({ message: "Bad request" }); //se ejecuta si se envía una fecha con formato no válido
+    }
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
         delete req.body.sanitizedInput[key];
       }
     });
+
     next();
   },
 };
