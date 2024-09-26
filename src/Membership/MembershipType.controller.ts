@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { validate } from "class-validator";
 import { MembershipType } from "./MembershipType.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 
@@ -40,9 +41,14 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const membType = em.create(MembershipType, req.body.sanitizedInput);
+
+      const errors = await validate(membType);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       await em.flush();
       res.status(201).json({
-        message: "Type of membership created",
+        message: "Membership type created",
         data: membType,
       });
     } catch (error: any) {
@@ -52,9 +58,13 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const membType = await em.findOneOrFail(MembershipType, { id });
+      const membType = await em.findOneOrFail(MembershipType, req.params.id);
       em.assign(membType, req.body.sanitizedInput);
+
+      const errors = await validate(membType);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       await em.flush();
       res
         .status(200)
@@ -83,8 +93,8 @@ const controller = {
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
-      name: req.body.name,
-      description: req.body.description,
+      name: req.body.name?.trim(),
+      description: req.body.description?.trim(),
       price: req.body.price,
     };
 
