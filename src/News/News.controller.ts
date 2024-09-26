@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { orm } from "../shared/db/mikro-orm.config.js";
+import { validate } from "class-validator";
 import { News } from "./News.entity.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
+import { error } from "console";
 
 const em = orm.em;
 
@@ -29,6 +31,11 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const news = em.create(News, req.body.sanitizedInput);
+
+      const errors = await validate(news);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       await em.flush();
       res.status(200).json({ message: "News created", data: news });
     } catch (error: any) {
@@ -40,11 +47,14 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const news = await em.findOneOrFail(News, { id });
+      const news = await em.findOneOrFail(News, req.params.id);
       em.assign(news, req.body.sanitizedInput);
-
       news.checkExpirationDate();
+
+      const errors = await validate(news);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       await em.flush();
 
       res.status(200).json({ message: "News updated", data: news });
@@ -69,8 +79,8 @@ const controller = {
   sanitizeNews: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
       expirationDateTime: req.body.expirationDateTime,
-      title: req.body.title,
-      body: req.body.body,
+      title: req.body.title?.trim(),
+      body: req.body.body?.trim(),
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {

@@ -1,4 +1,5 @@
 import { Entity, Property } from "@mikro-orm/core";
+import { IsNotEmpty } from "class-validator";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 
 @Entity()
@@ -9,9 +10,11 @@ export class News extends BaseEntity {
   @Property({ nullable: false })
   expirationDateTime?: Date;
 
+  @IsNotEmpty()
   @Property({ nullable: false })
   title!: string;
 
+  @IsNotEmpty()
   @Property({ nullable: false })
   body!: string;
 

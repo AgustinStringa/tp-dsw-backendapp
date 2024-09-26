@@ -34,6 +34,7 @@
     "@mikro-orm/mongo-highlighter": "^1.0.0",
     "@mikro-orm/mongodb": "^6.3.9",
     "bcrypt": "^5.1.1",
+    "class-validator": "^0.14.1",
     "cors": "2.8.5",
     "date-fns": "^3.6.0",
     "reflect-metadata": "0.2.2"
