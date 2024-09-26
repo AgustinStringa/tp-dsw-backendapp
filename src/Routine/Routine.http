@@ -1,0 +1,71 @@
+### Obtener todas las rutinas
+GET http://localhost:3000/api/routines
+Content-Type: application/json
+
+###
+
+### Obtener una rutina por ID
+GET http://localhost:3000/api/routines/{id}
+Content-Type: application/json
+
+###
+
+### Crear una nueva rutina
+POST http://localhost:3000/api/routines
+Content-Type: application/json
+
+{
+  "start": "2024-09-20T00:00:00Z",
+  "end": "2024-09-30T23:59:59Z",
+  "trainer": "66ce141775ef00a40ff511ef",
+  "client": "66e9b19b100c4d9c3024fc97",
+  "exercisesRoutine": [
+    {
+      "exercise": "66e9c19314200234c616156c",
+      "week": 1,
+      "day": "Monday",
+      "series": 3,
+      "repetitions": 12,
+      "weight": 50
+    },
+    {
+      "exercise": "66e9c25314200234c616156d",
+      "week": 1,
+      "day": "Wednesday",
+      "series": 4,
+      "repetitions": 10,
+      "weight": 60
+    }
+  ]
+}
+
+###
+
+### Actualizar una rutina por ID
+PUT http://localhost:3000/api/routines/{id}
+Content-Type: application/json
+
+{
+  "start": "2024-09-25T00:00:00Z",
+  "end": "2024-10-05T23:59:59Z",
+  "trainer": "66ce141775ef00a40ff511ef",
+  "client": "66e9b19b100c4d9c3024fc97",
+  "exercisesRoutine": [
+    {
+      "exercise": "66e9c19314200234c616156c",
+      "week": 2,
+      "day": "Friday",
+      "series": 3,
+      "repetitions": 15,
+      "weight": 55
+    }
+  ]
+}
+
+###
+
+### Eliminar una rutina por ID
+DELETE http://localhost:3000/api/routines/{id}
+Content-Type: application/json
+
+###

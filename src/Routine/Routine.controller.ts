@@ -1,11 +1,11 @@
+import { addDays, startOfWeek, startOfDay } from "date-fns";
+import { NotFoundError } from "@mikro-orm/core";
 import { Request, Response, NextFunction } from "express";
+import { Client } from "../Client/Client.entity.js";
+import { Exercise } from "./Exercise.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Routine } from "./Routine.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
-import { Client } from "../Client/Client.entity.js";
-import { addDays, startOfWeek, startOfDay } from "date-fns";
-import { NotFoundError } from "@mikro-orm/core";
-import { Exercise } from "./Exercise.entity.js";
 
 const em = orm.em;
 
@@ -139,6 +139,39 @@ const controller = {
       const routine = em.getReference(Routine, id);
       await em.removeAndFlush(routine);
       res.status(200).json({ message: "Routine deleted" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  findCurrentRoutine: async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.userId;
+      const today: Date = new Date();
+      const routine = await em.findOne(
+        Routine,
+        {
+          $and: [
+            { client: userId },
+            { start: { $lt: today } },
+            { end: { $gt: today } },
+          ],
+        },
+        {
+          populate: [
+            "client",
+            "trainer",
+            "exercisesRoutine",
+            "exercisesRoutine.exercise",
+          ],
+        }
+      );
+
+      if (!routine) {
+        return res.status(404).json({ message: "Routine not found" });
+      }
+
+      res.status(200).json({ message: "Routine found", data: routine });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
