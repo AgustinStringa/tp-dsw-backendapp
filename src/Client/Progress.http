@@ -10,18 +10,18 @@ Content-Type: application/json
 
 {
   "date": "2024-04-01",
-  "weight": "70",
-  "fatPercentage": "8",
-  "bodyMeasurements": "",
-  "client":"667f4692dd0e068972898abc"
+  "weight": 70,
+  "fatPercentage": 8,
+  "bodyMeasurements": "15 cm biceps derecho - 14 cm izquierdo",
+  "client":"66c8abd8cfede278ccb4edc1"
 }
 
 ### patch
-PATCH http://localhost:3000/clients/progresses/667f4b73a78079beb55aa5fa
+PATCH http://localhost:3000/api/clients/progresses/66f5959d461681f1edcfbd4a
 Content-Type: application/json
 
 {
-  "fatPercentage": "10"
+  "fatPercentage": 10
 }
 
 ### delete

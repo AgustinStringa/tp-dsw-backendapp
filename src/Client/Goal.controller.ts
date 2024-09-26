@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { validate } from "class-validator";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Client } from "./Client.entity.js";
 import { Goal } from "./Goal.entity.js";
@@ -33,8 +34,13 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(Client, req.body.sanitizedInput.client);
       const goal = em.create(Goal, req.body.sanitizedInput);
+
+      const errors = await validate(goal);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
+      await em.findOneOrFail(Client, req.body.sanitizedInput.client);
       await em.flush();
 
       res.status(201).json({ message: "Goal created", data: goal });
@@ -47,12 +53,16 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      const goal = await em.findOneOrFail(Goal, { id: req.params.id });
+      em.assign(goal, req.body.sanitizedInput);
+      
+      const errors = await validate(goal);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       if (req.body.sanitizedInput.client !== undefined)
         await em.findOneOrFail(Client, req.body.sanitizedInput.client);
 
-      const id = req.params.id;
-      const goal = await em.findOneOrFail(Goal, id);
-      em.assign(goal, req.body.sanitizedInput);
       await em.flush();
 
       res.status(200).json({ message: "Goal updated", data: goal });
@@ -77,7 +87,7 @@ const controller = {
   sanitizeGoal: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
       fatPercentage: req.body.fatPercentage,
-      bodyMeasurements: req.body.bodyMeasurements,
+      bodyMeasurements: req.body.bodyMeasurements?.trim(),
       done: req.body.done,
       client: req.body.client,
     };

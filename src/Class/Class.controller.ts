@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { validate } from "class-validator";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Class } from "./Class.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
@@ -13,7 +14,7 @@ const controller = {
         Class,
         {},
         { populate: ["classType", "trainer"] }
-      ); // QUESTION: Should we populate also with "ClassAssigned?"
+      );
       res
         .status(200)
         .json({ message: "All classes  were found", data: classes });
@@ -43,6 +44,11 @@ const controller = {
       await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
       await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
       const class_a = em.create(Class, req.body.sanitizedInput);
+
+      const errors = await validate(class_a);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       await em.flush();
 
       res.status(201).json({ message: "Class created", data: class_a });
@@ -55,15 +61,19 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      const class_a = await em.findOneOrFail(Class, { id: req.params.id });
+      em.assign(class_a, req.body.sanitizedInput);
+
+      const errors = await validate(class_a);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       if (req.body.sanitizedInput.classType !== undefined)
         await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
 
       if (req.body.sanitizedInput.trainer !== undefined)
         await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
 
-      const id = req.params.id;
-      const class_a = await em.findOneOrFail(Class, id);
-      em.assign(class_a, req.body.sanitizedInput);
       await em.flush();
 
       res.status(200).json({ message: "Class updated", data: class_a });
@@ -89,10 +99,10 @@ const controller = {
   sanitizeClass: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
       day: req.body.day,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
+      startTime: req.body.startTime?.trim(),
+      endTime: req.body.endTime?.trim(),
       maxCapacity: req.body.maxCapacity,
-      location: req.body.location,
+      location: req.body.location?.trim(),
       active: req.body.active,
       classType: req.body.classType,
       trainer: req.body.trainer,

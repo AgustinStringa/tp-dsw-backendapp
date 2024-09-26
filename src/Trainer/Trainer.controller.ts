@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { Client } from "../Client/Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "./Trainer.entity.js";
+import { validate } from "class-validator";
 
 const em = orm.em;
 
@@ -19,13 +20,7 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const trainer = await em.findOneOrFail(
-        Trainer,
-        { id },
-        {
-          populate: [],
-        }
-      );
+      const trainer = await em.findOneOrFail(Trainer, { id });
       if (!trainer) {
         res.status(404).send({ message: "Trainer not found" });
       } else {
@@ -38,15 +33,19 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const email = req.body.sanitizedInput.email;
-      const client = await em.findOne(Client, { email });
+      const trainer = em.create(Trainer, req.body.sanitizedInput);
+
+      const errors = await validate(trainer);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
+      const client = await em.findOne(Client, { email: trainer.email });
       if (client !== null) {
         return res
           .status(409)
           .send({ message: "There is already a client with the same email" });
       }
 
-      const trainer = em.create(Trainer, req.body.sanitizedInput);
       await em.flush();
       res.status(201).json({ message: "Trainer created", data: trainer });
     } catch (error: any) {
@@ -56,9 +55,15 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const email = req.body.sanitizedInput.email;
-      if (email !== undefined) {
-        const client = await em.findOne(Client, { email });
+      const trainer = await em.findOneOrFail(Trainer, { id: req.params.id });
+      em.assign(trainer, req.body.sanitizedInput);
+
+      const errors = await validate(trainer);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
+      if (req.body.sanitizedInput.email !== undefined) {
+        const client = await em.findOne(Client, { email: trainer.email });
         if (client !== null) {
           return res
             .status(409)
@@ -66,9 +71,6 @@ const controller = {
         }
       }
 
-      const id = req.params.id;
-      const trainer = await em.findOneOrFail(Trainer, { id });
-      em.assign(trainer, req.body.sanitizedInput);
       await em.flush();
       res.status(200).json({ message: "Trainer updated", data: trainer });
     } catch (error: any) {
@@ -89,10 +91,10 @@ const controller = {
 
   sanitizeTrainer: function (req: Request, _: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      lastName: req.body.lastName,
-      firstName: req.body.firstName,
-      dni: req.body.dni,
-      email: req.body.email,
+      lastName: req.body.lastName?.trim(),
+      firstName: req.body.firstName?.trim(),
+      dni: req.body.dni?.toString().trim(),
+      email: req.body.email?.trim(),
       password: req.body.password,
     };
 
@@ -103,10 +105,14 @@ const controller = {
     });
 
     if (req.body.sanitizedInput.password) {
-      req.body.sanitizedInput.password = bcrypt.hashSync(
-        req.body.sanitizedInput.password,
-        10
-      );
+      if (req.body.sanitizedInput.password.length >= 4) {
+        req.body.sanitizedInput.password = bcrypt.hashSync(
+          req.body.sanitizedInput.password,
+          10
+        );
+      } else {
+        req.body.sanitizedInput.password = "";
+      }
     }
 
     next();
