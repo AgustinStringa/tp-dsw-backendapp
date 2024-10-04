@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { orm } from "../shared/db/mikro-orm.config.js";
+import { validate } from "class-validator";
 import { Membership } from "./Membership.entity.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { Payment } from "./Payment.entity.js";
 
 const em = orm.em;
@@ -37,10 +38,14 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const id = req.body.sanitizedInput.membership;
-      await em.findOneOrFail(Membership, { id });
-
       const payment = em.create(Payment, req.body.sanitizedInput);
+
+      const errors = await validate(payment);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
+      await em.findOneOrFail(Membership, payment.membership.id);
+
       await em.flush();
       res.status(200).json({ message: "Payment created", data: payment });
     } catch (error: any) {
@@ -52,12 +57,16 @@ const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const payment = await em.findOneOrFail(Payment, { id });
+      const payment = await em.findOneOrFail(Payment, req.params.id);
+      em.assign(payment, req.body.sanitizedInput);
+
+      const errors = await validate(payment);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+
       if (req.body.sanitizedInput.membership !== undefined)
         await em.findOneOrFail(Membership, req.body.sanitizedInput.membership);
 
-      em.assign(payment, req.body.sanitizedInput);
       await em.flush();
       res.status(200).json({ message: "Payment updated", data: payment });
     } catch (error: any) {
@@ -80,7 +89,7 @@ const controller = {
 
   sanitizePayment: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      payMethod: req.body.payMethod,
+      payMethod: req.body.payMethod?.trim(),
       amount: req.body.amount,
       membership: req.body.membership,
     };

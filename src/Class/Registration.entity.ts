@@ -17,7 +17,7 @@ export class Registration extends BaseEntity {
   @ManyToOne(() => Class, { nullable: false })
   class!: Rel<Class>;
 
-  constructor(client: Rel<Client>, class_a: Rel<Class>, cancelDateTime?: Date) {
+  constructor(client: Rel<Client>, class_a: Rel<Class>) {
     super();
     this.client = client;
     this.class = class_a;
