@@ -6,6 +6,6 @@ export const authRouter = Router();
 authRouter.post("/", controller.sanitizeLogin, controller.login);
 authRouter.get(
   "/rutaprotegida",
-  controller.verifyToken,
+  controller.verifyClient,
   controller.getSomething
 );

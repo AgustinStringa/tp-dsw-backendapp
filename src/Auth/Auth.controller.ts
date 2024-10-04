@@ -63,28 +63,45 @@ const controller = {
     next();
   },
 
-  verifyToken: async function (
+  verifyTrainer: async function (
     req: Request,
     res: Response,
     next: NextFunction
   ) {
-    const token = req.header("Authorization")?.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ message: "Acceso denegado" });
-    }
     try {
-      const verified = jwt.verify(token, JWT_SECRET);
-      if (typeof verified !== "string") {
-        // client o trainer
-        const user = await em.findOneOrFail(Client, { _id: verified.id });
-        console.log(user);
+      const token = req.headers.authorization?.replace(/^Bearer\s+/, "");
+      if (token) {
+        let decoded = jwt.verify(token, JWT_SECRET);
+        decoded = decoded as { id: string; iat: number; exp: number };
+        await em.findOneOrFail(Trainer, {
+          id: decoded.id,
+        });
+        return next();
       }
-      next();
+      return res.status(400).json({ message: "unauthorized. void token." });
     } catch (error: any) {
-      console.log(error);
-      res
-        .status(400)
-        .json({ message: "Token no válido", error_message: error.message });
+      res.status(401).json({ message: error.message });
+    }
+  },
+
+  verifyClient: async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const token = req.headers.authorization?.replace(/^Bearer\s+/, "");
+      if (token) {
+        let decoded = jwt.verify(token, JWT_SECRET);
+        decoded = decoded as { id: string; iat: number; exp: number };
+        await em.findOneOrFail(Client, {
+          id: decoded.id,
+        });
+        return next();
+      }
+      return res.status(400).json({ message: "unauthorized. void token." });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message });
     }
   },
 
