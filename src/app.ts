@@ -9,6 +9,7 @@ import { classesRouter } from "./Class/Module.routes.js";
 import { clientsRouter } from "./Client/Module.routes.js";
 import { routinesRouter } from "./Routine/Module.routes.js";
 import { authRouter } from "./Auth/Auth.routes.js";
+import { controller as authController } from "./Auth/Auth.controller.js";
 
 const PORT = 3000;
 const app = express();
@@ -25,10 +26,10 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/classes", classesRouter);
-app.use("/api/clients", clientsRouter);
+app.use("/api/clients", authController.verifyTrainer, clientsRouter);
 app.use("/api/memberships", membershipsRouter);
 app.use("/api/routines", routinesRouter);
-app.use("/api/trainers", trainerRouter);
+app.use("/api/trainers", authController.verifyTrainer, trainerRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });

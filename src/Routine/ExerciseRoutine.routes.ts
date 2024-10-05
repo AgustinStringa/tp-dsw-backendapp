@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { controller } from "./ExerciseRoutine.controller.js";
-import { controller as authController } from "../Auth/Auth.controller.js";
+
 export const exerciseRoutineRouter = Router();
 
-exerciseRoutineRouter.get("/", authController.verifyClient, controller.findAll);
+exerciseRoutineRouter.get("/", controller.findAll);
 exerciseRoutineRouter.get("/:id", controller.findOne);
 exerciseRoutineRouter.post(
   "/",
