@@ -1,0 +1,35 @@
+### Get all exercises
+GET http://localhost:3000/api/routines/exercises
+Accept: application/json
+
+
+### Get a specific exercise by ID
+GET http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
+Accept: application/json
+
+
+### Create a new exercise
+POST http://localhost:3000/api/routines/exercises
+Content-Type: application/json
+
+{
+  "name": "Leg Drive",
+  "description": "An exercise to strengthen the lower body",
+  "urlVideo": "http://example.com/legdrive-video"
+}
+
+
+### Update an existing exercise
+PUT http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
+
+Content-Type: application/json
+{
+  "name": "Push Up",
+  "description": "An exercise to strengthen the upper body and core",
+  "urlVideo": "http://example.com/pushup-video"
+} 
+
+
+### Delete an exercise
+DELETE http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
+Accept: application/json

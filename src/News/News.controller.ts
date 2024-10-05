@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { validate } from "class-validator";
-import { Exercise } from "./Exercise.entity.js";
+import { News } from "./News.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
+import { error } from "console";
 
 const em = orm.em;
 
 const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const exercises = await em.find(Exercise, {});
-      res.json({ message: "All exercises were found", data: exercises });
+      const news = await em.find(News, {});
+      res.status(200).json({ message: "All news were found", data: news });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -18,8 +19,8 @@ const controller = {
   findOne: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const exercise = await em.findOneOrFail(Exercise, { id });
-      res.status(200).json({ message: "Exercise found", data: exercise });
+      const news = await em.findOneOrFail(News, id);
+      res.status(200).json({ message: "News found", data: news });
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
@@ -29,58 +30,62 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      const exercise = em.create(Exercise, req.body.sanitizedInput);
+      const news = em.create(News, req.body.sanitizedInput);
 
-      const errors = await validate(exercise);
+      const errors = await validate(news);
       if (errors.length > 0)
         return res.status(400).json({ message: "Bad request" });
 
       await em.flush();
-      res.status(201).json({ message: "Exercise created", data: exercise });
+      res.status(200).json({ message: "News created", data: news });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
   update: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const exercise = await em.findOneOrFail(Exercise, { id });
-      em.assign(exercise, req.body.sanitizedInput);
+      const news = await em.findOneOrFail(News, req.params.id);
+      em.assign(news, req.body.sanitizedInput);
+      news.checkExpirationDate();
 
-      const errors = await validate(exercise);
+      const errors = await validate(news);
       if (errors.length > 0)
         return res.status(400).json({ message: "Bad request" });
 
       await em.flush();
-      res.status(200).json({ message: "Exercise updated", data: exercise });
+
+      res.status(200).json({ message: "News updated", data: news });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const exercise = em.getReference(Exercise, id);
-      await em.removeAndFlush(exercise);
-      res.status(200).json({ message: "Exercise deleted" });
+      const news = em.getReference(News, id);
+      await em.removeAndFlush(news);
+      res.status(200).json({ message: "News deleted", data: news });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
 
-  sanitizeExercise: function (req: Request, _: Response, next: NextFunction) {
+  sanitizeNews: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      name: req.body.name?.trim(),
-      description: req.body.description?.trim(),
-      urlVideo: req.body.urlVideo?.trim(),
+      expirationDateTime: req.body.expirationDateTime,
+      title: req.body.title?.trim(),
+      body: req.body.body?.trim(),
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined) {
+      if (req.body.sanitizedInput[key] === undefined)
         delete req.body.sanitizedInput[key];
-      }
     });
 
     next();

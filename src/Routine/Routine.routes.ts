@@ -9,3 +9,4 @@ routineRouter.post("/", controller.sanitizeRoutine, controller.add);
 routineRouter.put("/:id", controller.sanitizeRoutine, controller.update);
 routineRouter.patch("/:id", controller.sanitizeRoutine, controller.update);
 routineRouter.delete("/:id", controller.delete);
+routineRouter.get("/:userId/current", controller.findCurrentRoutine);

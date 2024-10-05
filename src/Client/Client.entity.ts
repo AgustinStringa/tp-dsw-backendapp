@@ -1,4 +1,5 @@
 import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
+import { IsNotEmpty, MaxLength, MinLength } from "class-validator";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { IUser } from "../shared/interfaces/user.interface.js";
@@ -9,18 +10,25 @@ import { Routine } from "../Routine/Routine.entity.js";
 
 @Entity()
 export class Client extends BaseEntity implements IUser {
+  @IsNotEmpty()
   @Property({ nullable: false })
   lastName!: string;
 
+  @IsNotEmpty()
   @Property({ nullable: false })
   firstName!: string;
 
+  @IsNotEmpty()
+  @MinLength(7)
+  @MaxLength(8)
   @Property({ nullable: false, unique: true })
   dni!: string;
 
+  @IsNotEmpty()
   @Property({ nullable: false, unique: true })
   email!: string;
 
+  @IsNotEmpty()
   @Property({ nullable: false })
   password!: string;
 
@@ -70,27 +78,6 @@ export class Client extends BaseEntity implements IUser {
         return 0;
       });
       return arrayRoutines[0];
-    } else {
-      return null;
-    }
-  }
-
-  getCurrentMembership() {
-    if (this.memberships.length > 0) {
-      const arrayMemberships = Array.from(this.memberships).sort((a, b) => {
-        if (a.dateTo != null && b.dateTo != null) {
-          if (a.dateTo > b.dateTo) {
-            return 1;
-          }
-          if (a.dateTo < b.dateTo) {
-            return -1;
-          }
-          return 0;
-        } else {
-          return 0;
-        }
-      });
-      return arrayMemberships[0];
     } else {
       return null;
     }
