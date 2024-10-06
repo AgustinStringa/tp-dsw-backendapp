@@ -78,7 +78,7 @@ const controller = {
         });
         return next();
       }
-      return res.status(400).json({ message: "unauthorized. void token." });
+      res.status(400).json({ message: "unauthorized. void token." });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }
@@ -99,14 +99,33 @@ const controller = {
         });
         return next();
       }
-      return res.status(400).json({ message: "unauthorized. void token." });
+      res.status(401).json({ message: "unauthorized. void token." });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }
   },
 
-  getSomething: function (req: Request, res: Response, next: NextFunction) {
-    res.json({ somehting: "somehting" });
+  verifyUser: async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      // se podria analizar en un futuro si se pueden reutilizar las funciones creadas para verifyClient y verifyTrainer
+      const token = req.headers.authorization?.replace(/^Bearer\s+/, "");
+      if (token) {
+        let decoded = jwt.verify(token, JWT_SECRET);
+        decoded = decoded as { id: string; iat: number; exp: number };
+        const client = await em.findOne(Client, {
+          id: decoded.id,
+        });
+        if (client == null) {
+          await em.findOneOrFail(Trainer, {
+            id: decoded.id,
+          });
+        }
+        return next();
+      }
+      res.status(401).json({ message: "unauthorized. void token." });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message });
+    }
   },
 };
 

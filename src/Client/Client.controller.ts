@@ -4,7 +4,9 @@ import { Client } from "./Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { validate } from "class-validator";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = "your_jwt_secret";
 const em = orm.em;
 
 const controller = {
@@ -57,7 +59,13 @@ const controller = {
       }
 
       await em.flush();
-      res.status(201).json({ message: "Client created", data: client });
+      const token = jwt.sign({ id: client.id }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      return res.status(201).json({
+        message: "Register successfully",
+        data: { user: client, client: true, token },
+      }); //no debería devolver la contraseña
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

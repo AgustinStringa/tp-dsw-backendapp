@@ -4,8 +4,4 @@ import { controller } from "./Auth.controller.js";
 export const authRouter = Router();
 
 authRouter.post("/", controller.sanitizeLogin, controller.login);
-authRouter.get(
-  "/rutaprotegida",
-  controller.verifyClient,
-  controller.getSomething
-);
+//register iría aquí? o en el post de clients/trainer

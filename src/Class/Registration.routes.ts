@@ -1,11 +1,16 @@
 import { Router } from "express";
 import { controller } from "./Registration.controller.js";
-
+import { controller as authController } from "../Auth/Auth.controller.js";
 export const registrationRouter = Router();
 
 registrationRouter.get("/", controller.findAll);
 registrationRouter.get("/:id", controller.findOne);
-registrationRouter.post("/", controller.sanitizeRegistration, controller.add);
+registrationRouter.post(
+  "/",
+  authController.verifyClient,
+  controller.sanitizeRegistration,
+  controller.add
+);
 registrationRouter.put(
   "/:id",
   controller.sanitizeRegistration,
