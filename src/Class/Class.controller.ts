@@ -4,6 +4,7 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 import { Class } from "./Class.entity.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { ClassType } from "./ClassType.entity.js";
+import { sendEmail } from "../Notifications/Notifications.js";
 
 const em = orm.em;
 
@@ -41,8 +42,14 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
-      await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
+      const classType = await em.findOneOrFail(
+        ClassType,
+        req.body.sanitizedInput.classType
+      );
+      const trainer = await em.findOneOrFail(
+        Trainer,
+        req.body.sanitizedInput.trainer
+      );
       const class_a = em.create(Class, req.body.sanitizedInput);
 
       const errors = await validate(class_a);
@@ -51,6 +58,33 @@ const controller = {
 
       await em.flush();
 
+      console.log("APUNTO DE ENVIAR MAIL");
+      const days = [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+      ];
+      await sendEmail(
+        "Gimnasio - Nueva clase disponible",
+        `<h1>Nueva clase de ${classType.description}</h1>
+        <div>
+          <p>Se dictará una nueva clase los días ${
+            days[req.body.sanitizedInput.day]
+          } de ${req.body.sanitizedInput.startTime} a ${
+          req.body.sanitizedInput.endTime
+        } hs en la ubicación: ${req.body.sanitizedInput.location}</p>
+          <p>Las clases estarán a cargo de ${
+            trainer.firstName + " " + trainer.lastName
+          } y cuenta con ${
+          req.body.sanitizedInput.maxCapacity
+        } cupos. ¡Corre a inscribirte antes de que se acaben!</p>
+        </div>
+      `
+      );
       res.status(201).json({ message: "Class created", data: class_a });
     } catch (error: any) {
       let errorCode = 500;

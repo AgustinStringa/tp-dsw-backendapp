@@ -5,12 +5,7 @@ export const clientRouter = Router();
 
 clientRouter.get("/", authController.verifyTrainer, controller.findAll); //trainer
 clientRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-clientRouter.post(
-  "/",
-  authController.verifyUser,
-  controller.sanitizeClient,
-  controller.add
-); //client y trainer
+clientRouter.post("/", controller.sanitizeClient, controller.add); //client y trainer
 clientRouter.put(
   "/:id",
   authController.verifyTrainer,

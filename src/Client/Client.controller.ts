@@ -5,6 +5,7 @@ import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
 import { validate } from "class-validator";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../Notifications/Notifications.js";
 
 const JWT_SECRET = "your_jwt_secret";
 const em = orm.em;
@@ -62,6 +63,20 @@ const controller = {
       const token = jwt.sign({ id: client.id }, JWT_SECRET, {
         expiresIn: "1h",
       });
+      //enviar email?
+      sendEmail(
+        "Registro exitoso en AppGimnasio",
+        `
+        <h1>Felicitaciones. El registro en la App se realizo exitosamente.</h1>
+        <div>
+        <h2>${req.body.sanitizedInput.email} es el correo con el que deberás iniciar sesión cada vez que ingreses a nuestro sitio</h2>
+        <p>Ahora puedes disfrutar de las funcionalidades de inscribirte a una clase, enterarte de nuestras noticias y registrar tus progresos en el gimnasio.</p>
+        <p>¡Más funcionalidades en construcción!</p>
+        <p>¡Dirígite a nuestro <a href="https://www.mundogymcentro.com.ar/">sitio web</a> para comenzar!</p>
+        </div>
+      `,
+        [req.body.sanitizedInput.email]
+      );
       return res.status(201).json({
         message: "Register successfully",
         data: { user: client, client: true, token },
