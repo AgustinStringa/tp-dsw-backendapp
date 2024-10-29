@@ -9,6 +9,7 @@ import { membershipsRouter } from "./Membership/Module.routes.js";
 import { newsRouter } from "./News/News.routes.js";
 import { orm } from "./shared/db/mikro-orm.config.js";
 import { routinesRouter } from "./Routine/Module.routes.js";
+import { statisticsRouter } from "./Statistics/Statistics.routes.js";
 import { trainerRouter } from "./Trainer/Trainer.routes.js";
 
 const PORT = 3000;
@@ -30,6 +31,7 @@ app.use("/api/clients", clientsRouter);
 app.use("/api/memberships", membershipsRouter);
 app.use("/api/news", newsRouter);
 app.use("/api/routines", routinesRouter);
+app.use("/api/statistics", statisticsRouter);
 app.use("/api/trainers", trainerRouter);
 
 app.use((_, res) => {

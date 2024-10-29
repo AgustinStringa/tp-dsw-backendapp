@@ -10,8 +10,8 @@ Content-Type: application/json
 
 {
   "payMethod": "Efectivo",
-  "amount": "15500",
-  "membership": "66881354094fb79b203582e0"
+  "amount": 23000.99,
+  "membership": "66ed83cc74b40639f35c7fd3"
 }
 
 
@@ -21,7 +21,7 @@ Content-Type: application/json
 
 {
   "payMethod": "Tarjeta",
-  "amount": "15500",
+  "amount": 12700,
   "membership": "66881354094fb79b203582e0"
 }
 
@@ -31,7 +31,7 @@ PATCH http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
 Content-Type: application/json
 
 {
-    "payMethod": "Billetera Santa Fe"
+  "payMethod": "Billetera Santa Fe"
 }
 
 
