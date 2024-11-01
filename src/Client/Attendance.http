@@ -1,0 +1,7 @@
+### register attendance
+POST http://localhost:3000/api/clients/attendance/
+Content-Type: application/json
+
+{
+  "dni": 45868745
+}

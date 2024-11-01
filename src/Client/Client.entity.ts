@@ -1,5 +1,6 @@
 import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { IsNotEmpty, MaxLength, MinLength } from "class-validator";
+import { Attendance } from "./Attendance.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Goal } from "./Goal.entity.js";
 import { IUser } from "../shared/interfaces/user.interface.js";
@@ -65,6 +66,13 @@ export class Client extends BaseEntity implements IUser {
     orphanRemoval: true,
   })
   registrations = new Collection<Registration>(this);
+
+  @OneToMany({
+    entity: () => Attendance,
+    mappedBy: "client",
+    orphanRemoval: true,
+  })
+  attendances = new Collection<Attendance>(this);
 
   getLastRoutine() {
     if (this.routines.length > 0) {
