@@ -69,18 +69,21 @@ const controller = {
       ];
 
       await sendEmail(
-        "Gimnasio - Nueva clase disponible",
-        `<h1>Nueva clase de ${classType.description}</h1>
+        "Gimnasio Iron Haven - Nueva clase disponible",
+        `<h3>Nueva clase de ${classType.name}</h3>
         <div>
           <p>Se dictará una nueva clase los días ${
             days[req.body.sanitizedInput.day]
-          } de ${req.body.sanitizedInput.startTime} a ${
-          req.body.sanitizedInput.endTime
-        } hs en la ubicación: ${req.body.sanitizedInput.location}</p>
-          <p>Las clases estarán a cargo de ${
+          } de ${req.body.sanitizedInput.startTime} a 
+          ${req.body.sanitizedInput.endTime}.</p>
+          <p><b>Descripción: </b>${classType.description}</p>
+          <p><b>Ubicación: </b>${req.body.sanitizedInput.location}</p>
+          <p>La clase estará a cargo de ${
             trainer.firstName + " " + trainer.lastName
-          } y cuenta con ${req.body.sanitizedInput.maxCapacity} cupos.</p>
-        <p><b>¡Corre a inscribirte antes de que se acaben!</b></p>
+          } y cuenta con <b>${
+          req.body.sanitizedInput.maxCapacity
+        } cupos</b>.</p>
+          <p><b>¡Corre a inscribirte antes de que se acaben!</b></p>
         </div>
       `
       );
