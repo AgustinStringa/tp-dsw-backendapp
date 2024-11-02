@@ -1,16 +1,11 @@
 import { Router } from "express";
 import { controller } from "./Membership.controller.js";
 import { controller as authController } from "../Auth/Auth.controller.js";
+
 export const membershipRouter = Router();
 
-membershipRouter.get("/:id", controller.findOne);
-
-membershipRouter.get(
-  "/",
-  authController.verifyTrainer,
-  authController.verifyTrainer,
-  controller.findAll
-);
+membershipRouter.get("/:id", authController.verifyTrainer, controller.findOne);
+membershipRouter.get("/", authController.verifyTrainer, controller.findAll);
 
 membershipRouter.post(
   "/",

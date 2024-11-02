@@ -5,30 +5,39 @@ import { controller as authController } from "../Auth/Auth.controller.js";
 export const exerciseRoutineRouter = Router();
 
 exerciseRoutineRouter.get(
+  "/:id",
+  authController.verifyTrainer,
+  controller.findOne
+);
+
+exerciseRoutineRouter.get(
   "/",
   authController.verifyTrainer,
   controller.findAll
 );
-exerciseRoutineRouter.get("/:id", controller.findOne);
+
 exerciseRoutineRouter.post(
   "/",
   authController.verifyTrainer,
   controller.sanitizeExerciseRoutine,
   controller.add
 );
+
 exerciseRoutineRouter.put(
   "/:id",
   authController.verifyTrainer,
   controller.sanitizeExerciseRoutine,
   controller.update
 );
-//client
+
+//TODO verificar si es un trainer o un client (si es client solo puede modificar un ejercicio de su rutina actual)
 exerciseRoutineRouter.patch(
   "/:id",
   authController.verifyUser,
   controller.sanitizeExerciseRoutine,
   controller.update
 );
+
 exerciseRoutineRouter.delete(
   "/:id",
   authController.verifyTrainer,

@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { validate } from "class-validator";
-import { orm } from "../shared/db/mikro-orm.config.js";
 import { Class } from "./Class.entity.js";
-import { Trainer } from "../Trainer/Trainer.entity.js";
 import { ClassType } from "./ClassType.entity.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { sendEmail } from "../Notifications/Notifications.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
 
 const em = orm.em;
 
@@ -58,16 +58,16 @@ const controller = {
 
       await em.flush();
 
-      console.log("APUNTO DE ENVIAR MAIL");
       const days = [
-        "Domingo",
         "Lunes",
         "Martes",
         "Miércoles",
         "Jueves",
         "Viernes",
         "Sábado",
+        "Domingo",
       ];
+
       await sendEmail(
         "Gimnasio - Nueva clase disponible",
         `<h1>Nueva clase de ${classType.description}</h1>
@@ -79,9 +79,8 @@ const controller = {
         } hs en la ubicación: ${req.body.sanitizedInput.location}</p>
           <p>Las clases estarán a cargo de ${
             trainer.firstName + " " + trainer.lastName
-          } y cuenta con ${
-          req.body.sanitizedInput.maxCapacity
-        } cupos. ¡Corre a inscribirte antes de que se acaben!</p>
+          } y cuenta con ${req.body.sanitizedInput.maxCapacity} cupos.</p>
+        <p><b>¡Corre a inscribirte antes de que se acaben!</b></p>
         </div>
       `
       );
