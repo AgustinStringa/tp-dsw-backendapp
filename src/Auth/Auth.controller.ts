@@ -159,6 +159,20 @@ const controller = {
   },
 };
 
+async function isUserAdmin(req: Request): Promise<boolean> {
+  try {
+    const decoded = decodeToken(req);
+    await em.findOneOrFail(Trainer, {
+      id: decoded.id,
+    });
+    return true;
+  } catch (error: any) {
+    if (error.message.match("not found")) return false;
+    if (error.message.match("Unauthorized")) return false;
+    else throw error;
+  }
+}
+
 function decodeToken(req: Request): { id: string; iat: number; exp: number } {
   const token = req.headers.authorization?.replace(/^Bearer\s+/, "");
   if (token) {
