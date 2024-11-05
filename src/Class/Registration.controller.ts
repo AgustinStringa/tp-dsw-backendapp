@@ -44,11 +44,21 @@ const controller = {
     try {
       await em.findOneOrFail(Client, req.body.sanitizedInput.client);
       await em.findOneOrFail(Class, req.body.sanitizedInput.class);
-      const registration = em.create(Registration, req.body.sanitizedInput);
-      await em.flush();
-      res
-        .status(201)
-        .json({ message: "Registration created", data: registration });
+
+      const registrationVa = await em.findOne(Registration, {
+        client: req.body.sanitizedInput.client,
+        class: req.body.sanitizedInput.class,
+      });
+
+      if (registrationVa !== null) {
+        throw new Error("The client is already enrolled in the class");
+      } else {
+        const registration = em.create(Registration, req.body.sanitizedInput);
+        await em.flush();
+        res
+          .status(201)
+          .json({ message: "Registration created", data: registration });
+      }
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;
