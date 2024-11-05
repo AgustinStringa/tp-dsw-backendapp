@@ -5,11 +5,6 @@ export const classTypeRouter = Router();
 
 classTypeRouter.get("/", authController.verifyUser, controller.findAll); //client y ...
 classTypeRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-classTypeRouter.get(
-  "/available/:id",
-  authController.verifyClient,
-  controller.findAvailableClassTypes
-);
 classTypeRouter.post(
   "/",
   authController.verifyTrainer,

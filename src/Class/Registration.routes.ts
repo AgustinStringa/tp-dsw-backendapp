@@ -5,6 +5,11 @@ export const registrationRouter = Router();
 
 registrationRouter.get("/", controller.findAll);
 registrationRouter.get("/:id", controller.findOne);
+registrationRouter.get(
+  "/client/:id",
+  authController.verifyClient,
+  controller.findByClient
+);
 registrationRouter.post(
   "/",
   authController.verifyClient,

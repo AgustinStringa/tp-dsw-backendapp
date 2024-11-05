@@ -98,60 +98,6 @@ const controller = {
 
     next();
   },
-
-  findAvailableClassTypes: async function (req: Request, res: Response) {
-    const clientId = req.params.clientId;
-
-    try {
-      // Obtener todas las inscripciones del cliente
-      const registrations = await em.find(Registration, {
-        client: clientId,
-      });
-
-      // Obtener los IDs de las clases a las que el cliente ya está registrado
-      const registeredClassIds = registrations.map((reg) =>
-        reg.class._id.toString()
-      ); // Asegurarse de que sea un string
-
-      // Obtener todos los tipos de clase con las clases pobladas
-      const classTypes = await em.find(
-        ClassType,
-        {},
-        { populate: ["classes", "classes.trainer"] }
-      );
-
-      // Filtrar clases de cada tipo de clase para excluir las que ya están registradas
-      const filteredClassTypes = classTypes
-        .map((classType) => {
-          // Filtrar las clases que no están registradas por el cliente
-          const availableClasses = classType.classes.filter((cls) => {
-            const classId = cls._id.toString(); // Asegurarse de que sea un string
-            const isRegistered = registeredClassIds.includes(classId);
-
-            // Depuración
-            console.log(
-              `Checking class ID: ${classId}, Registered: ${isRegistered}`
-            );
-
-            return !isRegistered; // Retornar true si no está registrado
-          });
-
-          // Retornar el tipo de clase con las clases filtradas
-          return {
-            ...classType,
-            classes: availableClasses,
-          };
-        })
-        .filter((classType) => classType.classes.length > 0); // Excluir tipos de clase sin clases disponibles
-
-      res.status(200).json({
-        message: "Available class types found",
-        data: filteredClassTypes,
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  },
 };
 
 export { controller };

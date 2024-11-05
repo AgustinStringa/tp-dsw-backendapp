@@ -121,6 +121,20 @@ const controller = {
 
     next();
   },
+
+  findByClient: async function (req: Request, res: Response) {
+    try {
+      const id = req.params.id;
+      const registrations = await em.find(Registration, { client: id });
+
+      res.status(200).json({
+        message: "Registrations for the client were found",
+        data: registrations,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  },
 };
 
 export { controller };
