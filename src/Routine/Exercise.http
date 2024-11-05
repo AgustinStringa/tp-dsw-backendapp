@@ -1,15 +1,18 @@
+@token = insertar_token
+
 ### Get all exercises
 GET http://localhost:3000/api/routines/exercises
-Accept: application/json
+Authorization: Bearer {{token}}
 
 
 ### Get a specific exercise by ID
 GET http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
-Accept: application/json
+Authorization: Bearer {{token}}
 
 
 ### Create a new exercise
 POST http://localhost:3000/api/routines/exercises
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -21,8 +24,9 @@ Content-Type: application/json
 
 ### Update an existing exercise
 PUT http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
-
+Authorization: Bearer {{token}}
 Content-Type: application/json
+
 {
   "name": "Push Up",
   "description": "An exercise to strengthen the upper body and core",
@@ -32,4 +36,4 @@ Content-Type: application/json
 
 ### Delete an exercise
 DELETE http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
-Accept: application/json
+Authorization: Bearer {{token}}

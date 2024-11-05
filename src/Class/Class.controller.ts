@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { validate } from "class-validator";
-import { orm } from "../shared/db/mikro-orm.config.js";
 import { Class } from "./Class.entity.js";
-import { Trainer } from "../Trainer/Trainer.entity.js";
 import { ClassType } from "./ClassType.entity.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
+import { sendEmail } from "../Notifications/Notifications.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
 
 const em = orm.em;
 
@@ -41,8 +42,14 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
-      await em.findOneOrFail(Trainer, req.body.sanitizedInput.trainer);
+      const classType = await em.findOneOrFail(
+        ClassType,
+        req.body.sanitizedInput.classType
+      );
+      const trainer = await em.findOneOrFail(
+        Trainer,
+        req.body.sanitizedInput.trainer
+      );
       const class_a = em.create(Class, req.body.sanitizedInput);
 
       const errors = await validate(class_a);
@@ -51,6 +58,35 @@ const controller = {
 
       await em.flush();
 
+      const days = [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+      ];
+
+      await sendEmail(
+        "Gimnasio Iron Haven - Nueva clase disponible",
+        `<h3>Nueva clase de ${classType.name}</h3>
+        <div>
+          <p>Se dictará una nueva clase los días ${
+            days[req.body.sanitizedInput.day]
+          } de ${req.body.sanitizedInput.startTime} a 
+          ${req.body.sanitizedInput.endTime}.</p>
+          <p><b>Descripción: </b>${classType.description}</p>
+          <p><b>Ubicación: </b>${req.body.sanitizedInput.location}</p>
+          <p>La clase estará a cargo de ${
+            trainer.firstName + " " + trainer.lastName
+          } y cuenta con <b>${
+          req.body.sanitizedInput.maxCapacity
+        } cupos</b>.</p>
+          <p><b>¡Corre a inscribirte antes de que se acaben!</b></p>
+        </div>
+      `
+      );
       res.status(201).json({ message: "Class created", data: class_a });
     } catch (error: any) {
       let errorCode = 500;

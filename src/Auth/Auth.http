@@ -24,5 +24,8 @@ Content-Type: application/json
 
 {
   "email": "hernantarabella@hotmail.com.ar",
-  "password": "1234"
 }
+
+### logout
+POST http://localhost:3000/api/auth/logout/
+Authorization: Bearer insertar_token

@@ -1,18 +1,35 @@
 import { Router } from "express";
 import { controller } from "./Membership.controller.js";
+import { controller as authController } from "../Auth/Auth.controller.js";
 
 export const membershipRouter = Router();
 
-membershipRouter.get("/:id", controller.findOne);
-membershipRouter.get("/", controller.findAll);
-membershipRouter.post("/", controller.sanitizeMembership, controller.add);
+membershipRouter.get("/:id", authController.verifyTrainer, controller.findOne);
+membershipRouter.get("/", authController.verifyTrainer, controller.findAll);
 
-membershipRouter.put("/:id", controller.sanitizeMembership, controller.update);
+membershipRouter.post(
+  "/",
+  authController.verifyTrainer,
+  controller.sanitizeMembership,
+  controller.add
+);
 
-membershipRouter.patch(
+membershipRouter.put(
   "/:id",
+  authController.verifyTrainer,
   controller.sanitizeMembership,
   controller.update
 );
 
-membershipRouter.delete("/:id", controller.delete);
+membershipRouter.patch(
+  "/:id",
+  authController.verifyTrainer,
+  controller.sanitizeMembership,
+  controller.update
+);
+
+membershipRouter.delete(
+  "/:id",
+  authController.verifyTrainer,
+  controller.delete
+);

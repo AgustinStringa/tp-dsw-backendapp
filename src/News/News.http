@@ -1,11 +1,18 @@
+@token = insertar_token
+
 ### get all news
 GET http://localhost:3000/api/news/
+Authorization: Bearer {{token}}
+
 
 ### get one news
 GET http://localhost:3000/api/news/66c3a55a7fc788188da26d18
+Authorization: Bearer {{token}}
+
 
 ### create a news
 POST http://localhost:3000/api/news/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -17,6 +24,7 @@ Content-Type: application/json
 
 ### put news
 PUT http://localhost:3000/api/news/66c3b1f298fa3938dab12c19
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -28,6 +36,7 @@ Content-Type: application/json
 
 ### patch payment
 PATCH http://localhost:3000/api/news/66c3a5de7fc788188da26d1a
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -37,3 +46,4 @@ Content-Type: application/json
 
 ### delete news
 DELETE http://localhost:3000/api/news/66c3a5d47fc788188da26d19
+Authorization: Bearer {{token}}
