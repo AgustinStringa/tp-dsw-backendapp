@@ -6,6 +6,11 @@ export const goalRouter = Router();
 
 goalRouter.get("/:id", authController.verifyTrainer, controller.findOne);
 goalRouter.get("/", authController.verifyTrainer, controller.findAll);
+goalRouter.get(
+  "/client/:id",
+  authController.verifyClient,
+  controller.findByClient
+);
 
 goalRouter.post(
   "/",

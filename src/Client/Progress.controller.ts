@@ -3,7 +3,7 @@ import { Progress } from "./Progress.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Client } from "./Client.entity.js";
 import { validate } from "class-validator";
-
+import { getUser } from "../Auth/Auth.controller.js";
 const em = orm.em;
 
 const controller = {
@@ -33,7 +33,29 @@ const controller = {
       res.status(errorCode).json({ message: error.message });
     }
   },
-
+  findByClient: async function (req: Request, res: Response) {
+    try {
+      //1. suponiendo que no copie y pegué del metodo del controller de Goal
+      const user = await getUser(req);
+      if (user != null) {
+        const userIdParam = req.params.id;
+        const { id } = user;
+        if (userIdParam != id)
+          return res.status(401).json({ message: "client unauthorized" });
+        const goals = await em.find(Progress, {
+          client: id,
+        });
+        res.status(200).json({
+          message: "All progresses of the client were found",
+          data: goals,
+        });
+      } else {
+        return res.status(404).json({ message: "client not found" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  },
   add: async function (req: Request, res: Response) {
     try {
       const progress = em.create(Progress, req.body.sanitizedInput);

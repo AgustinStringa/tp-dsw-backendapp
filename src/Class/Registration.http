@@ -10,6 +10,9 @@ GET http://localhost:3000/api/classes/registration/66c3e3535f6f028235485e3b
 Authorization: Bearer {{token}}
 
 
+### get registrations by client
+GET http://localhost:3000/api/classes/registration/client/66f2fb46c89589b79fe56c13
+Authorization: Bearer {{token}}
 ### post one registration
 POST http://localhost:3000/api/classes/registration/
 Authorization: Bearer {{token}}
