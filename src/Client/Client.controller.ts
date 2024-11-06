@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { validate } from "class-validator";
 import { Client } from "./Client.entity.js";
-import { isUserAdmin } from "../Auth/Auth.controller.js";
+import { getUser } from "../Auth/Auth.controller.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { sendEmail } from "../Notifications/Notifications.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
@@ -20,7 +20,8 @@ const controller = {
         {
           populate: ["progresses", "goals", "memberships", "routines"],
           fields: ["lastName", "firstName", "dni", "email"],
-        } //parametrizar filtros según requerimientos
+          orderBy: { lastName: "asc", firstName: "asc" }, //TODO es sensible a mayúsculas y minúscilas
+        } //TODO determinar qué popular, qué atributos devolver (posiblemente se necesiten varios endpoints)
       );
       res
         .status(200)
@@ -63,7 +64,9 @@ const controller = {
       await em.flush();
 
       let token = undefined;
-      if (!(await isUserAdmin(req))) {
+      const user = await getUser(req);
+
+      if (user?.isTrainer === false) {
         token = jwt.sign({ id: client.id }, JWT_SECRET, {
           expiresIn: "1h",
         });

@@ -45,6 +45,7 @@ const controller = {
         });
 
         const userReturn = {
+          id: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
           dni: user.dni,
@@ -159,16 +160,29 @@ const controller = {
   },
 };
 
-async function isUserAdmin(req: Request): Promise<boolean> {
+async function getUser(
+  req: Request
+): Promise<{ isTrainer: boolean; id: string } | null> {
+  console.log("Iniciando");
   try {
     const decoded = decodeToken(req);
-    await em.findOneOrFail(Trainer, {
+    let isTrainer = true;
+
+    const found = await em.findOne(Trainer, {
       id: decoded.id,
     });
-    return true;
+
+    if (!found) {
+      isTrainer = false;
+      await em.findOneOrFail(Client, {
+        id: decoded.id,
+      });
+    }
+
+    return { isTrainer: isTrainer, id: decoded.id };
   } catch (error: any) {
-    if (error.message.match("not found")) return false;
-    if (error.message.match("Unauthorized")) return false;
+    if (error.message.match("not found")) return null;
+    if (error.message.match("Unauthorized")) return null;
     else throw error;
   }
 }
@@ -187,4 +201,4 @@ function decodeToken(req: Request): { id: string; iat: number; exp: number } {
   }
 }
 
-export { controller, isUserAdmin };
+export { controller, getUser };

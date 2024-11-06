@@ -4,12 +4,21 @@ import { controller as authController } from "../Auth/Auth.controller.js";
 
 export const registrationRouter = Router();
 
-registrationRouter.get("/:id", authController.verifyUser, controller.findOne);
-registrationRouter.get("/", authController.verifyUser, controller.findAll);
+registrationRouter.get(
+  "/client/:id",
+  authController.verifyTrainer,
+  controller.findByClient
+);
+registrationRouter.get(
+  "/:id",
+  authController.verifyTrainer,
+  controller.findOne
+);
+registrationRouter.get("/", authController.verifyTrainer, controller.findAll);
 
 registrationRouter.post(
   "/",
-  authController.verifyClient,
+  authController.verifyUser,
   controller.sanitizeRegistration,
   controller.add
 );
