@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { ClassType } from "./ClassType.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { validate } from "class-validator";
-import { Registration } from "./Registration.entity.js";
-import { Class } from "./Class.entity.js";
 
 const em = orm.em;
 
@@ -14,7 +12,7 @@ const controller = {
         ClassType,
         {},
         { populate: ["classes", "classes.trainer"] }
-      ); // TO DO: Make sure to populate an related entitites if necessary
+      ); // TODO: Make sure to populate an related entitites if necessary
       res
         .status(200)
         .json({ message: "All class types were found", data: classtypes });

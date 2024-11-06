@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { Registration } from "./Registration.entity.js";
-import { Client } from "../Client/Client.entity.js";
 import { Class } from "./Class.entity.js";
+import { Client } from "../Client/Client.entity.js";
+import { getUser } from "../Auth/Auth.controller.js";
+import { Registration } from "./Registration.entity.js";
 
 const em = orm.em;
 
@@ -40,6 +41,20 @@ const controller = {
     }
   },
 
+  findByClient: async function (req: Request, res: Response) {
+    try {
+      const id = req.params.id;
+      const registrations = await em.find(Registration, { client: id });
+
+      res.status(200).json({
+        message: "Registrations for the client were found",
+        data: registrations,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
   add: async function (req: Request, res: Response) {
     try {
       await em.findOneOrFail(Client, req.body.sanitizedInput.client);
@@ -51,7 +66,9 @@ const controller = {
       });
 
       if (registrationVa !== null) {
-        throw new Error("The client is already enrolled in the class");
+        res
+          .status(409)
+          .json({ message: "The client is already enrolled in the class" });
       } else {
         const registration = em.create(Registration, req.body.sanitizedInput);
         await em.flush();
@@ -102,7 +119,7 @@ const controller = {
     }
   },
 
-  sanitizeRegistration: function (
+  sanitizeRegistration: async function (
     req: Request,
     res: Response,
     next: NextFunction
@@ -119,18 +136,16 @@ const controller = {
       }
     });
 
-    next();
-  },
-
-  findByClient: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const registrations = await em.find(Registration, { client: id });
+      const user = await getUser(req);
 
-      res.status(200).json({
-        message: "Registrations for the client were found",
-        data: registrations,
-      });
+      if (user !== null) {
+        if (user.isTrainer === false) req.body.sanitizedInput.client = user.id;
+
+        next();
+      } else {
+        res.status(500).json({ message: "Try again please" });
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
