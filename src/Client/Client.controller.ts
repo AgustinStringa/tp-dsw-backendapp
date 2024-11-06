@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
-import { NextFunction, Request, Response } from "express";
-import { Client } from "./Client.entity.js";
-import { orm } from "../shared/db/mikro-orm.config.js";
-import { Trainer } from "../Trainer/Trainer.entity.js";
-import { validate } from "class-validator";
 import jwt from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
+import { validate } from "class-validator";
+import { Client } from "./Client.entity.js";
+import { isUserAdmin } from "../Auth/Auth.controller.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { sendEmail } from "../Notifications/Notifications.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
 
 const JWT_SECRET = "your_jwt_secret";
 const em = orm.em;
@@ -60,27 +61,43 @@ const controller = {
       }
 
       await em.flush();
-      const token = jwt.sign({ id: client.id }, JWT_SECRET, {
-        expiresIn: "1h",
-      });
-      //enviar email?
+
+      let token = undefined;
+      if (!(await isUserAdmin(req))) {
+        token = jwt.sign({ id: client.id }, JWT_SECRET, {
+          expiresIn: "1h",
+        });
+      }
+
       sendEmail(
-        "Registro exitoso en AppGimnasio",
+        "Registro exitoso en Gimnasio Iron Haven",
         `
-        <h1>Felicitaciones. El registro en la App se realizo exitosamente.</h1>
+        <h3>Felicitaciones. El registro en nuestra app se realizó exitosamente.</h3>
         <div>
-        <h2>${req.body.sanitizedInput.email} es el correo con el que deberás iniciar sesión cada vez que ingreses a nuestro sitio</h2>
-        <p>Ahora puedes disfrutar de las funcionalidades de inscribirte a una clase, enterarte de nuestras noticias y registrar tus progresos en el gimnasio.</p>
+        <p>Correo electrónico: ${req.body.sanitizedInput.email} (con él podrás iniciar sesión en nuestro sitio).</p>
+        <p>Ahora puedes disfrutar de las funcionalidades de inscribirte a una clase, leer nuestras noticias y registrar tus progresos en el gimnasio.</p>
         <p>¡Más funcionalidades en construcción!</p>
-        <p>¡Dirígite a nuestro <a href="https://www.mundogymcentro.com.ar/">sitio web</a> para comenzar!</p>
+        <p>¡Dirígite a nuestro <a href="https://www.ironheavengym.com.ar/">sitio web</a> para comenzar!</p>
         </div>
+        <div style="color: #FF5733; font-size: 16px; font-weight: bold;">
+    Gimnasio Iron Haven
+</div>
       `,
         [req.body.sanitizedInput.email]
       );
+
+      const userReturn = {
+        firstName: client.firstName,
+        lastName: client.lastName,
+        dni: client.dni,
+        email: client.email,
+        isClient: true,
+      };
+
       return res.status(201).json({
-        message: "Register successfully",
-        data: { user: client, client: true, token },
-      }); //no debería devolver la contraseña
+        message: "Registered successfully",
+        data: { user: userReturn, ...(token ? { token } : {}) },
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

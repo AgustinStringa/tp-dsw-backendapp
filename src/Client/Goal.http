@@ -1,11 +1,18 @@
+@token = insertar_token
+
 ### get all
 GET http://localhost:3000/api/clients/goals
+Authorization: Bearer {{token}}
+
 
 ### get one
 GET http://localhost:3000/api/clients/goals/667ad85f462b348eed0715eb
+Authorization: Bearer {{token}}
+
 
 ### añadir uno
 POST  http://localhost:3000/api/clients/goals/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -14,8 +21,10 @@ Content-Type: application/json
   "client": "667f4692dd0e068972898abc"
 }
 
+
 ### modificación total
 PUT http://localhost:3000/api/clients/goals/667ad85f462b348eed0715eb
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -24,13 +33,17 @@ Content-Type: application/json
   "client": "667f4692dd0e068972898abc"
 }
 
+
 ### modificación parcial
 PATCH http://localhost:3000/api/clients/goals/667ad85f462b348eed0715eb
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "done": true
 }
 
+
 ### borrar una meta
 DELETE http://localhost:3000/api/clients/goals/667f48579899199c6a75c763
+Authorization: Bearer {{token}}

@@ -1,11 +1,18 @@
+@token = insertar_token
+
 ### get all types
 GET http://localhost:3000/api/memberships/types
+Authorization: Bearer {{token}}
+
 
 ### get one type
 GET http://localhost:3000/api/memberships/types/66ed837132fc51c4357e75c4
+Authorization: Bearer {{token}}
+
 
 ### crear type
 POST http://localhost:3000/api/memberships/types/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -17,6 +24,7 @@ Content-Type: application/json
 
 ### put type
 PUT http://localhost:3000/api/memberships/types/66880b57ce8ccd39d9fe9085
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -28,6 +36,7 @@ Content-Type: application/json
 
 ### patch type
 PATCH http://localhost:3000/api/memberships/types/66880b57ce8ccd39d9fe9085
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -38,3 +47,4 @@ Content-Type: application/json
 
 ### delete type
 DELETE http://localhost:3000/api/memberships/types/66880a2e92ac25be35322db7
+Authorization: Bearer {{token}}

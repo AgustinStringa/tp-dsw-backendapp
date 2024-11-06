@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { validate } from "class-validator";
-import { orm } from "../shared/db/mikro-orm.config.js";
 import { Class } from "./Class.entity.js";
-import { Trainer } from "../Trainer/Trainer.entity.js";
 import { ClassType } from "./ClassType.entity.js";
+import { orm } from "../shared/db/mikro-orm.config.js";
 import { sendEmail } from "../Notifications/Notifications.js";
 import { Registration } from "./Registration.entity.js";
 import { Client } from "../Client/Client.entity.js";
+import { Trainer } from "../Trainer/Trainer.entity.js";
 
 const em = orm.em;
 
@@ -60,30 +60,32 @@ const controller = {
 
       await em.flush();
 
-      console.log("APUNTO DE ENVIAR MAIL");
       const days = [
-        "Domingo",
         "Lunes",
         "Martes",
         "Miércoles",
         "Jueves",
         "Viernes",
         "Sábado",
+        "Domingo",
       ];
+
       await sendEmail(
-        "Gimnasio - Nueva clase disponible",
-        `<h1>Nueva clase de ${classType.description}</h1>
+        "Gimnasio Iron Haven - Nueva clase disponible",
+        `<h3>Nueva clase de ${classType.name}</h3>
         <div>
           <p>Se dictará una nueva clase los días ${
             days[req.body.sanitizedInput.day]
-          } de ${req.body.sanitizedInput.startTime} a ${
-          req.body.sanitizedInput.endTime
-        } hs en la ubicación: ${req.body.sanitizedInput.location}</p>
-          <p>Las clases estarán a cargo de ${
+          } de ${req.body.sanitizedInput.startTime} a 
+          ${req.body.sanitizedInput.endTime}.</p>
+          <p><b>Descripción: </b>${classType.description}</p>
+          <p><b>Ubicación: </b>${req.body.sanitizedInput.location}</p>
+          <p>La clase estará a cargo de ${
             trainer.firstName + " " + trainer.lastName
-          } y cuenta con ${
+          } y cuenta con <b>${
           req.body.sanitizedInput.maxCapacity
-        } cupos. ¡Corre a inscribirte antes de que se acaben!</p>
+        } cupos</b>.</p>
+          <p><b>¡Corre a inscribirte antes de que se acaben!</b></p>
         </div>
       `
       );

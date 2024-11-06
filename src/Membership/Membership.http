@@ -1,11 +1,18 @@
+@token = insertar_token
+
 ### get all memberships
 GET http://localhost:3000/api/memberships/
+Authorization: Bearer {{token}}
+
 
 ### get one membership
 GET http://localhost:3000/api/memberships/66881354094fb79b203582e0
+Authorization: Bearer {{token}}
+
 
 ### create membership
 POST http://localhost:3000/api/memberships/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -16,6 +23,7 @@ Content-Type: application/json
 
 ### put membership
 PUT http://localhost:3000/api/memberships/66881354094fb79b203582e0
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -26,6 +34,7 @@ Content-Type: application/json
 
 ### patch membership
 PATCH http://localhost:3000/api/memberships/668817edd51fc4600353eaf6
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -35,3 +44,4 @@ Content-Type: application/json
 
 ### delete membership
 DELETE http://localhost:3000/api/memberships/6688149f1248ffd919ac105d
+Authorization: Bearer {{token}}

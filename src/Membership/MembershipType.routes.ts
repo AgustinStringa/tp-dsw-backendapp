@@ -4,8 +4,14 @@ import { controller as authController } from "../Auth/Auth.controller.js";
 
 export const membershipTypeRouter = Router();
 
-membershipTypeRouter.get("/:id", controller.findOne);
+membershipTypeRouter.get(
+  "/:id",
+  authController.verifyTrainer,
+  controller.findOne
+);
+
 membershipTypeRouter.get("/", authController.verifyTrainer, controller.findAll);
+
 membershipTypeRouter.post(
   "/",
   authController.verifyTrainer,
