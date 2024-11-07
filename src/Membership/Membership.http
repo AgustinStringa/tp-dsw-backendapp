@@ -9,6 +9,9 @@ Authorization: Bearer {{token}}
 GET http://localhost:3000/api/memberships/66881354094fb79b203582e0
 Authorization: Bearer {{token}}
 
+### get active
+ GET http://localhost:3000/api/memberships/active/66f2fb46c89589b79fe56c13
+Authorization: Bearer {{token}}
 
 ### create membership
 POST http://localhost:3000/api/memberships/

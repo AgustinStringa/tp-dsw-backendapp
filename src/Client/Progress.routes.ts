@@ -6,6 +6,11 @@ export const progressRouter = Router();
 
 progressRouter.get("/:id", authController.verifyTrainer, controller.findOne);
 progressRouter.get("/", authController.verifyTrainer, controller.findAll);
+progressRouter.get(
+  "/client/:id",
+  authController.verifyClient,
+  controller.findByClient
+);
 
 progressRouter.post(
   "/",

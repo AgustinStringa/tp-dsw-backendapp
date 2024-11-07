@@ -9,6 +9,9 @@ Authorization: Bearer {{token}}
 GET http://localhost:3000/api/clients/progresses/667f4b73a78079beb55aa5fa
 Authorization: Bearer {{token}}
 
+### get by user id
+GET http://localhost:3000/api/clients/progresses/user-id/66f2fb46c89589b79fe56c13
+Authorization: Bearer {{token}}
 
 ### create
 POST http://localhost:3000/api/clients/progresses/

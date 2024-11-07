@@ -4,6 +4,7 @@ import { startOfDay } from "date-fns";
 import { Client } from "../Client/Client.entity.js";
 import { Membership } from "./Membership.entity.js";
 import { MembershipType } from "./MembershipType.entity.js";
+import { getUser } from "../Auth/Auth.controller.js";
 
 const em = orm.em;
 
@@ -33,6 +34,34 @@ const controller = {
         { populate: ["type", "client", "payments"] }
       );
       res.status(200).json({ message: "Membership found", data: membership });
+    } catch (error: any) {
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
+    }
+  },
+
+  findActiveByClient: async function (req: Request, res: Response) {
+    try {
+      const client = await getUser(req);
+      if (client != null) {
+        const clientIdParam = req.params.id;
+        const { id } = client;
+        if (clientIdParam != id)
+          return res.status(401).json({ message: "client unauthorized" });
+        const membership = await em.findOneOrFail(
+          Membership,
+          {
+            client: id,
+            dateFrom: { $lte: new Date() },
+            dateTo: { $gte: new Date() },
+          },
+          { populate: ["type"] }
+        );
+        res.status(200).json({ message: "Membership found", data: membership });
+      } else {
+        return res.status(404).json({ message: "client not found" });
+      }
     } catch (error: any) {
       let errorCode = 500;
       if (error.message.match("not found")) errorCode = 404;

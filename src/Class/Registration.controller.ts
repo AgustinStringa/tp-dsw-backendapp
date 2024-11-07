@@ -43,13 +43,20 @@ const controller = {
 
   findByClient: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const registrations = await em.find(Registration, { client: id });
-
-      res.status(200).json({
-        message: "Registrations for the client were found",
-        data: registrations,
-      });
+      const user = await getUser(req);
+      if (user != null) {
+        const clientIdParam = req.params.id;
+        const { id } = user;
+        if (clientIdParam != id)
+          return res.status(401).json({ message: "client unauthorized" });
+        const registrations = await em.find(Registration, { client: id });
+        res.status(200).json({
+          message: "Registrations for the client were found",
+          data: registrations,
+        });
+      } else {
+        return res.status(404).json({ message: "client not found" });
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

@@ -6,6 +6,11 @@ export const membershipRouter = Router();
 
 membershipRouter.get("/:id", authController.verifyTrainer, controller.findOne);
 membershipRouter.get("/", authController.verifyTrainer, controller.findAll);
+membershipRouter.get(
+  "/active/:id",
+  authController.verifyClient,
+  controller.findActiveByClient
+);
 
 membershipRouter.post(
   "/",

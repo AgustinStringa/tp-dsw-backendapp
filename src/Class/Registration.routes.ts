@@ -6,7 +6,7 @@ export const registrationRouter = Router();
 
 registrationRouter.get(
   "/client/:id",
-  authController.verifyTrainer,
+  authController.verifyUser,
   controller.findByClient
 );
 registrationRouter.get(

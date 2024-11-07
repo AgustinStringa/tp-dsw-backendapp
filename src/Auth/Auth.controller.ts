@@ -163,7 +163,6 @@ const controller = {
 async function getUser(
   req: Request
 ): Promise<{ isTrainer: boolean; id: string } | null> {
-  console.log("Iniciando");
   try {
     const decoded = decodeToken(req);
     let isTrainer = true;
