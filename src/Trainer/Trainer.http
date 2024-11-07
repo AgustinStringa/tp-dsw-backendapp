@@ -1,4 +1,4 @@
-@token = insertar_token
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZTQ5YzIyYTZmMmVkYTBkNTUxYTg2YSIsImlhdCI6MTczMDU3Nzk5MSwiZXhwIjoxNzMwNTgxNTkxfQ.-D_yB3ENf_ag22jYMo7ClHrw7qXR7TuTUy9gbKuBm1o
 
 ### obtener todos los trainers
 GET http://localhost:3000/api/trainers

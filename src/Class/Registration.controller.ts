@@ -65,7 +65,10 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       await em.findOneOrFail(Client, req.body.sanitizedInput.client);
-      await em.findOneOrFail(Class, req.body.sanitizedInput.class);
+      await em.findOneOrFail(Class, {
+        id: req.body.sanitizedInput.class,
+        active: true,
+      });
 
       const registrationVa = await em.findOne(Registration, {
         client: req.body.sanitizedInput.client,
@@ -94,8 +97,12 @@ const controller = {
     try {
       if (req.body.sanitizedInput.client !== undefined)
         await em.findOneOrFail(Client, req.body.sanitizedInput.client);
-      if (req.body.sanitizedInput.class !== undefined)
-        await em.findOneOrFail(Class, req.body.sanitizedInput.class);
+      if (req.body.sanitizedInput.class !== undefined) {
+        await em.findOneOrFail(Class, {
+          id: req.body.sanitizedInput.class,
+          active: true,
+        });
+      }
 
       const id = req.params.id;
       const registration = await em.findOneOrFail(Registration, id);

@@ -154,35 +154,6 @@ const controller = {
 
     next();
   },
-
-  findAvailableClasses: async function (req: Request, res: Response) {
-    const clientId = req.params.clientId; // Suponiendo que el ID del cliente se pasa como un parámetro de la ruta
-
-    try {
-      // 1. Obtener todas las clases
-      const allClasses = await em.find(Class, {});
-
-      // 2. Obtener todas las inscripciones del cliente específico
-      const registrations = await em.find(Registration, {
-        client: clientId,
-      });
-
-      // 3. Obtener los IDs de las clases a las que el cliente ya está registrado
-      const registeredClassIds = registrations.map((reg) => reg.class._id);
-
-      // 4. Filtrar las clases disponibles que no están en las inscripciones del cliente
-      const availableClasses = allClasses.filter(
-        (cls) => !registeredClassIds.includes(cls._id)
-      );
-
-      res.status(200).json({
-        message: "Available classes found",
-        data: availableClasses,
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  },
 };
 
 export { controller };
