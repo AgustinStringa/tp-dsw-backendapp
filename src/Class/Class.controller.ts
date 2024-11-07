@@ -61,13 +61,13 @@ const controller = {
       await em.flush();
 
       const days = [
+        "Domingo",
         "Lunes",
         "Martes",
         "Miércoles",
         "Jueves",
         "Viernes",
         "Sábado",
-        "Domingo",
       ];
 
       await sendEmail(
