@@ -11,11 +11,14 @@ export class MembershipType extends BaseEntity {
 
   @IsNotEmpty()
   @Property({ nullable: false })
-  description!: string; //gym, pileta, gym + pileta...
+  description!: string;
 
   @IsNumber()
   @Property({ nullable: false })
   price!: number;
+
+  @Property({ nullable: true })
+  stripePriceId?: string;
 
   @OneToMany({
     entity: () => Membership,

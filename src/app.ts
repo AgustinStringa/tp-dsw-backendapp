@@ -10,20 +10,23 @@ import { newsRouter } from "./News/News.routes.js";
 import { orm } from "./shared/db/mikro-orm.config.js";
 import { routinesRouter } from "./Routine/Module.routes.js";
 import { trainerRouter } from "./Trainer/Trainer.routes.js";
+import { userPaymentRouter } from "./UserPayment/UserPayment.routes.js";
 
 const PORT = 3000;
 const app = express();
-app.use((req, res, next) => {
+
+app.use((_req, _res, next) => {
   RequestContext.create(orm.em, next);
 });
+
 app.use(
   cors({
     origin: "http://localhost:4200",
     optionsSuccessStatus: 200,
   })
 );
-app.use(express.json());
 
+app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/classes", classesRouter);
 app.use("/api/clients", clientsRouter);
@@ -31,8 +34,9 @@ app.use("/api/memberships", membershipsRouter);
 app.use("/api/news", newsRouter);
 app.use("/api/routines", routinesRouter);
 app.use("/api/trainers", trainerRouter);
+app.use("/api/user-payment", userPaymentRouter);
 
-app.use((_, res) => {
+app.use((_req, res) => {
   return res.status(404).send({ message: "Resource not found" });
 });
 
