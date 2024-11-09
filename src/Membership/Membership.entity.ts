@@ -20,6 +20,9 @@ export class Membership extends BaseEntity {
   @Property()
   dateTo = addMonths(this.dateFrom, 1);
 
+  @Property()
+  paid: boolean = false;
+
   @ManyToOne(() => MembershipType)
   type!: Rel<MembershipType>;
 

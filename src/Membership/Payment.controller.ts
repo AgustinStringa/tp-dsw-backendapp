@@ -89,7 +89,7 @@ const controller = {
 
   sanitizePayment: function (req: Request, res: Response, next: NextFunction) {
     req.body.sanitizedInput = {
-      payMethod: req.body.payMethod?.trim(),
+      paymentMethod: req.body.paymentMethod?.trim(),
       amount: req.body.amount,
       membership: req.body.membership,
     };

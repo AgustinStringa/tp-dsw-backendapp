@@ -10,12 +10,25 @@ export class Payment extends BaseEntity {
 
   @IsNotEmpty()
   @Property({ nullable: false })
-  payMethod!: string;
+  paymentMethod!: string;
 
   @IsNumber()
   @Property({ nullable: false })
-  amount!: number;
+  amount!: number; //en ars, no en centavos
 
   @ManyToOne(() => Membership)
   membership!: Rel<Membership>;
+
+  @Property({ nullable: false })
+  status!: string;
+
+  @Property({ nullable: true })
+  stripe:
+    | undefined
+    | {
+        created: number;
+        paymentIntent: string | undefined;
+        sessionId: string;
+        checkoutStatus: string | null;
+      };
 }

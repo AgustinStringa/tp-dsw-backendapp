@@ -4,4 +4,16 @@ import { controller as authController } from "../Auth/Auth.controller.js";
 
 export const userPaymentRouter = Router();
 
-userPaymentRouter.post("/:id", authController.verifyClient, controller.add);
+userPaymentRouter.post(
+  "/",
+  authController.verifyClient,
+  controller.sanitizeRequest,
+  controller.initiatePayment
+);
+
+userPaymentRouter.post(
+  "/webhook" /*bodyParser.raw({type: 'application/json'}),*/,
+  controller.handleWebhook
+);
+
+//TODO reembolsos, pagos cancelados??

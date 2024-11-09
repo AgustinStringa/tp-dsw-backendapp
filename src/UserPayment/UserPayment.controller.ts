@@ -1,9 +1,12 @@
 import dotenv from "dotenv";
 import Stripe from "stripe";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { MembershipType } from "../Membership/MembershipType.entity.js";
 import { getUser } from "../Auth/Auth.controller.js";
+import { Payment } from "../Membership/Payment.entity.js";
+import { Membership } from "../Membership/Membership.entity.js";
+import { startOfDay } from "date-fns";
 
 dotenv.config(); //TODO ver si es necesario
 
@@ -17,39 +20,67 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY);
 const domain = "https://youtube.com";
 const em = orm.em;
 
-const controller = {
-  add: async function (req: Request, res: Response) {
+export const controller = {
+  initiatePayment: async function (req: Request, res: Response) {
+    //Los pagos son al momento de contratar una nueva membresía. Si el cliente cuenta con una activa, se modifica la fecha de vencimiento.
+
     try {
-      const id = req.params.id;
-      const membType = await em.findOneOrFail(MembershipType, id);
-      console.log(membType.stripePriceId);
-      
       const client = await getUser(req);
-      if (client) {
-        //TODO validar que el cliente tenga una membresía activa de ese tipo
-        //permitir pagar un monto distinto?
+      if (client && client.id === req.body.sanitizedInput.client) {
+        const membType = await em.findOneOrFail(
+          MembershipType,
+          req.body.sanitizedInput.type
+        );
 
-        const session = await stripe.checkout.sessions.create({
-          line_items: [
-            {
-              price: membType.stripePriceId,
-              quantity: 1,
-            },
-          ],
-          mode: "payment", //subscription es para pagos recurrentes
-          success_url: `${domain}/success.html`,
-          cancel_url: `${domain}/cancel.html`,
-          //customer_email
-          metadata: { client_id: client.id },
-        });
+        const today = startOfDay(new Date());
 
-        if (session.url) {
-          res.redirect(303, session.url);
-          res.status(200);
-        } else res.status(500).send("Failed to create Stripe checkout session");
+        await em.nativeUpdate(
+          Membership,
+          { dateTo: { $gt: today }, client: req.body.sanitizedInput.client },
+          { dateTo: today }
+        );
+
+        const membership = em.create(Membership, req.body.sanitizedInput);
+        await em.flush();
+
+        const session: Stripe.Checkout.Session =
+          await stripe.checkout.sessions.create({
+            line_items: [
+              {
+                price: membType.stripePriceId,
+                quantity: 1,
+              },
+            ],
+            mode: "payment", //subscription es para pagos recurrentes
+            success_url: `${domain}/success.html`,
+            cancel_url: `${domain}/cancel.html`,
+            //customer_email
+          });
+
+        const payment: any = {
+          paymentMethod: "stripe",
+          amount: membType.price,
+          membership: membership,
+          status: session.payment_status,
+          stripe: {
+            created: session.created,
+            paymentIntent: undefined,
+            sessionId: session.id,
+            checkoutStatus: session.status,
+          },
+        };
+
+        em.create(Payment, payment);
+        await em.flush();
+
+        res.status(200).json(session.url); //TODO realizar redirect (problema con CORS) res.redirect(302, session.url);
+      } else {
+        res.status(401).json({ message: "client unauthorized" });
       }
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 };
