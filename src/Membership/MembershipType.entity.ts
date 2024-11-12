@@ -17,8 +17,11 @@ export class MembershipType extends BaseEntity {
   @Property({ nullable: false })
   price!: number;
 
-  @Property({ nullable: true })
-  stripePriceId?: string;
+  @Property({ nullable: false })
+  stripeId!: string;
+
+  @Property({ nullable: false })
+  stripePriceId!: string;
 
   @OneToMany({
     entity: () => Membership,

@@ -16,7 +16,7 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY);
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (_req: Request, res: Response) {
     try {
       const membTypes = await em.find(MembershipType, {});
@@ -57,24 +57,9 @@ const controller = {
       if (errors.length > 0)
         return res.status(400).json({ message: "Bad request" });
 
+      await createStripeProduct(membType);
+      await createStripePrice(membType);
       await em.flush();
-
-      //Stripe product
-      const product = await stripe.products.create({
-        name: membType.name,
-        description: membType.description,
-        metadata: { custom_id: membType.id },
-      });
-
-      const price = await stripe.prices.create({
-        unit_amount: membType.price * 100, // en centavos
-        currency: "ars",
-        product: product.id, //TODO validar que sea el mismo que el de la membresía
-      });
-
-      membType.stripePriceId = price.id;
-      await em.flush();
-      //TODO si falla stripe borrar membType
 
       res.status(201).json({
         message: "Membership type created",
@@ -88,13 +73,19 @@ const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const membType = await em.findOneOrFail(MembershipType, req.params.id);
+      const oldPrice = membType.price;
       em.assign(membType, req.body.sanitizedInput);
 
       const errors = await validate(membType);
       if (errors.length > 0)
         return res.status(400).json({ message: "Bad request" });
 
+      if (oldPrice !== membType.price) {
+        archiveStripePrice(membType);
+        await createStripePrice(membType);
+      }
       await em.flush();
+
       res
         .status(200)
         .json({ message: "Membership type updated", data: membType });
@@ -108,17 +99,25 @@ const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const membType = em.getReference(MembershipType, id);
+      const membType = await em.findOneOrFail(MembershipType, id);
+
+      await stripe.products.update(membType.stripeId, {
+        active: false,
+      });
+
       await em.removeAndFlush(membType);
+
       res.status(200).json({ message: "Membership type deleted" });
     } catch (error: any) {
-      res.status(500).send({ message: error.message });
+      let errorCode = 500;
+      if (error.message.match("not found")) errorCode = 404;
+      res.status(errorCode).json({ message: error.message });
     }
   },
 
   sanitizeMembershipType: function (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
@@ -135,4 +134,33 @@ const controller = {
   },
 };
 
-export { controller };
+async function createStripeProduct(
+  membType: MembershipType
+): Promise<MembershipType> {
+  const product = await stripe.products.create({
+    name: membType.name,
+    description: membType.description,
+  });
+
+  membType.stripeId = product.id;
+  return membType;
+}
+
+async function createStripePrice(
+  membType: MembershipType
+): Promise<MembershipType> {
+  const price = await stripe.prices.create({
+    unit_amount: membType.price * 100, // en centavos
+    currency: "ars",
+    product: membType.stripeId,
+  });
+
+  membType.stripePriceId = price.id;
+  return membType;
+}
+
+async function archiveStripePrice(membType: MembershipType) {
+  await stripe.prices.update(membType.stripePriceId, {
+    active: false,
+  });
+}
