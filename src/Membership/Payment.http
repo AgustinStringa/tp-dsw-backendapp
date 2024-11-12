@@ -17,8 +17,9 @@ Content-Type: application/json
 
 {
   "paymentMethod": "Efectivo",
-  "amount": "15500",
-  "membership": "66881354094fb79b203582e0"
+  "amount": 15500,
+  "status": "paid",
+  "membership": "67336a9c0e95d029cd5a8b86"
 }
 
 
@@ -29,7 +30,8 @@ Content-Type: application/json
 
 {
   "paymentMethod": "Tarjeta",
-  "amount": "15500",
+  "amount": 15500,
+  "status": "paid",
   "membership": "66881354094fb79b203582e0"
 }
 

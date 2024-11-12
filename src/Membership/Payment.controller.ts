@@ -92,6 +92,7 @@ const controller = {
       paymentMethod: req.body.paymentMethod?.trim(),
       amount: req.body.amount,
       membership: req.body.membership,
+      status: req.body.status,
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {

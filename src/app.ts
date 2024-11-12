@@ -1,10 +1,12 @@
 import "reflect-metadata";
-import express from "express";
+import bodyParser from "body-parser";
 import cors from "cors";
+import express from "express";
 import { RequestContext } from "@mikro-orm/mongodb";
 import { authRouter } from "./Auth/Auth.routes.js";
 import { classesRouter } from "./Class/Module.routes.js";
 import { clientsRouter } from "./Client/Module.routes.js";
+import { controller as userPaymentController } from "./UserPayment/UserPayment.controller.js";
 import { membershipsRouter } from "./Membership/Module.routes.js";
 import { newsRouter } from "./News/News.routes.js";
 import { orm } from "./shared/db/mikro-orm.config.js";
@@ -24,6 +26,12 @@ app.use(
     origin: "http://localhost:4200",
     optionsSuccessStatus: 200,
   })
+);
+
+app.post(
+  "/api/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  userPaymentController.handleWebhook
 );
 
 app.use(express.json());

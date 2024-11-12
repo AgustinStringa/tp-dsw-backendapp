@@ -8,12 +8,8 @@ userPaymentRouter.post(
   "/",
   authController.verifyClient,
   controller.sanitizeRequest,
-  controller.initiatePayment
+  controller.initiatePayment,
 );
 
-userPaymentRouter.post(
-  "/webhook" /*bodyParser.raw({type: 'application/json'}),*/,
-  controller.handleWebhook
-);
 
 //TODO reembolsos, pagos cancelados??

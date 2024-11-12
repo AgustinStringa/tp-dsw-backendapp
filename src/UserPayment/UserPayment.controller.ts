@@ -10,14 +10,13 @@ import { startOfDay } from "date-fns";
 
 dotenv.config(); //TODO ver si es necesario
 
-if (!process.env.STRIPE_API_KEY) {
-  throw new Error(
-    "The Stripe API key is not defined in the environment variables."
-  );
+if (!process.env.STRIPE_API_KEY || !process.env.STRIPE_WEBHOOK) {
+  throw new Error("Problem with the environment variables.");
 }
 const stripe = new Stripe(process.env.STRIPE_API_KEY);
+const endpointSecret = process.env.STRIPE_WEBHOOK;
 
-const domain = "https://youtube.com";
+const domain = "http://localhost:4200";
 const em = orm.em;
 
 export const controller = {
@@ -63,10 +62,11 @@ export const controller = {
           membership: membership,
           status: session.payment_status,
           stripe: {
+            checkoutStatus: session.status,
             created: session.created,
+            fulfilled: false,
             paymentIntent: undefined,
             sessionId: session.id,
-            checkoutStatus: session.status,
           },
         };
 
@@ -83,6 +83,79 @@ export const controller = {
       res.status(errorCode).json({ message: error.message });
     }
   },
+
+  handleWebhook: async function (req: Request, res: Response) {
+    try {
+      const payload = req.body;
+      const signature = req.headers["stripe-signature"] as string;
+
+      const event = stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        endpointSecret
+      );
+
+      if (
+        event.type === "checkout.session.completed" ||
+        event.type === "checkout.session.async_payment_succeeded"
+      ) {
+        fulfillCheckout(event.data.object.id);
+      }
+
+      res.status(200).end();
+    } catch (err) {
+      if (err instanceof Stripe.errors.StripeError)
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+      else return res.status(500).send("Unexpected error occurred");
+    }
+  },
+
+  sanitizeRequest: async function (
+    req: Request,
+    _res: Response,
+    next: NextFunction
+  ) {
+    req.body.sanitizedInput = {
+      client: req.body.client,
+      type: req.body.type,
+    };
+
+    Object.keys(req.body.sanitizedInput).forEach((key) => {
+      if (req.body.sanitizedInput[key] === undefined)
+        delete req.body.sanitizedInput[key];
+    });
+
+    next();
+  },
 };
 
-export { controller };
+async function fulfillCheckout(sessionId: any) {
+  try {
+    const payment = await em.findOne(Payment, {
+      stripe: { sessionId: sessionId, fulfilled: false },
+    }); //TODO bloquear registro
+
+    if (payment === null) return;
+
+    em.assign(payment, { stripe: { fulfilled: true } });
+    em.flush();
+
+    const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["line_items"],
+    }); //En el negocio, las compras son para una sola membresía
+
+    //ver caso de no_payment_required
+    if (checkoutSession.payment_status === "paid") {
+      em.assign(payment, {
+        status: "paid",
+        stripe: {
+          checkoutStatus: checkoutSession.status,
+          paymentIntent: checkoutSession.payment_intent as string,
+        },
+      });
+      em.flush();
+    }
+  } catch (error: any) {
+    throw error;
+  }
+}

@@ -1,7 +1,32 @@
-import { Entity, Property, ManyToOne, Rel } from "@mikro-orm/core";
+import {
+  Entity,
+  Property,
+  ManyToOne,
+  Rel,
+  Embeddable,
+  Embedded,
+} from "@mikro-orm/core";
 import { IsNotEmpty, IsNumber } from "class-validator";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { Membership } from "./Membership.entity.js";
+
+@Embeddable()
+class Stripe {
+  @Property()
+  checkoutStatus!: string;
+
+  @Property()
+  created!: number;
+
+  @Property()
+  fulfilled!: boolean;
+
+  @Property()
+  paymentIntent!: string | undefined;
+
+  @Property()
+  sessionId!: string;
+}
 
 @Entity()
 export class Payment extends BaseEntity {
@@ -22,13 +47,6 @@ export class Payment extends BaseEntity {
   @Property({ nullable: false })
   status!: string;
 
-  @Property({ nullable: true })
-  stripe:
-    | undefined
-    | {
-        created: number;
-        paymentIntent: string | undefined;
-        sessionId: string;
-        checkoutStatus: string | null;
-      };
+  @Embedded(() => Stripe, { nullable: true })
+  stripe?: Stripe | undefined;
 }
