@@ -5,7 +5,6 @@ import { NextFunction, Request, Response } from "express";
 import { Client } from "../Client/Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
-import { addHours } from "date-fns";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -44,6 +43,13 @@ const controller = {
           expiresIn: "1h",
         });
 
+        res.cookie("auth_token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 3600000,
+        });
+
         const userReturn = {
           id: user._id,
           firstName: user.firstName,
@@ -55,7 +61,7 @@ const controller = {
 
         return res.status(200).json({
           message: "Logged in successfully",
-          data: { user: userReturn, token },
+          data: { user: userReturn },
         });
       } else {
         return res.status(401).json({ message: "Wrong email or password" });
@@ -68,20 +74,67 @@ const controller = {
   },
 
   logout: async function name(req: Request, res: Response) {
-    const now = Date.now();
-    for (const [token, expiryTime] of blacklistedTokens.entries()) {
-      if (now > expiryTime) {
-        blacklistedTokens.delete(token);
-      }
-    }
+    try {
+      blackListToken(req);
 
-    const token = req.headers.authorization?.replace(/^Bearer\s+/, "");
-    if (token) {
-      const expiryTime = addHours(Date.now(), 1);
-      blacklistedTokens.set(token, expiryTime);
+      res.clearCookie("auth_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 3600000,
+      });
+
       res.status(200).json({ message: "Logged out successfully." });
-    } else {
-      res.status(400).json({ message: "Void token." });
+    } catch {
+      res.status(200).json({ message: "The session had already expired." });
+    }
+  },
+
+  refresh: async function (req: Request, res: Response) {
+    try {
+      let user = undefined;
+      let isClient = true;
+
+      const decoded = decodeToken(req);
+      blackListToken(req);
+
+      user = await em.findOne(Client, {
+        id: decoded.id,
+      });
+
+      if (user === null) {
+        user = await em.findOneOrFail(Trainer, {
+          id: decoded.id,
+        });
+        isClient = false;
+      }
+      const userReturn = {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        dni: user.dni,
+        email: user.email,
+        isClient,
+      };
+
+      const newToken = jwt.sign({ id: decoded.id }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      res.cookie("auth_token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 3600000,
+      });
+
+      return res.status(200).json({
+        message: "Session extended.",
+        data: { user: userReturn },
+      });
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -187,7 +240,7 @@ async function getUser(
 }
 
 function decodeToken(req: Request): { id: string; iat: number; exp: number } {
-  const token = req.headers.authorization?.replace(/^Bearer\s+/, "");
+  const token = req.cookies.auth_token;
   if (token) {
     if (blacklistedTokens.has(token)) {
       throw new Error("Unauthorized. Token is blacklisted.");
@@ -198,6 +251,18 @@ function decodeToken(req: Request): { id: string; iat: number; exp: number } {
   } else {
     throw new Error("Unauthorized. Void token.");
   }
+}
+
+function blackListToken(req: Request) {
+  const now = Date.now();
+  for (const [token, expiryTime] of blacklistedTokens.entries()) {
+    if (now > expiryTime) {
+      blacklistedTokens.delete(token);
+    }
+  }
+
+  const decoded = decodeToken(req);
+  blacklistedTokens.set(req.cookies.auth_token, decoded.exp * 1000);
 }
 
 export { controller, getUser };
