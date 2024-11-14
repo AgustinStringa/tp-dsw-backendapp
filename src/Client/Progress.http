@@ -2,20 +2,20 @@
 
 ### get all
 GET http://localhost:3000/api/clients/progresses/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### get one
 GET http://localhost:3000/api/clients/progresses/667f4b73a78079beb55aa5fa
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 ### get by user id
 GET http://localhost:3000/api/clients/progresses/user-id/66f2fb46c89589b79fe56c13
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 ### create
 POST http://localhost:3000/api/clients/progresses/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ### patch
 PATCH http://localhost:3000/api/clients/progresses/66f5959d461681f1edcfbd4a
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -39,4 +39,4 @@ Content-Type: application/json
 
 ### delete
 DELETE http://localhost:3000/api/clients/progresses/667f4b73a78079beb55aa5fa
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}

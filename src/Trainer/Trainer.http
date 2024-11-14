@@ -2,17 +2,17 @@
 
 ### obtener todos los trainers
 GET http://localhost:3000/api/trainers
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### obtener un trainer
 GET http://localhost:3000/api/trainers/25967e44-73b3-4187-af93-3903d206ec21
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### crear un nuevo trainer
 POST http://localhost:3000/api/trainers/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
 
 ### modificar un trainer (PUT - recurso completo e idempotente)
 PUT http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 ### modificar un trainer (PATCH - recurso parcial)
 PATCH http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -50,4 +50,4 @@ Content-Type: application/json
 
 ### borrar un trainer
 DELETE http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}

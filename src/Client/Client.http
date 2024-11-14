@@ -2,17 +2,17 @@
 
 ### get all clients
 GET http://localhost:3000/api/clients
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### get one client
 GET http://localhost:3000/api/clients/66c8abd8cfede278ccb4edc1
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### create client
 POST http://localhost:3000/api/clients/
-//Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
 
 ### put client
 PUT http://localhost:3000/api/clients/66c8abd8cfede278ccb4edc1
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 ### patch client
 PATCH http://localhost:3000/api/clients/666dd5dae54ba86485903105
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -50,4 +50,4 @@ Content-Type: application/json
 
 ### delete client
 DELETE http://localhost:3000/api/clients/666cca4599dc046e1bdc7a4e
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}

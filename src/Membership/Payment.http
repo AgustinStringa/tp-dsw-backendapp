@@ -2,17 +2,17 @@
 
 ### get all payments
 GET http://localhost:3000/api/memberships/payments/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### get one payment
 GET http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### create a payment
 POST http://localhost:3000/api/memberships/payments/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 
 ### put payment
 PUT http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
 
 ### patch payment
 PATCH http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -46,4 +46,4 @@ Content-Type: application/json
 
 ### delete payment
 DELETE http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}

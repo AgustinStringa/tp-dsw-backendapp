@@ -2,12 +2,12 @@
 
 ### get all clients with an active membership
 GET http://localhost:3000/api/memberships/active/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### create routine
 POST http://localhost:3000/api/routines/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
