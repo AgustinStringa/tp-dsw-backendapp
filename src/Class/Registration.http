@@ -2,20 +2,22 @@
 
 ### get all registrations
 GET http://localhost:3000/api/classes/registration
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### get one registration
 GET http://localhost:3000/api/classes/registration/66c3e3535f6f028235485e3b
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 
 
 ### get registrations by client
 GET http://localhost:3000/api/classes/registration/client/66f2fb46c89589b79fe56c13
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
+
+
 ### post one registration
 POST http://localhost:3000/api/classes/registration/
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -26,7 +28,7 @@ Content-Type: application/json
 
 ### update one registration
 PUT http://localhost:3000/api/classes/registration/66c3e112e12ac3e83ceee86c
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -37,7 +39,7 @@ Content-Type: application/json
 
 ### update(parcial) one registration
 PATCH http://localhost:3000/api/classes/registration/66c3e112e12ac3e83ceee86c
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -47,4 +49,4 @@ Content-Type: application/json
 
 ### delete one registration
 DELETE http://localhost:3000/api/classes/registration/66c3e3535f6f028235485e3b
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}

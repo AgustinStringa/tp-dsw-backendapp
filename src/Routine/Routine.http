@@ -2,19 +2,19 @@
 
 ### Obtener todas las rutinas
 GET http://localhost:3000/api/routines
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 
 ### Obtener una rutina por ID
 GET http://localhost:3000/api/routines/{id}
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 
 ### Crear una nueva rutina
 POST http://localhost:3000/api/routines
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -45,7 +45,7 @@ Content-Type: application/json
 
 ### Actualizar una rutina por ID
 PUT http://localhost:3000/api/routines/{id}
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -68,5 +68,5 @@ Content-Type: application/json
 
 ### Eliminar una rutina por ID
 DELETE http://localhost:3000/api/routines/{id}
-Authorization: Bearer {{token}}
+Cookie: auth_token={{token}}
 Content-Type: application/json

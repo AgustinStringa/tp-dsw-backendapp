@@ -3,8 +3,8 @@ POST http://localhost:3000/api/auth/
 Content-Type: application/json
 
 {
-  "email": "gasti123@hotmail.com.ar",
-  "password": "abcde"
+  "email": "claudia@reynares.com.ar",
+  "password": "claudia"
 }
 
 
@@ -13,8 +13,8 @@ POST http://localhost:3000/api/auth/
 Content-Type: application/json
 
 {
-  "email": "agu.stringa141@gmail.com",
-  "password": "stri"
+  "email": "aaron@debernardo.com",
+  "password": "aaron"
 }
 
 
@@ -28,4 +28,4 @@ Content-Type: application/json
 
 ### logout
 POST http://localhost:3000/api/auth/logout/
-Authorization: Bearer insertar_token
+Cookie: auth_token=insertar_token

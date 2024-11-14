@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import { RequestContext } from "@mikro-orm/mongodb";
@@ -25,6 +26,7 @@ app.use(
   cors({
     origin: "http://localhost:4200",
     optionsSuccessStatus: 200,
+    credentials: true,
   })
 );
 
@@ -35,6 +37,7 @@ app.post(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/classes", classesRouter);
 app.use("/api/clients", clientsRouter);
