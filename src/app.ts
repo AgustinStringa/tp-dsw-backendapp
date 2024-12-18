@@ -11,9 +11,22 @@ import { newsRouter } from "./News/News.routes.js";
 import { orm } from "./shared/db/mikro-orm.config.js";
 import { routinesRouter } from "./Routine/Module.routes.js";
 import { trainerRouter } from "./Trainer/Trainer.routes.js";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
 const PORT = 3000;
 const app = express();
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
 app.use((req, res, next) => {
   RequestContext.create(orm.em, next);
 });
@@ -40,6 +53,25 @@ app.use((_, res) => {
   return res.status(404).send({ message: "Resource not found" });
 });
 
+io.on("connection", (socket) => {
+  console.log("Cliente conectado:", socket.id);
+
+  socket.on("mensaje", (data) => {
+    console.log("Mensaje recibido:", data);
+    io.emit("respuesta", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Cliente desconectado:", socket.id);
+  });
+});
+
+httpServer.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}/`);
+});
+
+/*
 app.listen(PORT, () => {
   console.log("Server runnning on http://localhost:3000/");
 });
+*/
