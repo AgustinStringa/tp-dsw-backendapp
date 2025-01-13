@@ -6,6 +6,8 @@ import { NextFunction, Request, Response } from "express";
 import { Client } from "../Client/Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
 import { Trainer } from "../Trainer/Trainer.entity.js";
+import { sendEmail } from "../Notifications/Notifications.js";
+import crypto from "crypto";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -147,6 +149,55 @@ const controller = {
     };
 
     next();
+  },
+
+  sendEmailChangePassword: async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const objectUser = await getUser(req);
+      if (objectUser == null) throw new Error("error al buscar el usuario");
+
+      const user = await em.findOneOrFail(Client, { id: objectUser.id });
+
+      const resetPasswordToken: Token = {
+        id: user.id,
+        iat: Date.now(),
+        rawToken: crypto.randomBytes(16).toString("hex"),
+        exp: 900,
+      };
+
+      //save token?
+
+      await sendEmail(
+        `Restablecer Contraseña`,
+        `
+        <p>
+        Estás recibiendo este email porque tú (o alguien más) solicitó cambiar la contraseña de tu cuenta en Iron Haven Gimnasio.
+        </p>
+        
+        <p>
+        Por favor haz click en el siguiente link, o pega esto en tu navegador para completar el proceso:
+        </p>
+
+      <a href="${"http://localhost:4200/reset-password/resetPasswordToken.rawToken"}"> 
+      http://localhost:4200/reset-password/${resetPasswordToken.rawToken}  
+      <a/>
+
+      <p>
+      Si no solicitaste esto, ignora este correo y tu contraseña seguirá siendo la misma.
+      </p>
+      `,
+        [user.email]
+      );
+
+      return res.status(200).json({ message: "email sent successfully" });
+    } catch (error) {
+      //TODO: ver los distintos tipos de errores
+      res.status(500).json({ message: "Internal error" });
+    }
   },
 
   verifyTrainer: async function (
