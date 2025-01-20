@@ -1,13 +1,15 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { differenceInMinutes } from "date-fns";
 import { NextFunction, Request, Response } from "express";
+import { ChangePasswordToken } from "./ChangePasswordToken.entity.js";
 import { Client } from "../Client/Client.entity.js";
 import { orm } from "../shared/db/mikro-orm.config.js";
-import { Trainer } from "../Trainer/Trainer.entity.js";
 import { sendEmail } from "../Notifications/Notifications.js";
-import crypto from "crypto";
+import { Trainer } from "../Trainer/Trainer.entity.js";
+import { validate } from "class-validator";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -158,18 +160,28 @@ const controller = {
   ) {
     try {
       const objectUser = await getUser(req);
-      if (objectUser == null) throw new Error("error al buscar el usuario");
+      if (objectUser == null)
+        return res.status(404).json({ message: "error al buscar el usuario" });
 
-      const user = await em.findOneOrFail(Client, { id: objectUser.id });
+      let user;
+      if (objectUser.isTrainer) {
+        user = await em.findOneOrFail(Trainer, { id: objectUser.id });
+      }
+      user = await em.findOneOrFail(Client, { id: objectUser.id });
 
-      const resetPasswordToken: Token = {
-        id: user.id,
-        iat: Date.now(),
-        rawToken: crypto.randomBytes(16).toString("hex"),
-        exp: 900,
+      const rawToken = crypto.randomBytes(16).toString("hex");
+      const newToken = {
+        user,
+        createdAt: new Date(),
+        rawToken,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        used: false,
       };
-
-      //save token?
+      em.create(ChangePasswordToken, newToken);
+      const errors = await validate(newToken);
+      if (errors.length > 0)
+        return res.status(400).json({ message: "Bad request" });
+      await em.flush();
 
       await sendEmail(
         `Restablecer Contraseña`,
@@ -182,8 +194,8 @@ const controller = {
         Por favor haz click en el siguiente link, o pega esto en tu navegador para completar el proceso:
         </p>
 
-      <a href="${"http://localhost:4200/reset-password/resetPasswordToken.rawToken"}"> 
-      http://localhost:4200/reset-password/${resetPasswordToken.rawToken}  
+      <a href="http://localhost:4200/reset-password/${rawToken}"> 
+      http://localhost:4200/reset-password/${rawToken}  
       <a/>
 
       <p>
@@ -200,6 +212,57 @@ const controller = {
     }
   },
 
+  validatePasswordToken: async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { rawToken } = req.body;
+      const token = await em.findOneOrFail(
+        ChangePasswordToken,
+        { rawToken, used: false },
+        {
+          populate: ["user"],
+        }
+      );
+
+      if (token.expiresAt < new Date())
+        return res.status(401).json({ message: "Expired token" });
+
+      const user = token.user;
+      token.used = true;
+      await em.flush();
+
+      //idem as login and sign up
+      const tokenAuth = jwt.sign({ id: user.id }, JWT_SECRET, {
+        expiresIn: `${sessionDurationInHours}h`,
+      });
+      res.cookie("auth_token", tokenAuth, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: sessionDurationInHours * 3600000,
+      });
+
+      return res.status(200).json({
+        message: "token validated successfully",
+        data: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dni: user.dni,
+          email: user.email,
+          isClient: true,
+        },
+      });
+    } catch (error: any) {
+      if (error.message && error.message.match("not found"))
+        return res
+          .status(404)
+          .json({ message: "token not found or already used" });
+    }
+  },
   verifyTrainer: async function (
     req: Request,
     res: Response,

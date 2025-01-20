@@ -10,4 +10,5 @@ authRouter.get(
   controller.verifyUser,
   controller.sendEmailChangePassword
 );
+authRouter.post("/validate-password-token/", controller.validatePasswordToken);
 authRouter.post("/refresh/", controller.refresh);
