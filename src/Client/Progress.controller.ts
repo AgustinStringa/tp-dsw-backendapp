@@ -42,12 +42,12 @@ const controller = {
         const { id } = user;
         if (userIdParam != id)
           return res.status(401).json({ message: "client unauthorized" });
-        const goals = await em.find(Progress, {
+        const progresses = await em.find(Progress, {
           client: id,
         });
         res.status(200).json({
           message: "All progresses of the client were found",
-          data: goals,
+          data: progresses,
         });
       } else {
         return res.status(404).json({ message: "client not found" });
