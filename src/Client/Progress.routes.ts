@@ -4,8 +4,8 @@ import { controller as authController } from "../Auth/Auth.controller.js";
 
 export const progressRouter = Router();
 
-progressRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-progressRouter.get("/", authController.verifyTrainer, controller.findAll);
+progressRouter.get("/:id", authController.verifyClient, controller.findOne);
+progressRouter.get("/", authController.verifyClient, controller.findAll);
 progressRouter.get(
   "/client/:id",
   authController.verifyClient,
@@ -14,23 +14,23 @@ progressRouter.get(
 
 progressRouter.post(
   "/",
-  authController.verifyTrainer,
+  authController.verifyClient,
   controller.sanitizeProgress,
   controller.add
 );
 
 progressRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authController.verifyClient,
   controller.sanitizeProgress,
   controller.update
 );
 
 progressRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authController.verifyClient,
   controller.sanitizeProgress,
   controller.update
 );
 
-progressRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+progressRouter.delete("/:id", authController.verifyClient, controller.delete);

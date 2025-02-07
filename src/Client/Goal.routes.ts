@@ -4,8 +4,8 @@ import { controller as authController } from "../Auth/Auth.controller.js";
 
 export const goalRouter = Router();
 
-goalRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-goalRouter.get("/", authController.verifyTrainer, controller.findAll);
+goalRouter.get("/:id", authController.verifyClient, controller.findOne);
+goalRouter.get("/", authController.verifyClient, controller.findAll);
 goalRouter.get(
   "/client/:id",
   authController.verifyClient,
@@ -14,23 +14,23 @@ goalRouter.get(
 
 goalRouter.post(
   "/",
-  authController.verifyTrainer,
+  authController.verifyClient,
   controller.sanitizeGoal,
   controller.add
 );
 
 goalRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authController.verifyClient,
   controller.sanitizeGoal,
   controller.update
 );
 
 goalRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authController.verifyClient,
   controller.sanitizeGoal,
   controller.update
 );
 
-goalRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+goalRouter.delete("/:id", authController.verifyClient, controller.delete);
