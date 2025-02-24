@@ -1,36 +1,36 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./goal.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const goalRouter = Router();
 
-goalRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-goalRouter.get("/", authController.verifyTrainer, controller.findAll);
+goalRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+goalRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 goalRouter.get(
   "/client/:id",
-  authController.verifyClient,
+  authMiddlewares.verifyClient,
   controller.findByClient
 );
 
 goalRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeGoal,
   controller.add
 );
 
 goalRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeGoal,
   controller.update
 );
 
 goalRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeGoal,
   controller.update
 );
 
-goalRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+goalRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);

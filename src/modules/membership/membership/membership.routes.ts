@@ -1,40 +1,40 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./membership.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const membershipRouter = Router();
 
-membershipRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-membershipRouter.get("/", authController.verifyTrainer, controller.findAll);
+membershipRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+membershipRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 membershipRouter.get(
   "/active/:id",
-  authController.verifyClient,
+  authMiddlewares.verifyClient,
   controller.findActiveByClient
 );
 
 membershipRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeMembership,
   controller.add
 );
 
 membershipRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeMembership,
   controller.update
 );
 
 membershipRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeMembership,
   controller.update
 );
 
 membershipRouter.delete(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.delete
 );

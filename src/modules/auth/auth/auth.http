@@ -23,7 +23,7 @@ POST http://localhost:3000/api/auth/
 Content-Type: application/json
 
 {
-  "email": "hernantarabella@hotmail.com.ar",
+  "email": "hernantarabella@hotmail.com.ar"
 }
 
 ### logout

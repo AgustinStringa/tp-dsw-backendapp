@@ -1,36 +1,36 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./progress.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const progressRouter = Router();
 
-progressRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-progressRouter.get("/", authController.verifyTrainer, controller.findAll);
+progressRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+progressRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 progressRouter.get(
   "/client/:id",
-  authController.verifyClient,
+  authMiddlewares.verifyClient,
   controller.findByClient
 );
 
 progressRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeProgress,
   controller.add
 );
 
 progressRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeProgress,
   controller.update
 );
 
 progressRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeProgress,
   controller.update
 );
 
-progressRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+progressRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);

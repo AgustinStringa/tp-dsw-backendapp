@@ -1,7 +1,5 @@
-import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-
-dotenv.config();
+import { environment } from "../../config/env.config.js";
 
 const emailListDev = [
   "agustinstringa24@hotmail.com",
@@ -19,13 +17,13 @@ export const sendEmail = async (
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASS,
+      user: environment.emailAccount.email,
+      pass: environment.emailAccount.password,
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL,
+    from: environment.emailAccount.email,
     to: receivers,
     subject: subject,
     html: htmlContent,

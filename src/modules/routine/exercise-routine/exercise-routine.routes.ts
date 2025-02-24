@@ -1,31 +1,31 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./exercise-routine.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const exerciseRoutineRouter = Router();
 
 exerciseRoutineRouter.get(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.findOne
 );
 
 exerciseRoutineRouter.get(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.findAll
 );
 
 exerciseRoutineRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeExerciseRoutine,
   controller.add
 );
 
 exerciseRoutineRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeExerciseRoutine,
   controller.update
 );
@@ -33,13 +33,13 @@ exerciseRoutineRouter.put(
 //TODO verificar si es un trainer o un client (si es client solo puede modificar un ejercicio de su rutina actual)
 exerciseRoutineRouter.patch(
   "/:id",
-  authController.verifyUser,
+  authMiddlewares.verifyUser,
   controller.sanitizeExerciseRoutine,
   controller.update
 );
 
 exerciseRoutineRouter.delete(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.delete
 );

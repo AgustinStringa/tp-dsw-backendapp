@@ -1,17 +1,16 @@
-import { MikroORM } from "@mikro-orm/mongodb";
 import { defineConfig } from "@mikro-orm/mongodb";
+import { MikroORM } from "@mikro-orm/mongodb";
 import { MongoHighlighter } from "@mikro-orm/mongo-highlighter";
+import { environment } from "../env.config.js";
+
 const config = defineConfig({
   entities: ["dist/**/*.entity.js"],
   entitiesTs: ["src/**/*.entity.ts"],
   dbName: "gimnasio",
   highlighter: new MongoHighlighter(),
-  debug: true,
-  clientUrl: "mongodb://localhost:27017/gimnasio",
-  ensureIndexes: true, //preguntar al profe si es apto para producción
-  /*`mongodb+srv://${encodeURIComponent("roota")}:${encodeURIComponent(
-    "roota"
-  )}@cluster0.asqcnur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,*/
+  debug: !environment.production,
+  clientUrl: environment.mongoUri,
+  ensureIndexes: true,
 });
 
 export const orm = await MikroORM.init(config);

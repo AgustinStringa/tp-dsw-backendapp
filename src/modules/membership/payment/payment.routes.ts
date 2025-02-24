@@ -1,31 +1,31 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./payment.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const paymentRouter = Router();
 
-paymentRouter.get("/", authController.verifyTrainer, controller.findAll);
-paymentRouter.get("/:id", authController.verifyTrainer, controller.findOne);
+paymentRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
+paymentRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
 
 paymentRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizePayment,
   controller.add
 );
 
 paymentRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizePayment,
   controller.update
 );
 
 paymentRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizePayment,
   controller.update
 );
 
-paymentRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+paymentRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);

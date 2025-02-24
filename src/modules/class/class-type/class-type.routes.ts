@@ -1,31 +1,35 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./class-type.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const classTypeRouter = Router();
 
-classTypeRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-classTypeRouter.get("/", authController.verifyUser, controller.findAll);
+classTypeRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+classTypeRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
 
 classTypeRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClassType,
   controller.add
 );
 
 classTypeRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClassType,
   controller.update
 );
 
 classTypeRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClassType,
   controller.update
 );
 
-classTypeRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+classTypeRouter.delete(
+  "/:id",
+  authMiddlewares.verifyTrainer,
+  controller.delete
+);

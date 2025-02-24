@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Class } from "../class/class.entity.js";
 import { Client } from "../../client/client/client.entity.js";
-import { getUser } from "../../auth/auth/auth.controller.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Registration } from "./registration.entity.js";
 
@@ -43,22 +44,19 @@ const controller = {
 
   findByClient: async function (req: Request, res: Response) {
     try {
-      const user = await getUser(req);
-      if (user != null) {
-        const clientIdParam = req.params.id;
-        const { id } = user;
-        if (clientIdParam != id)
-          return res.status(401).json({ message: "client unauthorized" });
-        const registrations = await em.find(Registration, { client: id });
-        res.status(200).json({
-          message: "Registrations for the client were found",
-          data: registrations,
-        });
-      } else {
-        return res.status(404).json({ message: "client not found" });
-      }
+      const clientIdParam = req.params.id;
+      const { user } = await authService.getUser(req);
+
+      if (clientIdParam !== user.id)
+        return res.status(401).json({ message: "client unauthorized" });
+
+      const registrations = await em.find(Registration, { client: user.id });
+      res.status(200).json({
+        message: "Registrations for the client were found",
+        data: registrations,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -84,6 +82,7 @@ const controller = {
       }
 
       //buscar cupo y contar inscripciones activas
+      //chequear que se el cliente este...
       const registration = em.create(Registration, req.body.sanitizedInput);
       await em.flush();
       res
@@ -133,17 +132,12 @@ const controller = {
 
     try {
       //TODO ver en el cancel que se verifique esto
-      const user = await getUser(req);
+      const { user, isTrainer } = await authService.getUser(req);
 
-      if (user !== null) {
-        if (user.isTrainer === false) req.body.sanitizedInput.client = user.id;
-
-        next();
-      } else {
-        res.status(500).json({ message: "Try again please" });
-      }
+      if (isTrainer === false) req.body.sanitizedInput.client = user.id;
+      next();
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 };

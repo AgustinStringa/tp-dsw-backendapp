@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { validate } from "class-validator";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../client/client.entity.js";
-import { getUser } from "../../auth/auth/auth.controller.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Progress } from "./progress.entity.js";
-import { validate } from "class-validator";
 
 const em = orm.em;
 
@@ -34,29 +34,27 @@ const controller = {
       res.status(errorCode).json({ message: error.message });
     }
   },
+
   findByClient: async function (req: Request, res: Response) {
     try {
-      //1. suponiendo que no copie y pegué del metodo del controller de Goal
-      const user = await getUser(req);
-      if (user != null) {
-        const userIdParam = req.params.id;
-        const { id } = user;
-        if (userIdParam != id)
-          return res.status(401).json({ message: "client unauthorized" });
-        const goals = await em.find(Progress, {
-          client: id,
-        });
-        res.status(200).json({
-          message: "All progresses of the client were found",
-          data: goals,
-        });
-      } else {
-        return res.status(404).json({ message: "client not found" });
-      }
+      const userIdParam = req.params.id;
+      const { user } = await authService.getUser(req);
+
+      if (userIdParam !== user.id)
+        return res.status(401).json({ message: "client unauthorized." });
+
+      const progresses = await em.find(Progress, {
+        client: user.id,
+      });
+      res.status(200).json({
+        message: "All progresses of the client were found.",
+        data: progresses,
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   },
+
   add: async function (req: Request, res: Response) {
     try {
       const progress = em.create(Progress, req.body.sanitizedInput);

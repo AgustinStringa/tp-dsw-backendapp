@@ -1,37 +1,37 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./routine.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const routineRouter = Router();
 
-routineRouter.get("/:id", authController.verifyUser, controller.findOne);
-routineRouter.get("/", authController.verifyTrainer, controller.findAll);
+routineRouter.get("/:id", authMiddlewares.verifyUser, controller.findOne);
+routineRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 
 routineRouter.get(
   "/:userId/current",
-  authController.verifyClient,
+  authMiddlewares.verifyClient,
   controller.findCurrentRoutine
 );
 
 routineRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeRoutine,
   controller.add
 );
 
 routineRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeRoutine,
   controller.update
 );
 
 routineRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeRoutine,
   controller.update
 );
 
-routineRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+routineRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);

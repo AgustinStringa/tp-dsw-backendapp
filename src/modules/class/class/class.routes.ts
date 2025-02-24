@@ -1,31 +1,31 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./class.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const classRouter = Router();
 
-classRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-classRouter.get("/", authController.verifyUser, controller.findAll); //trainer & client
+classRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+classRouter.get("/", authMiddlewares.verifyUser, controller.findAll); //trainer & client
 
 classRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClass,
   controller.add
 ); //trainer
 
 classRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClass,
   controller.update
 );
 
 classRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClass,
   controller.update
 );
 
-classRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+classRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);

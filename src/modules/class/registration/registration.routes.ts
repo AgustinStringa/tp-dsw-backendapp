@@ -1,30 +1,30 @@
 import { Router } from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./registration.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const registrationRouter = Router();
 
 registrationRouter.get(
   "/client/:id",
-  authController.verifyUser,
+  authMiddlewares.verifyUser,
   controller.findByClient
 );
 registrationRouter.get(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.findOne
 );
-registrationRouter.get("/", authController.verifyTrainer, controller.findAll);
+registrationRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 
 registrationRouter.post(
   "/",
-  authController.verifyUser,
+  authMiddlewares.verifyUser,
   controller.sanitizeRegistration,
   controller.add
 );
 
 registrationRouter.patch(
   "/cancel/:id",
-  authController.verifyUser,
+  authMiddlewares.verifyUser,
   controller.cancel
 );

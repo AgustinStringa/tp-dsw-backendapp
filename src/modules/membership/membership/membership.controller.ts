@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { startOfDay } from "date-fns";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
-import { getUser } from "../../auth/auth/auth.controller.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "./membership.entity.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -43,29 +44,24 @@ const controller = {
 
   findActiveByClient: async function (req: Request, res: Response) {
     try {
-      const client = await getUser(req);
-      if (client != null) {
-        const clientIdParam = req.params.id;
-        const { id } = client;
-        if (clientIdParam != id)
-          return res.status(401).json({ message: "client unauthorized" });
-        const membership = await em.findOneOrFail(
-          Membership,
-          {
-            client: id,
-            dateFrom: { $lte: new Date() },
-            dateTo: { $gte: new Date() },
-          },
-          { populate: ["type"] }
-        );
-        res.status(200).json({ message: "Membership found", data: membership });
-      } else {
-        return res.status(404).json({ message: "client not found" });
-      }
+      const clientIdParam = req.params.id;
+      const { user } = await authService.getUser(req);
+
+      if (clientIdParam != user.id)
+        return res.status(401).json({ message: "Client unauthorized." });
+
+      const membership = await em.findOneOrFail(
+        Membership,
+        {
+          client: user,
+          dateFrom: { $lte: new Date() },
+          dateTo: { $gte: new Date() },
+        },
+        { populate: ["type"] }
+      );
+      res.status(200).json({ message: "Membership found", data: membership });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 

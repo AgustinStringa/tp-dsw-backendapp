@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { validate } from "class-validator";
 import { Client } from "./client.entity.js";
-import { getUser } from "../../auth/auth/auth.controller.js";
+import { authService } from "../../auth/auth/auth.service.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { sendEmail } from "../../../utils/notifications/notifications.js";
 import { Trainer } from "../../trainer/trainer/trainer.entity.js";
@@ -41,9 +42,7 @@ const controller = {
       );
       res.status(200).json({ message: "Client found", data: client });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -63,13 +62,9 @@ const controller = {
 
       await em.flush();
 
-      let token = undefined;
-      const user = await getUser(req);
-
-      if (user?.isTrainer === false) {
-        token = jwt.sign({ id: client.id }, JWT_SECRET, {
-          expiresIn: "1h",
-        });
+      const { user, isTrainer } = await authService.getUser(req);
+      if (isTrainer === false) {
+        authService.startSession(res, user);
       }
 
       sendEmail(
@@ -99,7 +94,7 @@ const controller = {
 
       return res.status(201).json({
         message: "Registered successfully",
-        data: { user: userReturn, ...(token ? { token } : {}) },
+        data: { user: userReturn },
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });

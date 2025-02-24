@@ -1,31 +1,31 @@
 import express from "express";
+import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./exercise.controller.js";
-import { controller as authController } from "../../auth/auth/auth.controller.js";
 
 export const exerciseRouter = express.Router();
 
-exerciseRouter.get("/:id", authController.verifyTrainer, controller.findOne);
-exerciseRouter.get("/", authController.verifyTrainer, controller.findAll);
+exerciseRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+exerciseRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 
 exerciseRouter.post(
   "/",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeExercise,
   controller.add
 );
 
 exerciseRouter.put(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeExercise,
   controller.update
 );
 
 exerciseRouter.patch(
   "/:id",
-  authController.verifyTrainer,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeExercise,
   controller.update
 );
 
-exerciseRouter.delete("/:id", authController.verifyTrainer, controller.delete);
+exerciseRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);
