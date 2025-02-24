@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { validate } from "class-validator";
 import { MembershipType } from "./membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -41,10 +41,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const membType = em.create(MembershipType, req.body.sanitizedInput);
-
-      const errors = await validate(membType);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(membType);
 
       await em.flush();
       res.status(201).json({
@@ -60,10 +57,7 @@ const controller = {
     try {
       const membType = await em.findOneOrFail(MembershipType, req.params.id);
       em.assign(membType, req.body.sanitizedInput);
-
-      const errors = await validate(membType);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(membType);
 
       await em.flush();
       res

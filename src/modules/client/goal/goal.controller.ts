@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../client/client.entity.js";
 import { Goal } from "./goal.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -37,10 +37,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const goal = em.create(Goal, req.body.sanitizedInput);
-
-      const errors = await validate(goal);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(goal);
 
       await em.findOneOrFail(Client, req.body.sanitizedInput.client);
       await em.flush();
@@ -76,10 +73,7 @@ const controller = {
     try {
       const goal = await em.findOneOrFail(Goal, { id: req.params.id });
       em.assign(goal, req.body.sanitizedInput);
-
-      const errors = await validate(goal);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(goal);
 
       if (req.body.sanitizedInput.client !== undefined)
         await em.findOneOrFail(Client, req.body.sanitizedInput.client);

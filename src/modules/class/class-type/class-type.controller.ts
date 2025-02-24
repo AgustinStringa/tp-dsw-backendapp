@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
 import { ClassType } from "./class-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -36,10 +36,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const classtype = em.create(ClassType, req.body.sanitizedInput);
-
-      const errors = await validate(classtype);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(classtype);
 
       await em.flush();
       res.status(201).json({ message: "Class Type created", data: classtype });
@@ -52,11 +49,9 @@ const controller = {
     try {
       const id = req.params.id;
       const classtype = await em.findOneOrFail(ClassType, { id });
-      em.assign(classtype, req.body.sanitizedInput);
 
-      const errors = await validate(classtype);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      em.assign(classtype, req.body.sanitizedInput);
+      validateEntity(classtype);
 
       await em.flush();
       res.status(200).json({ message: "Class Type updated", data: classtype });

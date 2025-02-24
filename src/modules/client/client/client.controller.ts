@@ -1,15 +1,13 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
-import { validate } from "class-validator";
 import { Client } from "./client.entity.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { sendEmail } from "../../../utils/notifications/notifications.js";
 import { Trainer } from "../../trainer/trainer/trainer.entity.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
-const JWT_SECRET = "your_jwt_secret";
 const em = orm.em;
 
 const controller = {
@@ -49,9 +47,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const client = em.create(Client, req.body.sanitizedInput);
-      const errors = await validate(client);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(client);
 
       const trainer = await em.findOne(Trainer, { email: client.email });
       if (trainer !== null) {
@@ -117,9 +113,7 @@ const controller = {
       const client = await em.findOneOrFail(Client, { id });
       em.assign(client, req.body.sanitizedInput);
 
-      const errors = await validate(client);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(client);
 
       await em.flush();
       res.status(200).json({ message: "Client updated", data: client });

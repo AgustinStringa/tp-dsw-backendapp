@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
 import { News } from "./news.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -30,10 +30,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const news = em.create(News, req.body.sanitizedInput);
-
-      const errors = await validate(news);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(news);
 
       await em.flush();
       res.status(200).json({ message: "News created", data: news });
@@ -50,10 +47,7 @@ const controller = {
       em.assign(news, req.body.sanitizedInput);
       news.checkExpirationDate();
 
-      const errors = await validate(news);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
-
+      validateEntity(news);
       await em.flush();
 
       res.status(200).json({ message: "News updated", data: news });

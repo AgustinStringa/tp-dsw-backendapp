@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
 import { Exercise } from "./exercise.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -30,10 +30,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const exercise = em.create(Exercise, req.body.sanitizedInput);
-
-      const errors = await validate(exercise);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(exercise);
 
       await em.flush();
       res.status(201).json({ message: "Exercise created", data: exercise });
@@ -48,11 +45,9 @@ const controller = {
       const exercise = await em.findOneOrFail(Exercise, { id });
       em.assign(exercise, req.body.sanitizedInput);
 
-      const errors = await validate(exercise);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
-
+      validateEntity(exercise);
       await em.flush();
+
       res.status(200).json({ message: "Exercise updated", data: exercise });
     } catch (error: any) {
       res.status(500).json({ message: error.message });

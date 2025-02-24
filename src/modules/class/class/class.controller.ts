@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
 import { Class } from "./class.entity.js";
 import { ClassType } from "../class-type/class-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { sendEmail } from "../../../utils/notifications/notifications.js";
 import { Trainer } from "../../trainer/trainer/trainer.entity.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -50,11 +50,9 @@ const controller = {
         Trainer,
         req.body.sanitizedInput.trainer
       );
-      const class_a = em.create(Class, req.body.sanitizedInput);
 
-      const errors = await validate(class_a);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      const class_a = em.create(Class, req.body.sanitizedInput);
+      validateEntity(class_a);
 
       await em.flush();
 
@@ -99,10 +97,7 @@ const controller = {
     try {
       const class_a = await em.findOneOrFail(Class, { id: req.params.id });
       em.assign(class_a, req.body.sanitizedInput);
-
-      const errors = await validate(class_a);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(class_a);
 
       if (req.body.sanitizedInput.classType !== undefined)
         await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);

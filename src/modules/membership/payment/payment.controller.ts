@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
 import { Membership } from "../membership/membership.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Payment } from "./payment.entity.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -39,10 +39,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const payment = em.create(Payment, req.body.sanitizedInput);
-
-      const errors = await validate(payment);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(payment);
 
       await em.findOneOrFail(Membership, payment.membership.id);
 
@@ -59,10 +56,7 @@ const controller = {
     try {
       const payment = await em.findOneOrFail(Payment, req.params.id);
       em.assign(payment, req.body.sanitizedInput);
-
-      const errors = await validate(payment);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(payment);
 
       if (req.body.sanitizedInput.membership !== undefined)
         await em.findOneOrFail(Membership, req.body.sanitizedInput.membership);

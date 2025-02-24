@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { validate } from "class-validator";
 import { Client } from "../../client/client/client.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Trainer } from "./trainer.entity.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
@@ -34,10 +34,7 @@ const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const trainer = em.create(Trainer, req.body.sanitizedInput);
-
-      const errors = await validate(trainer);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(trainer);
 
       const client = await em.findOne(Client, { email: trainer.email });
       if (client !== null) {
@@ -57,10 +54,7 @@ const controller = {
     try {
       const trainer = await em.findOneOrFail(Trainer, { id: req.params.id });
       em.assign(trainer, req.body.sanitizedInput);
-
-      const errors = await validate(trainer);
-      if (errors.length > 0)
-        return res.status(400).json({ message: "Bad request" });
+      validateEntity(trainer);
 
       if (req.body.sanitizedInput.email !== undefined) {
         const client = await em.findOne(Client, { email: trainer.email });
