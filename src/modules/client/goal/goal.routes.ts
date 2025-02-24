@@ -1,0 +1,36 @@
+import { Router } from "express";
+import { controller } from "./goal.controller.js";
+import { controller as authController } from "../../auth/auth/auth.controller.js";
+
+export const goalRouter = Router();
+
+goalRouter.get("/:id", authController.verifyTrainer, controller.findOne);
+goalRouter.get("/", authController.verifyTrainer, controller.findAll);
+goalRouter.get(
+  "/client/:id",
+  authController.verifyClient,
+  controller.findByClient
+);
+
+goalRouter.post(
+  "/",
+  authController.verifyTrainer,
+  controller.sanitizeGoal,
+  controller.add
+);
+
+goalRouter.put(
+  "/:id",
+  authController.verifyTrainer,
+  controller.sanitizeGoal,
+  controller.update
+);
+
+goalRouter.patch(
+  "/:id",
+  authController.verifyTrainer,
+  controller.sanitizeGoal,
+  controller.update
+);
+
+goalRouter.delete("/:id", authController.verifyTrainer, controller.delete);
