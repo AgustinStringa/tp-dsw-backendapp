@@ -13,18 +13,15 @@ const em = orm.em;
 const controller = {
   findAll: async function (_req: Request, res: Response) {
     try {
-      const clients = await em.find(
-        Client,
-        {},
-        {
-          populate: ["progresses", "goals", "memberships", "routines"],
-          fields: ["lastName", "firstName", "dni", "email"],
-          orderBy: { lastName: "asc", firstName: "asc" }, //TODO es sensible a mayúsculas y minúscilas
-        } //TODO determinar qué popular, qué atributos devolver (posiblemente se necesiten varios endpoints)
-      );
-      res
-        .status(200)
-        .json({ message: "All clients were found", data: clients });
+      const clients = await em.findAll(Client, {
+        fields: ["lastName", "firstName", "dni", "email"],
+        orderBy: { lastName: "asc", firstName: "asc" }, //es sensible a mayúsculas y minúsculas
+      });
+
+      res.status(200).json({
+        message: "Todos los clientes fueron encontrados.",
+        data: clients,
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -38,7 +35,7 @@ const controller = {
         { id },
         { populate: ["progresses", "goals"] }
       );
-      res.status(200).json({ message: "Client found", data: client });
+      res.status(200).json({ message: "Cliente encontrado.", data: client });
     } catch (error: any) {
       handleError(error, res);
     }
@@ -53,15 +50,19 @@ const controller = {
       if (trainer !== null) {
         return res
           .status(409)
-          .send({ message: "There is already a trainer with the same email" });
+          .send({ message: "El correo electrónico ya se encuentra en uso." });
+      }
+
+      let token;
+      try {
+        token = authService.decodeToken(req);
+      } catch (error: any) {}
+
+      if (token === undefined) {
+        authService.startSession(res, client);
       }
 
       await em.flush();
-
-      const { user, isTrainer } = await authService.getUser(req);
-      if (isTrainer === false) {
-        authService.startSession(res, user);
-      }
 
       sendEmail(
         "Registro exitoso en Gimnasio Iron Haven",
@@ -89,7 +90,7 @@ const controller = {
       };
 
       return res.status(201).json({
-        message: "Registered successfully",
+        message: "Cliente registrado.",
         data: { user: userReturn },
       });
     } catch (error: any) {
@@ -104,7 +105,7 @@ const controller = {
         const trainer = await em.findOne(Trainer, { email });
         if (trainer !== null) {
           return res.status(409).send({
-            message: "There is already a trainer with the same email",
+            message: "El correo electrónico ya se encuentra en uso.",
           });
         }
       }
@@ -116,11 +117,9 @@ const controller = {
       validateEntity(client);
 
       await em.flush();
-      res.status(200).json({ message: "Client updated", data: client });
+      res.status(200).json({ message: "Cliente actualizado.", data: client });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -129,9 +128,9 @@ const controller = {
       const id = req.params.id;
       const client = em.getReference(Client, id);
       await em.removeAndFlush(client);
-      res.status(200).json({ message: "Client deleted" });
+      res.status(200).json({ message: "Cliente eliminado." });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
