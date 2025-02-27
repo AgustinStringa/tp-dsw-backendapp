@@ -1,4 +1,4 @@
-import { addDays, startOfWeek } from "date-fns";
+import { addDays, format, startOfWeek } from "date-fns";
 import { Exercise } from "../exercise/exercise.entity.js";
 import { HttpError } from "../../../utils/errors/http-error.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -45,11 +45,17 @@ export const routineService = {
     if (routineOverlap)
       throw new HttpError(
         409,
-        `La rutina se sobrepone con otra que empieza el ${routineOverlap.start} y termina el ${routineOverlap.end}`
-      ); //TODO mostrar mejor las fechas
+        `Ya existe una rutina que empieza el ${format(
+          routineOverlap.start,
+          "dd-MM-yyyy"
+        )} y termina el ${format(routineOverlap.end, "dd-MM-yyyy")}.`
+      );
   },
 
   validateExercises: async (routine: Routine) => {
+    if (routine.exercisesRoutine.length === 0)
+      throw new HttpError(400, "La rutina debe tener al menos 1 ejercicio.");
+
     const exercisesIds = [
       ...new Set(routine.exercisesRoutine.map((er) => er.exercise.id)),
     ];

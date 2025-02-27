@@ -150,14 +150,27 @@ export const controller = {
     next: NextFunction
   ) {
     try {
-      const start = startOfDay(validateDateTime(req.body.start, "start")!); //TODO admitir undefined
-      const end = startOfDay(validateDateTime(req.body.end, "end")!); //TODO admitir undefined
+      let start = validateDateTime(req.body.start, "start");
+      let end = validateDateTime(req.body.end, "end");
 
-      if (getDay(start) !== 1 || getDay(end) !== 1) {
-        res
-          .status(400)
-          .json({ message: "Las fechas de inicio y de fin deben ser lunes." });
-        return;
+      if (start !== undefined) {
+        start = startOfDay(start);
+        if (getDay(start) !== 1) {
+          res.status(400).json({
+            message: "Las fechas de inicio y de fin deben ser lunes.",
+          });
+          return;
+        }
+      }
+
+      if (end !== undefined) {
+        end = startOfDay(end);
+        if (getDay(end) !== 1) {
+          res.status(400).json({
+            message: "Las fechas de inicio y de fin deben ser lunes.",
+          });
+          return;
+        }
       }
 
       req.body.sanitizedInput = {
