@@ -1,0 +1,7 @@
+### Record execution
+PATCH http://localhost:3000/api/routines/exerciseroutines/{id}/record-execution/
+Content-Type: application/json
+
+{
+  "weight": "5"
+}

@@ -1,22 +1,28 @@
-import { addDays, startOfWeek, startOfDay } from "date-fns";
-import { NotFoundError } from "@mikro-orm/core";
+import { startOfDay, getDay } from "date-fns";
 import { Request, Response, NextFunction } from "express";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
-import { Exercise } from "../exercise/exercise.entity.js";
+import { ExerciseRoutine } from "../exercise-routine/exercise-routine.entity.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Routine } from "./routine.entity.js";
-import { Trainer } from "../../trainer/trainer/trainer.entity.js";
+import { routineService } from "./routine.service.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import {
+  validateDateTime,
+  validateObjectId,
+} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
       const routines = await em.find(
         Routine,
         {},
         {
-          populate: ["client", "trainer", "exercisesRoutine"],
+          populate: ["client", "trainer", "exercisesRoutine.exercise"],
         }
       );
       res.status(200).json({
@@ -30,115 +36,73 @@ const controller = {
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const routine = await em.findOneOrFail(
         Routine,
         { id },
         {
-          populate: [
-            "client",
-            "trainer",
-            "exercisesRoutine",
-            "exercisesRoutine.exercise",
-          ],
+          populate: ["client", "trainer", "exercisesRoutine.exercise"],
         }
       );
-      res.status(200).json({ message: "Routine found", data: routine });
+      res.status(200).json({ message: "Rutina encontrada.", data: routine });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   add: async function (req: Request, res: Response) {
     try {
-      if (req.body.start > req.body.end) {
-        return res.status(400).json({
-          message: "End date must be greather than start date",
-        });
-      }
-
-      const thisWeekMonday = addDays(startOfWeek(new Date()), 1);
-      if (req.body.start < thisWeekMonday) {
-        return res.status(400).json({
-          message: "Routine's start date must be greater than last monday",
-        });
-      }
-
-      await em.findOneOrFail(Trainer, { id: req.body.trainer });
-      await em.findOneOrFail(Client, { id: req.body.client });
-
-      const routineOverlap = await orm.em.findOne(Routine, {
-        $and: [
-          {
-            client: { $eq: req.body.client },
-          },
-          {
-            $or: [
-              {
-                start: { $lt: new Date(req.body.sanitizedInput.end) },
-                end: { $gt: new Date(req.body.sanitizedInput.start) },
-              },
-            ],
-          },
-        ],
-      });
-
-      if (routineOverlap) {
-        return res.status(400).json({
-          message: "There is overlap between routines",
-          data: routineOverlap,
-        });
-      }
+      await routineService.checkDates(req.body.sanitizedInput, true);
+      await em.findOneOrFail(Client, req.body.sanitizedInput.client);
 
       const routine = em.create(Routine, req.body.sanitizedInput);
-      const exercisesIds = [
-        ...new Set(routine.exercisesRoutine.map((er) => er.exercise.id)),
-      ];
-      const exercises = await em.find(Exercise, { id: { $in: exercisesIds } });
-
-      if (exercises.length !== exercisesIds.length)
-        return res.status(400).json({
-          message: "Some exercises were not found",
-        });
+      validateEntity(routine);
+      await routineService.validateExercises(routine);
 
       await em.flush();
-      res.status(201).json({ message: "Routine created", data: routine });
+      res.status(201).json({ message: "Rutina creada.", data: routine });
     } catch (error: any) {
-      if (error instanceof NotFoundError) {
-        res.status(400).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: error.message });
-      }
+      handleError(error, res);
     }
   },
 
   update: async function (req: Request, res: Response) {
     try {
-      if (req.body.trainer !== undefined) {
-        await em.findOneOrFail(Trainer, { id: req.body.trainer });
-      }
-      if (req.body.client) {
-        await em.findOneOrFail(Client, { id: req.body.client });
-      }
+      const id = validateObjectId(req.params.id, "id");
+      const routine = await em.findOneOrFail(
+        Routine,
+        { id },
+        { populate: ["exercisesRoutine"] }
+      );
 
-      //hay que realizar validaciones similares a las del método add
+      const aux = { ...routine, ...req.body.sanitizedInput };
 
-      const id = req.params.id;
-      const routine = await em.findOneOrFail(Routine, { id });
+      let checkStart = false;
+      if (req.body.sanitizedInput.start !== undefined) checkStart = true;
+
+      if (req.body.sanitizedInput.client)
+        await em.findOneOrFail(Client, aux.client);
+
+      await routineService.checkDates(aux, checkStart);
+
       em.assign(routine, req.body.sanitizedInput);
+      validateEntity(routine);
+      await routineService.validateExercises(routine);
+
       await em.flush();
-      res.status(200).json({ message: "Routine updated", data: routine });
+      res.status(200).json({ message: "Rutina actualizada.", data: routine });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   delete: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const routine = em.getReference(Routine, id);
+      const id = validateObjectId(req.params.id, "id", false);
+      const routine = em.getReference(Routine, id as string);
       await em.removeAndFlush(routine);
-      res.status(200).json({ message: "Routine deleted" });
+
+      res.status(200).json({ message: "Rutina eliminada." });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -146,14 +110,15 @@ const controller = {
 
   findCurrentRoutine: async (req: Request, res: Response) => {
     try {
-      const userId = req.params.userId;
+      const userId = validateObjectId(req.params.userId, "userId");
       const today: Date = new Date();
+
       const routine = await em.findOne(
         Routine,
         {
           $and: [
             { client: userId },
-            { start: { $lt: today } },
+            { start: { $lte: today } },
             { end: { $gt: today } },
           ],
         },
@@ -168,36 +133,57 @@ const controller = {
       );
 
       if (!routine) {
-        return res.status(404).json({ message: "Routine not found" });
+        return res
+          .status(404)
+          .json({ message: "No se encontró ninguna rutina actual." });
       }
 
-      res.status(200).json({ message: "Routine found", data: routine });
+      res.status(200).json({ message: "Rutina encontrada", data: routine });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
-  sanitizeRoutine: function (req: Request, res: Response, next: NextFunction) {
+  sanitizeRoutine: async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      req.body.sanitizedInput = {
-        start: startOfDay(req.body.start),
-        end: startOfDay(req.body.end),
-        trainer: req.body.trainer,
-        client: req.body.client,
-        exercisesRoutine: req.body.exercisesRoutine, //en un post weight debe ser nulo
-      };
-    } catch {
-      res.status(400).json({ message: "Bad request" }); //se ejecuta si se envía una fecha con formato no válido
-    }
+      const start = startOfDay(validateDateTime(req.body.start, "start")!); //TODO admitir undefined
+      const end = startOfDay(validateDateTime(req.body.end, "end")!); //TODO admitir undefined
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined) {
-        delete req.body.sanitizedInput[key];
+      if (getDay(start) !== 1 || getDay(end) !== 1) {
+        res
+          .status(400)
+          .json({ message: "Las fechas de inicio y de fin deben ser lunes." });
+        return;
       }
-    });
 
-    next();
+      req.body.sanitizedInput = {
+        start: start,
+        end: end,
+        trainer: (await authService.getUser(req)).user,
+        client: validateObjectId(req.body.client_id, "client_id", true),
+        exercisesRoutine: req.body.exercisesRoutine,
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined) {
+          delete req.body.sanitizedInput[key];
+        }
+      });
+
+      req.body.sanitizedInput.exercisesRoutine?.forEach(
+        (e: ExerciseRoutine) => {
+          validateObjectId(e.exercise, "exercise");
+          if (req.method === "POST") e.weight = null;
+        }
+      );
+
+      next();
+    } catch (error: any) {
+      handleError(error, res);
+    }
   },
 };
-
-export { controller };

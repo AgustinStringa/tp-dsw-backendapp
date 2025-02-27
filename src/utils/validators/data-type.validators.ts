@@ -12,3 +12,15 @@ export function validateObjectId(
 
   throw new HttpError(400, `${field}: must be an ObjectId.`);
 }
+
+export function validateDateTime(dateTime: any, field: string) {
+  if (dateTime === undefined) return undefined;
+
+  const aux = new Date(dateTime);
+  if (!isNaN(aux.getTime())) return aux;
+
+  throw new HttpError(
+    400,
+    `${field}: debe ser un string en formato YYYY-MM-DDTHH:mm:ss.sssZ`
+  );
+}

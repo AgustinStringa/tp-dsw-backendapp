@@ -1,48 +1,15 @@
 import { Request, Response, NextFunction } from "express";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Exercise } from "../exercise/exercise.entity.js";
 import { ExerciseRoutine } from "./exercise-routine.entity.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Routine } from "../routine/routine.entity.js";
+import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
-const controller = {
-  findAll: async function (_: Request, res: Response) {
-    try {
-      const exercisesRoutine = await em.find(
-        ExerciseRoutine,
-        {},
-        {
-          populate: ["exercise", "routine"],
-        }
-      );
-      res.status(200).json({
-        message: "All exercises routine were found",
-        data: exercisesRoutine,
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
-  findOne: async function (req: Request, res: Response) {
-    try {
-      const id = req.params.id;
-      const exerciseRoutine = await em.findOneOrFail(
-        ExerciseRoutine,
-        { id },
-        {
-          populate: ["exercise", "routine"],
-        }
-      );
-      res
-        .status(200)
-        .json({ message: "Exercise routine found", data: exerciseRoutine });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
+export const controller = {
   add: async function (req: Request, res: Response) {
     try {
       await em.findOneOrFail(Exercise, { id: req.body.exercise });
@@ -52,12 +19,49 @@ const controller = {
         ExerciseRoutine,
         req.body.sanitizedInput
       );
+
+      validateEntity(exerciseRoutine);
       await em.flush();
-      res
-        .status(201)
-        .json({ message: "Exercise routine created", data: exerciseRoutine });
+
+      res.status(201).json({
+        message: "Se agregó el ejercicio a la rutina.",
+        data: exerciseRoutine,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
+    }
+  },
+
+  markAsDone: async function (req: Request, res: Response) {
+    try {
+      const id = req.params.id;
+      const exerciseRoutine = await em.findOneOrFail(
+        ExerciseRoutine,
+        { id },
+        { populate: ["routine.client"] }
+      );
+
+      if (exerciseRoutine.routine.end <= new Date()) {
+        res.status(400).json({ message: "La rutina ya finalizó." });
+        return;
+      }
+
+      const { user } = await authService.getUser(req);
+      if (exerciseRoutine.routine.client !== user) {
+        res.status(401).json({ message: "Cliente no autorizado." });
+        return;
+      }
+
+      em.assign(exerciseRoutine, req.body.sanitizedInput);
+      validateEntity(exerciseRoutine);
+      await em.flush();
+
+      res.status(200).json({
+        message: "Se registró la ejecución del ejercicio.",
+        data: exerciseRoutine,
+      });
+    } catch (error: any) {
+      handleError(error, res);
     }
   },
 
@@ -71,13 +75,17 @@ const controller = {
         await em.findOneOrFail(Routine, { id: req.body.routine });
       }
       const exerciseRoutine = await em.findOneOrFail(ExerciseRoutine, { id });
+
       em.assign(exerciseRoutine, req.body.sanitizedInput);
+      validateEntity(exerciseRoutine);
       await em.flush();
-      res
-        .status(200)
-        .json({ message: "Exercise routine updated", data: exerciseRoutine });
+
+      res.status(200).json({
+        message: "Se actualizó el ejercicio de la rutina.",
+        data: exerciseRoutine,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -86,15 +94,16 @@ const controller = {
       const id = req.params.id;
       const exerciseRoutine = em.getReference(ExerciseRoutine, id);
       await em.removeAndFlush(exerciseRoutine);
-      res.status(200).json({ message: "Exercise routine deleted" });
+
+      res.status(200).json({ message: "Se quitó el ejercicio de la rutina." });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   sanitizeExerciseRoutine: function (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
@@ -106,7 +115,6 @@ const controller = {
       routine: req.body.routine,
       exercise: req.body.exercise,
     };
-    //more checks about malicious content, sql injections, data type...
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {
       if (req.body.sanitizedInput[key] === undefined) {
@@ -115,6 +123,24 @@ const controller = {
     });
     next();
   },
-};
 
-export { controller };
+  sanitizeExecution: function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    req.body.sanitizedInput = {
+      weight: Number(req.body.weight),
+    };
+
+    if (
+      isNaN(req.body.sanitizedInput.weight) ||
+      req.body.sanitizedInput.weight < 0
+    ) {
+      res.status(401).json({ message: "El peso no es válido." });
+      return;
+    }
+
+    next();
+  },
+};

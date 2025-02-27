@@ -4,18 +4,6 @@ import { controller } from "./exercise-routine.controller.js";
 
 export const exerciseRoutineRouter = Router();
 
-exerciseRoutineRouter.get(
-  "/:id",
-  authMiddlewares.verifyTrainer,
-  controller.findOne
-);
-
-exerciseRoutineRouter.get(
-  "/",
-  authMiddlewares.verifyTrainer,
-  controller.findAll
-);
-
 exerciseRoutineRouter.post(
   "/",
   authMiddlewares.verifyTrainer,
@@ -30,10 +18,16 @@ exerciseRoutineRouter.put(
   controller.update
 );
 
-//TODO verificar si es un trainer o un client (si es client solo puede modificar un ejercicio de su rutina actual)
+exerciseRoutineRouter.patch(
+  "/:id/record-execution/",
+  authMiddlewares.verifyClient,
+  controller.sanitizeExecution,
+  controller.markAsDone
+);
+
 exerciseRoutineRouter.patch(
   "/:id",
-  authMiddlewares.verifyUser,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeExerciseRoutine,
   controller.update
 );

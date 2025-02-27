@@ -28,6 +28,7 @@ export class Routine extends BaseEntity {
 
   @OneToMany(() => ExerciseRoutine, (eRoutine) => eRoutine.routine, {
     cascade: [Cascade.ALL],
+    orphanRemoval: true,
   })
   exercisesRoutine = new Collection<ExerciseRoutine>(this);
 }

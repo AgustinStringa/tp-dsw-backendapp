@@ -18,26 +18,16 @@ Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
-  "start": "2024-09-20T00:00:00Z",
-  "end": "2024-09-30T23:59:59Z",
-  "trainer": "66ce141775ef00a40ff511ef",
-  "client": "66e9b19b100c4d9c3024fc97",
+  "start": "2025-04-14T03:00:00Z",
+  "end": "2025-04-28T03:00:00Z",
+  "client_id": "{id}",
   "exercisesRoutine": [
     {
-      "exercise": "66e9c19314200234c616156c",
+      "exercise": "{id}",
       "week": 1,
-      "day": "Monday",
+      "day": 4,
       "series": 3,
-      "repetitions": 12,
-      "weight": 50
-    },
-    {
-      "exercise": "66e9c25314200234c616156d",
-      "week": 1,
-      "day": "Wednesday",
-      "series": 4,
-      "repetitions": 10,
-      "weight": 60
+      "repetitions": 10
     }
   ]
 }
@@ -49,18 +39,16 @@ Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
-  "start": "2024-09-25T00:00:00Z",
-  "end": "2024-10-05T23:59:59Z",
-  "trainer": "66ce141775ef00a40ff511ef",
-  "client": "66e9b19b100c4d9c3024fc97",
+  "start": "2025-04-07T03:00:00Z",
+  "end": "2025-04-14T03:00:00",
   "exercisesRoutine": [
     {
-      "exercise": "66e9c19314200234c616156c",
+      "exercise": "{id}",
       "week": 2,
-      "day": "Friday",
-      "series": 3,
-      "repetitions": 15,
-      "weight": 55
+      "day": 4,
+      "series": 14,
+      "repetitions": 4,
+      "weight": 150
     }
   ]
 }
