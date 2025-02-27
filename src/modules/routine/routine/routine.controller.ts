@@ -177,7 +177,7 @@ export const controller = {
         start: start,
         end: end,
         trainer: (await authService.getUser(req)).user,
-        client: validateObjectId(req.body.client_id, "client_id", true),
+        client: validateObjectId(req.body.clientId, "clientId", true),
         exercisesRoutine: req.body.exercisesRoutine,
       };
 

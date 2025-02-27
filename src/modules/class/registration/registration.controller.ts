@@ -137,8 +137,8 @@ const controller = {
   ) {
     try {
       req.body.sanitizedInput = {
-        client: validateObjectId(req.body.client_id, "client_id"),
-        class: validateObjectId(req.body.class_id, "class_id"),
+        client: validateObjectId(req.body.clientId, "clientId"),
+        class: validateObjectId(req.body.classId, "classId"),
       };
 
       Object.keys(req.body.sanitizedInput).forEach((key) => {

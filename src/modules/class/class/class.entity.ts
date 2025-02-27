@@ -6,7 +6,7 @@ import {
   OneToMany,
   Collection,
 } from "@mikro-orm/core";
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsInt, IsNotEmpty, Max, Min } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { ClassType } from "../class-type/class-type.entity.js";
 import { Registration } from "../registration/registration.entity.js";
@@ -14,21 +14,24 @@ import { Trainer } from "../../trainer/trainer/trainer.entity.js";
 
 @Entity()
 export class Class extends BaseEntity {
-  @IsNumber()
+  @Max(6)
+  @Min(0)
+  @IsInt()
   @Property({ nullable: false })
   day!: number;
 
   @IsNotEmpty()
   @Property({ nullable: false })
-  startTime!: string; // 8:00, 9:00, 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00, 17:00, 18:00, 19:00, 20:00, 21:00
+  startTime!: string; // HH:MM
 
   @IsNotEmpty()
   @Property({ nullable: false })
-  endTime!: string; // Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+  endTime!: string; // HH:MM
 
-  @IsNumber()
+  @Min(1)
+  @IsInt()
   @Property({ nullable: false })
-  maxCapacity!: number; // 10, 15, 20, 25, 30, 35, 40, 45, 50 people
+  maxCapacity!: number;
 
   @IsNotEmpty()
   @Property({ nullable: false })

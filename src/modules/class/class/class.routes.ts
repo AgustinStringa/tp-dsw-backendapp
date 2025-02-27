@@ -4,15 +4,16 @@ import { controller } from "./class.controller.js";
 
 export const classRouter = Router();
 
+classRouter.get("/active", authMiddlewares.verifyUser, controller.findActive);
 classRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
-classRouter.get("/", authMiddlewares.verifyUser, controller.findAll); //trainer & client
+classRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
 
 classRouter.post(
   "/",
   authMiddlewares.verifyTrainer,
   controller.sanitizeClass,
   controller.add
-); //trainer
+);
 
 classRouter.put(
   "/:id",

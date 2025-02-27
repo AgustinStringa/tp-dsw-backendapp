@@ -17,7 +17,7 @@ Content-Type: application/json
 {
   "start": "2025-04-14T03:00:00Z",
   "end": "2025-04-28T03:00:00Z",
-  "client_id": "{{id}}",
+  "clientId": "{{id}}",
   "exercisesRoutine": [
     {
       "exercise": "{{id}}",
