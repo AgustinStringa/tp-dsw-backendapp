@@ -26,6 +26,6 @@ Content-Type: application/json
   "email": "hernantarabella@hotmail.com.ar"
 }
 
+
 ### logout
 POST http://localhost:3000/api/auth/logout/
-Cookie: auth_token=insertar_token

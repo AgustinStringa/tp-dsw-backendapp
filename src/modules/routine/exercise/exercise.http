@@ -1,18 +1,15 @@
-@token = insertar_token
+@id = id
 
 ### Get all exercises
 GET http://localhost:3000/api/routines/exercises
-Cookie: auth_token={{token}}
 
 
 ### Get a specific exercise by ID
-GET http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/routines/exercises/{{id}}
 
 
 ### Create a new exercise
 POST http://localhost:3000/api/routines/exercises
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -23,8 +20,7 @@ Content-Type: application/json
 
 
 ### Update an existing exercise
-PUT http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
-Cookie: auth_token={{token}}
+PUT http://localhost:3000/api/routines/exercises/{{id}}
 Content-Type: application/json
 
 {
@@ -35,5 +31,4 @@ Content-Type: application/json
 
 
 ### Delete an exercise
-DELETE http://localhost:3000/api/routines/exercises/66f2d6bcd508d37d3049d877
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/routines/exercises/{{id}}
