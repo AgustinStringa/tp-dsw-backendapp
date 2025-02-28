@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Class } from "../class/class.entity.js";
-import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
+import { membershipService } from "../../membership/membership/membership.service.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Registration } from "./registration.entity.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
@@ -62,7 +62,10 @@ const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
-      await em.findOneOrFail(Client, req.body.sanitizedInput.client);
+      await membershipService.checkActiveMembership(
+        req.body.sanitizedInput.client
+      );
+
       const chosenClass = await em.findOneOrFail(Class, {
         id: req.body.sanitizedInput.class,
         active: true,

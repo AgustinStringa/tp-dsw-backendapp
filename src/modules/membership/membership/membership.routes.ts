@@ -4,13 +4,20 @@ import { controller } from "./membership.controller.js";
 
 export const membershipRouter = Router();
 
-membershipRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
-membershipRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 membershipRouter.get(
-  "/active/:id",
+  "/active/",
+  authMiddlewares.verifyTrainer,
+  controller.findActive
+);
+
+membershipRouter.get(
+  "/active/:clientId",
   authMiddlewares.verifyClient,
   controller.findActiveByClient
 );
+
+membershipRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
+membershipRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 
 membershipRouter.post(
   "/",

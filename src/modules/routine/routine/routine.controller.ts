@@ -1,9 +1,9 @@
 import { startOfDay, getDay } from "date-fns";
 import { Request, Response, NextFunction } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
-import { Client } from "../../client/client/client.entity.js";
 import { ExerciseRoutine } from "../exercise-routine/exercise-routine.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
+import { membershipService } from "../../membership/membership/membership.service.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Routine } from "./routine.entity.js";
 import { routineService } from "./routine.service.js";
@@ -53,7 +53,9 @@ export const controller = {
   add: async function (req: Request, res: Response) {
     try {
       await routineService.checkDates(req.body.sanitizedInput, true);
-      await em.findOneOrFail(Client, req.body.sanitizedInput.client);
+      await membershipService.checkActiveMembership(
+        req.body.sanitizedInput.client
+      );
 
       const routine = em.create(Routine, req.body.sanitizedInput);
       validateEntity(routine);
@@ -81,7 +83,7 @@ export const controller = {
       if (req.body.sanitizedInput.start !== undefined) checkStart = true;
 
       if (req.body.sanitizedInput.client)
-        await em.findOneOrFail(Client, aux.client);
+        await membershipService.checkActiveMembership(aux.client);
 
       await routineService.checkDates(aux, checkStart);
 

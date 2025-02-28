@@ -1,52 +1,50 @@
-@token = insertar_token
+@id = id
+@clientId = clientId
 
 ### get all memberships
 GET http://localhost:3000/api/memberships/
-Cookie: auth_token={{token}}
 
 
 ### get one membership
-GET http://localhost:3000/api/memberships/66881354094fb79b203582e0
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/memberships/{{id}}
 
 
-### get active
-GET http://localhost:3000/api/memberships/active/66f2fb46c89589b79fe56c13
-Cookie: auth_token={{token}}
+### get all active memberships
+GET http://localhost:3000/api/memberships/active/
+
+
+### get client's active membership
+GET http://localhost:3000/api/memberships/active/{{clientId}}
 
 
 ### create membership
 POST http://localhost:3000/api/memberships/
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
-  "type": "66c522a366f91e5d87dca9a8",
-  "client": "66c8abd8cfede278ccb4edc1"
+  "type": "{{id}}",
+  "client": "{{id}}"
 }
 
 
 ### put membership
-PUT http://localhost:3000/api/memberships/66881354094fb79b203582e0
-Cookie: auth_token={{token}}
+PUT http://localhost:3000/api/memberships/{{id}}
 Content-Type: application/json
 
 {
-  "type": "66880b57ce8ccd39d9fe9085",
-  "client": "666c45e6b7de20e525df8d1e"
+  "type": "{{id}}",
+  "client": "{{id}}"
 }
 
 
 ### patch membership
-PATCH http://localhost:3000/api/memberships/668817edd51fc4600353eaf6
-Cookie: auth_token={{token}}
+PATCH http://localhost:3000/api/memberships/{{id}}
 Content-Type: application/json
 
 {
-  "client": "667ad97c462b348eed0715ed"
+  "client": "{{id}}"
 }
 
 
 ### delete membership
-DELETE http://localhost:3000/api/memberships/6688149f1248ffd919ac105d
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/memberships/{{id}}
