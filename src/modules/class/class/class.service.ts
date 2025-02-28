@@ -48,11 +48,13 @@ export const classService = {
   sendNewClassEmail: async (
     newClass: Class,
     type: ClassType,
-    trainer: Trainer
+    trainer: Trainer,
+    receivers: string[]
   ) => {
-    sendEmail(
-      "Gimnasio Iron Haven - Nueva clase disponible",
-      `
+    try {
+      await sendEmail(
+        "Gimnasio Iron Haven - Nueva clase disponible",
+        `
       <h3>Nueva clase de ${type.name}</h3>
       <div>
         <p>Se dictará una nueva clase los días ${days[newClass.day]} de 
@@ -67,7 +69,14 @@ export const classService = {
         </p>
         <p><b>¡Corre a inscribirte antes de que se acaben!</b></p>
       </div>
-      `
-    );
+      `,
+        receivers
+      );
+    } catch (error: any) {
+      throw new HttpError(
+        503,
+        "No se pudo enviar el correo a los clientes. La clase no fue creada."
+      );
+    }
   },
 };

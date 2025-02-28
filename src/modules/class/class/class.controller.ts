@@ -3,6 +3,7 @@ import { authService } from "../../auth/auth/auth.service.js";
 import { Class } from "./class.entity.js";
 import { classService } from "./class.service.js";
 import { ClassType } from "../class-type/class-type.entity.js";
+import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
@@ -75,10 +76,15 @@ export const controller = {
       const newClass = em.create(Class, req.body.sanitizedInput);
       validateEntity(newClass);
 
+      const emails = (await em.findAll(Client, { fields: ["email"] })).map(
+        (c) => c.email
+      );
+
       await classService.sendNewClassEmail(
         newClass,
         classType,
-        newClass.trainer
+        newClass.trainer,
+        emails
       );
       await em.flush();
 
@@ -126,12 +132,22 @@ export const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = validateObjectId(req.params.id, "id");
-      const classReference = em.getReference(Class, id!);
-      await em.removeAndFlush(classReference);
+      const trainer = (await authService.getUser(req)).user;
+
+      const classToDelete = await em.findOneOrFail(Class, {
+        id,
+      });
+
+      if (trainer !== classToDelete.trainer) {
+        res.status(401).json({ message: "Entrenador no autorizado." });
+        return;
+      }
+
+      await em.removeAndFlush(classToDelete);
 
       res
         .status(200)
-        .json({ message: "Clase eliminada.", data: classReference });
+        .json({ message: "Clase eliminada.", data: classToDelete });
     } catch (error: any) {
       handleError(error, res);
     }
