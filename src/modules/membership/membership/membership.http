@@ -1,0 +1,50 @@
+@id = id
+@clientId = clientId
+
+### get all memberships
+GET http://localhost:3000/api/memberships/
+
+
+### get one membership
+GET http://localhost:3000/api/memberships/{{id}}
+
+
+### get all active memberships
+GET http://localhost:3000/api/memberships/active/
+
+
+### get client's active membership
+GET http://localhost:3000/api/memberships/active/{{clientId}}
+
+
+### create membership
+POST http://localhost:3000/api/memberships/
+Content-Type: application/json
+
+{
+  "type": "{{id}}",
+  "client": "{{id}}"
+}
+
+
+### put membership
+PUT http://localhost:3000/api/memberships/{{id}}
+Content-Type: application/json
+
+{
+  "type": "{{id}}",
+  "client": "{{id}}"
+}
+
+
+### patch membership
+PATCH http://localhost:3000/api/memberships/{{id}}
+Content-Type: application/json
+
+{
+  "client": "{{id}}"
+}
+
+
+### delete membership
+DELETE http://localhost:3000/api/memberships/{{id}}

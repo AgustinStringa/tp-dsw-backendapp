@@ -1,0 +1,26 @@
+@id = id
+
+### get all registrations
+GET http://localhost:3000/api/classes/registration
+
+
+### get one registration
+GET http://localhost:3000/api/classes/registration/{{id}}
+
+
+### get registrations by client
+GET http://localhost:3000/api/classes/registration/client/{{id}}
+
+
+### register for a class
+POST http://localhost:3000/api/classes/registration/
+Content-Type: application/json
+
+{
+  "clientId": "{{id}}",
+  "classId": "{{id}}"
+}
+
+
+### cancel a registration
+PATCH http://localhost:3000/api/classes/registration/cancel/{{id}}

@@ -1,0 +1,54 @@
+@id = id
+
+### Obtener todas las rutinas
+GET http://localhost:3000/api/routines
+Content-Type: application/json
+
+
+### Obtener una rutina por ID
+GET http://localhost:3000/api/routines/{{id}}
+Content-Type: application/json
+
+
+### Crear una nueva rutina
+POST http://localhost:3000/api/routines
+Content-Type: application/json
+
+{
+  "start": "2025-04-14T03:00:00Z",
+  "end": "2025-04-28T03:00:00Z",
+  "clientId": "{{id}}",
+  "exercisesRoutine": [
+    {
+      "exercise": "{{id}}",
+      "week": 1,
+      "day": 4,
+      "series": 3,
+      "repetitions": 10
+    }
+  ]
+}
+
+
+### Actualizar una rutina por ID
+PUT http://localhost:3000/api/routines/{{id}}
+Content-Type: application/json
+
+{
+  "start": "2025-03-31T03:00:00Z",
+  "exercisesRoutine": [
+    {
+      "exercise": "{{id}}",
+      "week": 2,
+      "day": 4,
+      "series": 14,
+      "repetitions": 4,
+      "weight": 150
+    }
+  ]
+}
+
+
+### Eliminar una rutina por ID
+DELETE http://localhost:3000/api/routines/{{id}}
+Content-Type: application/json
