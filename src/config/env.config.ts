@@ -24,7 +24,7 @@ export const environment = {
   mongoUri: process.env.MONGO_URI,
   emailAccount: {
     email: process.env.EMAIL,
-    password: process.env.PASSWORD,
+    password: process.env.EMAIL_PASSWORD,
   },
   session: {
     jwtSecret: process.env.JWT_SECRET as string,
