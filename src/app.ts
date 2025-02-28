@@ -81,8 +81,6 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("Cliente autenticado:", socket.data.user);
-
   socket.on("message", async (data) => {
     const messageData = JSON.parse(data);
     console.log(`Mensaje de ${socket.data.user.id}:`, messageData);
@@ -106,7 +104,6 @@ io.on("connection", (socket) => {
         }
 
         await orm.em.persistAndFlush(newMessage);
-        console.log("Mensaje guardado en BD:", newMessage);
       } catch (error) {
         console.error("Error al guardar mensaje:", error);
       }
@@ -115,9 +112,7 @@ io.on("connection", (socket) => {
     io.emit("respuesta", messageData);
   });
 
-  socket.on("disconnect", () => {
-    console.log("Cliente desconectado:", socket.id);
-  });
+  socket.on("disconnect", () => {});
 });
 
 httpServer.listen(PORT, () => {
