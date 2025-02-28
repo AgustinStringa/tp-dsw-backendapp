@@ -5,12 +5,12 @@ import { Message } from "./message.entity.js";
 export const messageController = {
   getMessagesForTrainer: async (req: Request, res: Response) => {
     try {
-      const trainerId = req.params.trainerId;
-      console.log("Buscando mensajes para el entrenador:", trainerId);
+      const receiver = req.params.userId;
+      console.log("Buscando mensajes para el entrenador:", receiver);
 
       const messages = await orm.em.find(
         Message,
-        { trainer: trainerId },
+        { receiver: receiver },
         { orderBy: { createdAt: "ASC" } }
       );
 
@@ -22,14 +22,16 @@ export const messageController = {
     }
   },
 
-  getMessageFromClient: async (req: Request, res: Response) => {
+  getMessages: async (req: Request, res: Response) => {
     try {
-      const clientId = req.params.clientId;
-      console.log("Buscando mensajes para el cliente:", clientId);
+      const sender = req.params.sender;
+      const receiver = req.params.receiver;
+      console.log("Buscando mensajes para :", receiver);
+      console.log("Buscando mensajes de:", sender);
 
       const messages = await orm.em.find(
         Message,
-        { client: clientId },
+        { sender: sender, receiver: receiver },
         { orderBy: { createdAt: "ASC" } }
       );
 

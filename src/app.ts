@@ -92,13 +92,18 @@ io.on("connection", (socket) => {
         const newMessage = new Message();
         newMessage.content = messageData.content;
         newMessage.createdAt = new Date();
-        newMessage.client = await orm.em.findOneOrFail(Client, {
-          id: socket.data.user.id,
-        });
-
-        let id = messageData.trainerId;
-        console.log("trainerId:", id);
-        newMessage.trainer = await orm.em.findOneOrFail(Trainer, { id });
+        const id = messageData.receiver;
+        if (messageData.entity === "client") {
+          newMessage.sender = await orm.em.findOneOrFail(Client, {
+            id: socket.data.user.id,
+          });
+          newMessage.receiver = await orm.em.findOneOrFail(Trainer, { id });
+        } else {
+          newMessage.sender = await orm.em.findOneOrFail(Trainer, {
+            id: socket.data.user.id,
+          });
+          newMessage.receiver = await orm.em.findOneOrFail(Client, { id });
+        }
 
         await orm.em.persistAndFlush(newMessage);
         console.log("Mensaje guardado en BD:", newMessage);
