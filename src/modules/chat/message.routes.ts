@@ -9,3 +9,13 @@ messageRouter.get(
   authMiddlewares.verifyUser,
   messageController.getMessages
 );
+messageRouter.post(
+  "/unread/:receiver",
+  authMiddlewares.verifyUser,
+  messageController.getUnreadMessages
+);
+messageRouter.post(
+  "/mark-as-read/:receiver/:sender",
+  authMiddlewares.verifyUser,
+  messageController.markMessagesAsRead
+);

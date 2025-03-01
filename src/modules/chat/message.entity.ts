@@ -15,5 +15,5 @@ export class Message extends BaseEntity {
   createdAt!: Date;
 
   @Property({ nullable: true })
-  readAt?: Date;
+  readAt: Date | undefined = undefined;
 }
