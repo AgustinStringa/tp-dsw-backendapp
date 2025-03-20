@@ -1,32 +1,28 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZTQ5YzIyYTZmMmVkYTBkNTUxYTg2YSIsImlhdCI6MTczMDU3Nzk5MSwiZXhwIjoxNzMwNTgxNTkxfQ.-D_yB3ENf_ag22jYMo7ClHrw7qXR7TuTUy9gbKuBm1o
+@id = id
 
 ### obtener todos los trainers
 GET http://localhost:3000/api/trainers
-Cookie: auth_token={{token}}
 
 
 ### obtener un trainer
-GET http://localhost:3000/api/trainers/25967e44-73b3-4187-af93-3903d206ec21
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/trainers/{{id}}
 
 
 ### crear un nuevo trainer
 POST http://localhost:3000/api/trainers/
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
-  "lastName" : "Stringa",
+  "lastName": "Stringa",
   "firstName": "Agustin",
   "dni": "44854963",
   "email": "agu.stringa@gmail.com",
-  "password" : "stri"
+  "password": "stri"
 }
 
 
 ### modificar un trainer (PUT - recurso completo e idempotente)
-PUT http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
-Cookie: auth_token={{token}}
+PUT http://localhost:3000/api/trainers/{{id}}
 Content-Type: application/json
 
 {
@@ -39,8 +35,7 @@ Content-Type: application/json
 
 
 ### modificar un trainer (PATCH - recurso parcial)
-PATCH http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
-Cookie: auth_token={{token}}
+PATCH http://localhost:3000/api/trainers/{{id}}
 Content-Type: application/json
 
 {
@@ -49,5 +44,4 @@ Content-Type: application/json
 
 
 ### borrar un trainer
-DELETE http://localhost:3000/api/trainers/5a00b711-0a60-4f73-bb53-05c29e835b87
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/trainers/{{id}}

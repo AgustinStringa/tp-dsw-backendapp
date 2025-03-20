@@ -1,33 +1,35 @@
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { Client } from "../../client/client/client.entity.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Trainer } from "./trainer.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const trainers = await em.find(Trainer, {});
-      res.json({ message: "All Trainers were found", data: trainers });
+      const trainers = await em.findAll(Trainer);
+      res.json({
+        message: "Todos los entrenadores fueron encontrados.",
+        data: trainers,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const trainer = await em.findOneOrFail(Trainer, { id });
-      if (!trainer) {
-        res.status(404).send({ message: "Trainer not found" });
-      } else {
-        res.json({ data: trainer }).status(200);
-      }
+
+      res.status(200).json({ message: "Entrenador encontrado", data: trainer });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -40,13 +42,13 @@ const controller = {
       if (client !== null) {
         return res
           .status(409)
-          .send({ message: "There is already a client with the same email" });
+          .send({ message: "El correo electrónico ya se encuentra en uso." });
       }
 
       await em.flush();
-      res.status(201).json({ message: "Trainer created", data: trainer });
+      res.status(201).json({ message: "Entrenador creado.", data: trainer });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -61,14 +63,16 @@ const controller = {
         if (client !== null) {
           return res
             .status(409)
-            .send({ message: "There is already a client with the same email" });
+            .send({ message: "El correo electrónico ya se encuentra en uso." });
         }
       }
 
       await em.flush();
-      res.status(200).json({ message: "Trainer updated", data: trainer });
+      res
+        .status(200)
+        .json({ message: "Entrenador actualizado.", data: trainer });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -77,9 +81,9 @@ const controller = {
       const id = req.params.id;
       const trainer = em.getReference(Trainer, id);
       await em.removeAndFlush(trainer);
-      res.status(200).json({ message: "Trainer deleted" });
+      res.status(200).json({ message: "Entrenador eliminado." });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -112,5 +116,3 @@ const controller = {
     next();
   },
 };
-
-export { controller };
