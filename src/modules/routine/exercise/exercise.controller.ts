@@ -1,29 +1,34 @@
 import { Request, Response, NextFunction } from "express";
 import { Exercise } from "./exercise.entity.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const exercises = await em.find(Exercise, {});
-      res.json({ message: "All exercises were found", data: exercises });
+      const exercises = await em.findAll(Exercise);
+      res.status(200).json({
+        message: "Todos los ejercicios fueron encontrados.",
+        data: exercises,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const exercise = await em.findOneOrFail(Exercise, { id });
-      res.status(200).json({ message: "Exercise found", data: exercise });
+      res
+        .status(200)
+        .json({ message: "Ejercicio encontrado.", data: exercise });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -33,24 +38,26 @@ const controller = {
       validateEntity(exercise);
 
       await em.flush();
-      res.status(201).json({ message: "Exercise created", data: exercise });
+      res.status(201).json({ message: "Ejercicio creado.", data: exercise });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   update: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const exercise = await em.findOneOrFail(Exercise, { id });
       em.assign(exercise, req.body.sanitizedInput);
 
       validateEntity(exercise);
       await em.flush();
 
-      res.status(200).json({ message: "Exercise updated", data: exercise });
+      res
+        .status(200)
+        .json({ message: "Ejercicio actualizado.", data: exercise });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -59,9 +66,9 @@ const controller = {
       const id = req.params.id;
       const exercise = em.getReference(Exercise, id);
       await em.removeAndFlush(exercise);
-      res.status(200).json({ message: "Exercise deleted" });
+      res.status(200).json({ message: "Ejercicio eliminado." });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -81,5 +88,3 @@ const controller = {
     next();
   },
 };
-
-export { controller };

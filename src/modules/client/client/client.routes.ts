@@ -10,14 +10,14 @@ clientRouter.post("/", controller.sanitizeClient, controller.add); //un visitant
 
 clientRouter.put(
   "/:id",
-  authMiddlewares.verifyTrainer,
+  authMiddlewares.verifyUser,
   controller.sanitizeClient,
   controller.update
-); // TODO manejar el caso en el que un cliente modifica sus datos
+);
 
 clientRouter.patch(
   "/:id",
-  authMiddlewares.verifyTrainer,
+  authMiddlewares.verifyUser,
   controller.sanitizeClient,
   controller.update
 );

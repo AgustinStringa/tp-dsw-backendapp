@@ -1,5 +1,5 @@
 import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber, Min } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { Membership } from "../membership/membership.entity.js";
 
@@ -11,8 +11,9 @@ export class MembershipType extends BaseEntity {
 
   @IsNotEmpty()
   @Property({ nullable: false })
-  description!: string; //gym, pileta, gym + pileta...
+  description!: string;
 
+  @Min(0)
   @IsNumber()
   @Property({ nullable: false })
   price!: number;

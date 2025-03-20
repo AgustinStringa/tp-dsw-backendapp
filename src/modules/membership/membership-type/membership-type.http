@@ -1,30 +1,26 @@
-@token = insertar_token
+@id = id
 
 ### get all types
 GET http://localhost:3000/api/memberships/types
-Cookie: auth_token={{token}}
 
 
 ### get one type
-GET http://localhost:3000/api/memberships/types/66ed837132fc51c4357e75c4
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/memberships/types/{{id}}
 
 
 ### crear type
 POST http://localhost:3000/api/memberships/types/
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
   "name": "Musculación + Pileta",
   "description": "Permite acceder todos los días de la semana al gimnasio de pesas y a también a la pileta.",
-  "price": 28000
+  "price": 0
 }
 
 
 ### put type
-PUT http://localhost:3000/api/memberships/types/66880b57ce8ccd39d9fe9085
-Cookie: auth_token={{token}}
+PUT http://localhost:3000/api/memberships/types/{{id}}
 Content-Type: application/json
 
 {
@@ -35,8 +31,7 @@ Content-Type: application/json
 
 
 ### patch type
-PATCH http://localhost:3000/api/memberships/types/66880b57ce8ccd39d9fe9085
-Cookie: auth_token={{token}}
+PATCH http://localhost:3000/api/memberships/types/{{id}}
 Content-Type: application/json
 
 {
@@ -46,5 +41,4 @@ Content-Type: application/json
 
 
 ### delete type
-DELETE http://localhost:3000/api/memberships/types/66880a2e92ac25be35322db7
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/memberships/types/{{id}}
