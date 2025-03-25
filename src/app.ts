@@ -4,18 +4,18 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import { RequestContext } from "@mikro-orm/mongodb";
-import { controller as userPaymentController } from "./UserPayment/UserPayment.controller.js";
 import { authRouter } from "./modules/auth/auth/auth.routes.js";
 import { classesRouter } from "./modules/class/class-module.routes.js";
 import { clientsRouter } from "./modules/client/client-module.routes.js";
+import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
+import { environment } from "./config/env.config.js";
 import { membershipsRouter } from "./modules/membership/membership-module.routes.js";
 import { newsRouter } from "./modules/news/news/news.routes.js";
 import { orm } from "./config/db/mikro-orm.config.js";
 import { routinesRouter } from "./modules/routine/routine-module.routes.js";
 import { trainerRouter } from "./modules/trainer/trainer/trainer.routes.js";
-import { userPaymentRouter } from "./UserPayment/UserPayment.routes.js";
+import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
 
-const PORT = 3000;
 const app = express();
 
 app.use((_req, _res, next) => {
@@ -24,7 +24,7 @@ app.use((_req, _res, next) => {
 
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: environment.systemUrls.frontendUrl,
     optionsSuccessStatus: 200,
     credentials: true,
   })
@@ -51,6 +51,6 @@ app.use((_req, res) => {
   return res.status(404).send({ message: "Resource not found" });
 });
 
-app.listen(PORT, () => {
-  console.log("Server runnning on http://localhost:3000/");
+app.listen(environment.systemUrls.port, () => {
+  console.log("Server runnning on " + environment.systemUrls.backendUrl);
 });

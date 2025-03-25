@@ -1,6 +1,6 @@
 import Stripe from "stripe";
-import { environment } from "../../../config/env.config";
-import { MembershipType } from "./membership-type.entity";
+import { environment } from "../../../config/env.config.js";
+import { MembershipType } from "./membership-type.entity.js";
 
 const stripe = new Stripe(environment.stripe.apiKey as string);
 
