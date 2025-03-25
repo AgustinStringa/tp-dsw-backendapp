@@ -37,3 +37,31 @@ export function validateDateTime(dateTime: any, field: string) {
     `${field}: debe ser un string en formato YYYY-MM-DDTHH:mm:ss.sssZ`
   );
 }
+
+export function validateEnum(
+  value: any,
+  enumType: any,
+  fieldName: string,
+  canBeUndefined: boolean = true
+): any {
+  if (!canBeUndefined && !value) {
+    throw new HttpError(400, `El campo ${fieldName} es requerido.`);
+  }
+
+  if (canBeUndefined && !value) {
+    return undefined;
+  }
+
+  value = value.toString().trim();
+  const normalizedValue =
+    value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+
+  if (!Object.values(enumType).includes(normalizedValue)) {
+    throw new HttpError(
+      400,
+      `El valor ingresado para ${fieldName} no es válido.`
+    );
+  }
+
+  return normalizedValue;
+}

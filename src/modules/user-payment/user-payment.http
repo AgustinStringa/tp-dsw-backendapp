@@ -1,0 +1,10 @@
+@id = id
+
+### pay
+POST http://localhost:3000/api/user-payment/
+Content-Type: application/json
+
+{
+  "clientId": "{{id}}",
+  "membershipTypeId": "{{id}}"
+}

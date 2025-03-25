@@ -1,11 +1,15 @@
+import Stripe from "stripe";
 import { NextFunction, Request, Response } from "express";
+import { environment } from "../../../config/env.config.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { MembershipType } from "./membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
+import { membershipTypeService } from "./membership-type.service.js";
 
 const em = orm.em;
+const stripe = new Stripe(environment.stripe.apiKey as string);
 
 export const controller = {
   findAll: async function (_req: Request, res: Response) {
@@ -44,7 +48,10 @@ export const controller = {
       const membType = em.create(MembershipType, req.body.sanitizedInput);
       validateEntity(membType);
 
+      await membershipTypeService.createStripeProduct(membType);
+      await membershipTypeService.createStripePrice(membType);
       await em.flush();
+
       res.status(201).json({
         message: "Tipo de membresía creado.",
         data: membType,
@@ -58,10 +65,17 @@ export const controller = {
     try {
       const id = validateObjectId(req.params.id, "id");
       const membType = await em.findOneOrFail(MembershipType, id!);
+      const oldPrice = membType.price;
+
       em.assign(membType, req.body.sanitizedInput);
       validateEntity(membType);
 
+      if (oldPrice !== membType.price) {
+        membershipTypeService.archiveStripePrice(membType);
+        await membershipTypeService.createStripePrice(membType);
+      }
       await em.flush();
+
       res
         .status(200)
         .json({ message: "Tipo de membresía actualizado.", data: membType });
@@ -73,7 +87,12 @@ export const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const membType = em.getReference(MembershipType, id);
+      const membType = await em.findOneOrFail(MembershipType, id);
+
+      await stripe.products.update(membType.stripeId, {
+        active: false,
+      });
+
       await em.removeAndFlush(membType);
       res.status(200).json({ message: "Tipo de membresía eliminado." });
     } catch (error: any) {

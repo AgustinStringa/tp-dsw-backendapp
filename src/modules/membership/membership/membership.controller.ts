@@ -4,8 +4,12 @@ import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "./membership.entity.js";
+import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";
+import { membershipService } from "./membership.service.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { Payment } from "../payment/payment.entity.js";
+import { paymentService } from "../payment/payment.service.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
@@ -56,6 +60,7 @@ export const controller = {
           fields: [
             "dateFrom",
             "dateTo",
+            "debt",
             "type.*",
             "client.id",
             "client.lastName",
@@ -67,6 +72,35 @@ export const controller = {
 
       return res.status(200).json({
         message: "Todas las membresías activas fueron encontradas.",
+        data: memberships,
+      });
+    } catch (error: any) {
+      handleError(error, res);
+    }
+  },
+
+  findOutstandingMemberships: async function (req: Request, res: Response) {
+    try {
+      const memberships = await em.find(
+        Membership,
+        { debt: { $gt: 0 } },
+        {
+          populate: ["client", "type"],
+          fields: [
+            "dateFrom",
+            "dateTo",
+            "debt",
+            "type.*",
+            "client.id",
+            "client.lastName",
+            "client.firstName",
+            "client.dni",
+          ],
+        }
+      );
+
+      return res.status(200).json({
+        message: "Todas las membresías adeudadas fueron encontradas.",
         data: memberships,
       });
     } catch (error: any) {
@@ -106,20 +140,36 @@ export const controller = {
         id: req.body.sanitizedInput.client,
       });
 
-      await em.findOneOrFail(MembershipType, {
-        id: req.body.sanitizedInput.type,
-      });
-
       const today = startOfDay(new Date());
-      let membership = await em.findOne(Membership, {
+      const existingMembership = await em.findOne(Membership, {
         dateTo: { $gt: today },
         client: req.body.sanitizedInput.client,
       });
 
-      if (membership === null)
-        membership = em.create(Membership, req.body.sanitizedInput);
-      else membership.type = req.body.sanitizedInput.type;
+      if (existingMembership) {
+        res.status(403).json({
+          message: "El cliente posee una membresía activa.",
+        });
+        return;
+      }
 
+      const debt = await membershipService.calcleClientDebt(
+        req.body.sanitizedInput.client
+      );
+      if (debt) {
+        res.status(403).json({
+          message: "El cliente tiene una deuda de $" + debt,
+        });
+        return;
+      }
+
+      const membershipType = await em.findOneOrFail(MembershipType, {
+        id: req.body.sanitizedInput.type,
+      });
+
+      const membership = em.create(Membership, req.body.sanitizedInput);
+      membership.createdBy = MembershipCreatedByEnum.TRAINER;
+      membership.debt = membershipType.price;
       await em.flush();
 
       res
@@ -132,18 +182,24 @@ export const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      const id = validateObjectId(req.params.id, "id");
+      const input = req.body.sanitizedInput;
+
       const membership = await em.findOneOrFail(Membership, {
-        id: req.params.id,
+        id,
       });
 
-      if (req.body.sanitizedInput.client !== undefined)
+      if (input.client && input.client !== membership.client.id)
         await em.findOneOrFail(Client, req.body.sanitizedInput.client);
 
-      if (req.body.sanitizedInput.type !== undefined)
+      if (input.type && input.type !== membership.type.id)
         await em.findOneOrFail(MembershipType, req.body.sanitizedInput.type);
 
       em.assign(membership, req.body.sanitizedInput);
       await em.flush();
+
+      await paymentService.updateMembershipDebt(membership);
+
       res
         .status(200)
         .json({ message: "Membresía acualizada.", data: membership });
@@ -156,7 +212,9 @@ export const controller = {
     try {
       const id = req.params.id;
       const membership = em.getReference(Membership, id);
+      await em.nativeDelete(Payment, { membership });
       await em.removeAndFlush(membership);
+
       res.status(200).json({ message: "Membresía eliminada." });
     } catch (error: any) {
       handleError(error, res);
@@ -165,19 +223,26 @@ export const controller = {
 
   sanitizeMembership: function (
     req: Request,
-    _res: Response,
+    res: Response,
     next: NextFunction
   ) {
-    req.body.sanitizedInput = {
-      type: validateObjectId(req.body.typeId, "typeId"),
-      client: validateObjectId(req.body.clientId, "clientId"),
-    };
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined)
-        delete req.body.sanitizedInput[key];
-    });
+    try {
+      const allowUndefined = req.method === "PATCH";
 
-    next();
+      req.body.sanitizedInput = {
+        type: validateObjectId(req.body.typeId, "typeId", allowUndefined),
+        client: validateObjectId(req.body.clientId, "clientId", allowUndefined),
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined)
+          delete req.body.sanitizedInput[key];
+      });
+
+      next();
+    } catch (error: any) {
+      handleError(error, res);
+    }
   },
 };

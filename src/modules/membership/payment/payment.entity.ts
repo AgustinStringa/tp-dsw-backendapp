@@ -1,7 +1,31 @@
-import { Entity, Property, ManyToOne, Rel } from "@mikro-orm/core";
-import { IsNotEmpty, IsNumber } from "class-validator";
+import {
+  Entity,
+  Property,
+  ManyToOne,
+  Rel,
+  Embeddable,
+  Embedded,
+} from "@mikro-orm/core";
+import { IsNotEmpty, IsNumber, Min } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { Membership } from "../membership/membership.entity.js";
+import { PaymentMethodEnum } from "../../../utils/enums/payment-method.enum.js";
+import { PaymentStatusEnum } from "../../../utils/enums/payment-status.enum.js";
+
+@Embeddable()
+class Stripe {
+  @Property()
+  checkoutStatus!: string;
+
+  @Property()
+  created!: number;
+
+  @Property()
+  paymentIntent!: string | undefined;
+
+  @Property()
+  sessionId!: string;
+}
 
 @Entity()
 export class Payment extends BaseEntity {
@@ -10,12 +34,19 @@ export class Payment extends BaseEntity {
 
   @IsNotEmpty()
   @Property({ nullable: false })
-  payMethod!: string;
+  paymentMethod!: PaymentMethodEnum;
 
+  @Min(0.01)
   @IsNumber()
   @Property({ nullable: false })
-  amount!: number;
+  amount!: number; //en ars, no en centavos
 
   @ManyToOne(() => Membership)
   membership!: Rel<Membership>;
+
+  @Property({ nullable: false })
+  status!: PaymentStatusEnum;
+
+  @Embedded(() => Stripe, { nullable: true })
+  stripe?: Stripe | undefined;
 }
