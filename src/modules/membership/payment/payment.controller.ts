@@ -50,7 +50,7 @@ export const controller = {
       validateEntity(payment);
       await em.flush();
 
-      await paymentService.updateMembershipPaymentStatus(
+      await paymentService.updateMembershipDebt(
         req.body.sanitizedInput.membership
       );
 
@@ -82,7 +82,7 @@ export const controller = {
       validateEntity(payment);
       await em.flush();
 
-      await paymentService.updateMembershipPaymentStatus(payment.membership);
+      await paymentService.updateMembershipDebt(payment.membership);
 
       res.status(200).json({ message: "Pago actualizado.", data: payment });
     } catch (error: any) {
@@ -96,7 +96,7 @@ export const controller = {
       const payment = await em.findOneOrFail(Payment, id!);
       await em.removeAndFlush(payment);
 
-      await paymentService.updateMembershipPaymentStatus(payment.membership);
+      await paymentService.updateMembershipDebt(payment.membership);
 
       res.status(200).json({ message: "Pago eliminado.", data: payment });
     } catch (error: any) {

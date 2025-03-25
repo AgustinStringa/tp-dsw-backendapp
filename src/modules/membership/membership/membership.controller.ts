@@ -59,6 +59,7 @@ export const controller = {
           fields: [
             "dateFrom",
             "dateTo",
+            "debt",
             "type.*",
             "client.id",
             "client.lastName",
@@ -70,6 +71,35 @@ export const controller = {
 
       return res.status(200).json({
         message: "Todas las membresías activas fueron encontradas.",
+        data: memberships,
+      });
+    } catch (error: any) {
+      handleError(error, res);
+    }
+  },
+
+  findOutstandingMemberships: async function (req: Request, res: Response) {
+    try {
+      const memberships = await em.find(
+        Membership,
+        { debt: { $gt: 0 } },
+        {
+          populate: ["client", "type"],
+          fields: [
+            "dateFrom",
+            "dateTo",
+            "debt",
+            "type.*",
+            "client.id",
+            "client.lastName",
+            "client.firstName",
+            "client.dni",
+          ],
+        }
+      );
+
+      return res.status(200).json({
+        message: "Todas las membresías adeudadas fueron encontradas.",
         data: memberships,
       });
     } catch (error: any) {
@@ -109,7 +139,7 @@ export const controller = {
         id: req.body.sanitizedInput.client,
       });
 
-      await em.findOneOrFail(MembershipType, {
+      const membershipType = await em.findOneOrFail(MembershipType, {
         id: req.body.sanitizedInput.type,
       });
 
@@ -122,11 +152,13 @@ export const controller = {
       if (membership === null) {
         membership = em.create(Membership, req.body.sanitizedInput);
         membership.createdBy = MembershipCreatedByEnum.TRAINER;
+        membership.debt = membershipType.price;
+
         await em.flush();
       } else {
         membership.type = req.body.sanitizedInput.type;
         await em.flush();
-        paymentService.updateMembershipPaymentStatus(membership);
+        await paymentService.updateMembershipDebt(membership);
       }
 
       res
@@ -155,8 +187,7 @@ export const controller = {
       em.assign(membership, req.body.sanitizedInput);
       await em.flush();
 
-      if (input.type && input.type !== membership.type.id)
-        paymentService.updateMembershipPaymentStatus(membership);
+      await paymentService.updateMembershipDebt(membership);
 
       res
         .status(200)

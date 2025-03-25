@@ -5,7 +5,7 @@ import { PaymentStatusEnum } from "../../../utils/enums/payment-status.enum.js";
 const em = orm.em;
 
 export const paymentService = {
-  updateMembershipPaymentStatus: async (membershipId: Membership) => {
+  updateMembershipDebt: async (membershipId: Membership) => {
     const membership = await em.findOneOrFail(Membership, membershipId, {
       populate: ["payments", "type"],
     });
@@ -16,7 +16,8 @@ export const paymentService = {
         : sum;
     }, 0);
 
-    membership.paid = totalPaid >= membership.type.price;
+    membership.debt =
+      membership.type.price > totalPaid ? membership.type.price - totalPaid : 0;
     await em.flush();
   },
 };

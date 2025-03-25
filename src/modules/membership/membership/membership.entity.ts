@@ -22,7 +22,7 @@ export class Membership extends BaseEntity {
   dateTo = addMonths(this.dateFrom, 1);
 
   @Property()
-  paid: boolean = false;
+  debt!: number;
 
   @Property()
   createdBy!: MembershipCreatedByEnum;
