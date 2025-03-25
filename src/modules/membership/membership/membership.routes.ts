@@ -16,6 +16,11 @@ membershipRouter.get(
   controller.findActiveByClient
 );
 
+membershipRouter.get(
+  "/outstanding",
+  authMiddlewares.verifyTrainer,
+  controller.findOutstandingMemberships
+);
 membershipRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
 membershipRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 

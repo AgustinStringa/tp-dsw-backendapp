@@ -2,10 +2,12 @@ import Stripe from "stripe";
 import { NextFunction, Request, Response } from "express";
 import { startOfDay } from "date-fns";
 import { authService } from "../auth/auth/auth.service.js";
+import { Client } from "../client/client/client.entity.js";
 import { environment } from "../../config/env.config.js";
 import { handleError } from "../../utils/errors/error-handler.js";
 import { Membership } from "../membership/membership/membership.entity.js";
 import { MembershipCreatedByEnum } from "../../utils/enums/membership-created-by.enum.js";
+import { membershipService } from "../membership/membership/membership.service.js";
 import { MembershipType } from "../membership/membership-type/membership-type.entity.js";
 import { orm } from "../../config/db/mikro-orm.config.js";
 import { Payment } from "../membership/payment/payment.entity.js";
@@ -27,6 +29,15 @@ export const controller = {
       const client = (await authService.getUser(req)).user;
       if (client.id !== req.body.sanitizedInput.client) {
         res.status(401).json({ message: "Cliente no autorizado." });
+        return;
+      }
+
+      const debt = await membershipService.calcleClientDebt(client as Client);
+      if (debt) {
+        res.status(403).json({
+          message:
+            "No puede comprar una membresía. Usted posee una deuda de $" + debt,
+        });
         return;
       }
 

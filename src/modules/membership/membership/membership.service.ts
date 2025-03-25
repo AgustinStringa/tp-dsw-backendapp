@@ -16,4 +16,13 @@ export const membershipService = {
     if (!membership)
       throw new HttpError(400, "El cliente no tiene una membresía activa.");
   },
+
+  calcleClientDebt: async (client: Client) => {
+    const membership = await em.findOne(Membership, {
+      client: client,
+      debt: { $gt: 0 },
+    });
+
+    return membership?.debt || 0;
+  },
 };

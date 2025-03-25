@@ -5,6 +5,7 @@ import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "./membership.entity.js";
 import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";
+import { membershipService } from "./membership.service.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Payment } from "../payment/payment.entity.js";
@@ -139,27 +140,37 @@ export const controller = {
         id: req.body.sanitizedInput.client,
       });
 
-      const membershipType = await em.findOneOrFail(MembershipType, {
-        id: req.body.sanitizedInput.type,
-      });
-
       const today = startOfDay(new Date());
-      let membership = await em.findOne(Membership, {
+      const existingMembership = await em.findOne(Membership, {
         dateTo: { $gt: today },
         client: req.body.sanitizedInput.client,
       });
 
-      if (membership === null) {
-        membership = em.create(Membership, req.body.sanitizedInput);
-        membership.createdBy = MembershipCreatedByEnum.TRAINER;
-        membership.debt = membershipType.price;
-
-        await em.flush();
-      } else {
-        membership.type = req.body.sanitizedInput.type;
-        await em.flush();
-        await paymentService.updateMembershipDebt(membership);
+      if (existingMembership) {
+        res.status(403).json({
+          message: "El cliente posee una membresía activa.",
+        });
+        return;
       }
+
+      const debt = await membershipService.calcleClientDebt(
+        req.body.sanitizedInput.client
+      );
+      if (debt) {
+        res.status(403).json({
+          message: "El cliente tiene una deuda de $" + debt,
+        });
+        return;
+      }
+
+      const membershipType = await em.findOneOrFail(MembershipType, {
+        id: req.body.sanitizedInput.type,
+      });
+
+      const membership = em.create(Membership, req.body.sanitizedInput);
+      membership.createdBy = MembershipCreatedByEnum.TRAINER;
+      membership.debt = membershipType.price;
+      await em.flush();
 
       res
         .status(201)
