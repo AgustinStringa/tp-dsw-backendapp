@@ -1,15 +1,14 @@
 import { Router } from "express";
-import { controller } from "./UserPayment.controller.js";
-import { controller as authController } from "../Auth/Auth.controller.js";
+import { authMiddlewares } from "../auth/auth/auth.middlewares.js";
+import { controller } from "./user-payment.controller.js";
 
 export const userPaymentRouter = Router();
 
 userPaymentRouter.post(
   "/",
-  authController.verifyClient,
+  authMiddlewares.verifyClient,
   controller.sanitizeRequest,
-  controller.initiatePayment,
+  controller.initiatePayment
 );
-
 
 //TODO reembolsos, pagos cancelados??

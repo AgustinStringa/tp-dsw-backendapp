@@ -1,6 +1,10 @@
-@token = insertar_token
-@membership-type-id = id_membresía
+@id = id
 
 ### pay
-POST http://localhost:3000/api/user-payment/{{membership-type-id}}
-Authorization: Bearer {{token}}
+POST http://localhost:3000/api/user-payment/
+Content-Type: application/json
+
+{
+  "clientId": "{{id}}",
+  "membershipTypeId": "{{id}}"
+}
