@@ -1,51 +1,43 @@
-@token = insertar_token
+@id = {{id}}
 
 ### get all payments
 GET http://localhost:3000/api/memberships/payments/
-Cookie: auth_token={{token}}
 
 
 ### get one payment
-GET http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/memberships/payments/{{id}}
 
 
 ### create a payment
 POST http://localhost:3000/api/memberships/payments/
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
-  "paymentMethod": "Efectivo",
-  "amount": 15500,
-  "status": "paid",
-  "membership": "67336a9c0e95d029cd5a8b86"
+  "amount": 15000,
+  "membershipId": "{{id}}",
+  "paymentMethod": "Efectivo"
 }
 
 
 ### put payment
-PUT http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Cookie: auth_token={{token}}
+PUT http://localhost:3000/api/memberships/payments/{{id}}
 Content-Type: application/json
 
 {
-  "paymentMethod": "Tarjeta",
-  "amount": 15500,
-  "status": "paid",
-  "membership": "66881354094fb79b203582e0"
+  "amount": 19500,
+  "membershipId": "{{id}}",
+  "paymentMethod": "Transferencia"
 }
 
 
 ### patch payment
-PATCH http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Cookie: auth_token={{token}}
+PATCH http://localhost:3000/api/memberships/payments/{{id}}
 Content-Type: application/json
 
 {
-  "paymentMethod": "Billetera Santa Fe"
+  "paymentMethod": "Tarjeta de crédito"
 }
 
 
 ### delete payment
-DELETE http://localhost:3000/api/memberships/payments/66882f671494414a2a03f2e9
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/memberships/payments/{{id}}

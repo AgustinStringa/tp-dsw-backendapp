@@ -4,8 +4,11 @@ import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "./membership.entity.js";
+import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import { Payment } from "../payment/payment.entity.js";
+import { paymentService } from "../payment/payment.service.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
@@ -116,11 +119,15 @@ export const controller = {
         client: req.body.sanitizedInput.client,
       });
 
-      if (membership === null)
+      if (membership === null) {
         membership = em.create(Membership, req.body.sanitizedInput);
-      else membership.type = req.body.sanitizedInput.type;
-
-      await em.flush();
+        membership.createdBy = MembershipCreatedByEnum.TRAINER;
+        await em.flush();
+      } else {
+        membership.type = req.body.sanitizedInput.type;
+        await em.flush();
+        paymentService.updateMembershipPaymentStatus(membership);
+      }
 
       res
         .status(201)
@@ -132,18 +139,25 @@ export const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
+      const id = validateObjectId(req.params.id, "id");
+      const input = req.body.sanitizedInput;
+
       const membership = await em.findOneOrFail(Membership, {
-        id: req.params.id,
+        id,
       });
 
-      if (req.body.sanitizedInput.client !== undefined)
+      if (input.client && input.client !== membership.client.id)
         await em.findOneOrFail(Client, req.body.sanitizedInput.client);
 
-      if (req.body.sanitizedInput.type !== undefined)
+      if (input.type && input.type !== membership.type.id)
         await em.findOneOrFail(MembershipType, req.body.sanitizedInput.type);
 
       em.assign(membership, req.body.sanitizedInput);
       await em.flush();
+
+      if (input.type && input.type !== membership.type.id)
+        paymentService.updateMembershipPaymentStatus(membership);
+
       res
         .status(200)
         .json({ message: "Membresía acualizada.", data: membership });
@@ -156,7 +170,9 @@ export const controller = {
     try {
       const id = req.params.id;
       const membership = em.getReference(Membership, id);
+      await em.nativeDelete(Payment, { membership });
       await em.removeAndFlush(membership);
+
       res.status(200).json({ message: "Membresía eliminada." });
     } catch (error: any) {
       handleError(error, res);
@@ -165,19 +181,26 @@ export const controller = {
 
   sanitizeMembership: function (
     req: Request,
-    _res: Response,
+    res: Response,
     next: NextFunction
   ) {
-    req.body.sanitizedInput = {
-      type: validateObjectId(req.body.typeId, "typeId"),
-      client: validateObjectId(req.body.clientId, "clientId"),
-    };
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined)
-        delete req.body.sanitizedInput[key];
-    });
+    try {
+      const allowUndefined = req.method === "PATCH";
 
-    next();
+      req.body.sanitizedInput = {
+        type: validateObjectId(req.body.typeId, "typeId", allowUndefined),
+        client: validateObjectId(req.body.clientId, "clientId", allowUndefined),
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined)
+          delete req.body.sanitizedInput[key];
+      });
+
+      next();
+    } catch (error: any) {
+      handleError(error, res);
+    }
   },
 };

@@ -22,8 +22,8 @@ POST http://localhost:3000/api/memberships/
 Content-Type: application/json
 
 {
-  "type": "{{id}}",
-  "client": "{{id}}"
+  "typeId": "{{id}}",
+  "clientId": "{{id}}"
 }
 
 
@@ -32,8 +32,8 @@ PUT http://localhost:3000/api/memberships/{{id}}
 Content-Type: application/json
 
 {
-  "type": "{{id}}",
-  "client": "{{id}}"
+  "typeId": "{{id}}",
+  "clientId": "{{id}}"
 }
 
 
@@ -42,7 +42,7 @@ PATCH http://localhost:3000/api/memberships/{{id}}
 Content-Type: application/json
 
 {
-  "client": "{{id}}"
+  "clientId": "{{id}}"
 }
 
 
