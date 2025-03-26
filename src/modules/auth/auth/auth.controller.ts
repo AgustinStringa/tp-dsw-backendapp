@@ -33,7 +33,9 @@ export const controller = {
       );
 
       if (!auth) {
-        return res.status(401).json({ message: "Wrong email or password." });
+        return res
+          .status(401)
+          .json({ message: "Email y/o contraseña incorrectos." });
       }
 
       authService.startSession(res, user);
@@ -48,12 +50,12 @@ export const controller = {
       };
 
       return res.status(200).json({
-        message: "Logged in successfully",
+        message: "Sesión iniciada.",
         data: { user: userReturn },
       });
     } catch (error: any) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "Wrong email or password." });
+        res.status(401).json({ message: "Email y/o contraseña incorrectos." });
       else handleError(error, res);
     }
   },
@@ -70,9 +72,9 @@ export const controller = {
         sameSite: "strict",
       });
 
-      res.status(200).json({ message: "Logged out successfully." });
+      res.status(200).json({ message: "Sesión finalizada." });
     } catch {
-      res.status(200).json({ message: "The session had already expired." });
+      res.status(200).json({ message: "La sesión expiró previamente." });
     }
   },
 
@@ -106,12 +108,12 @@ export const controller = {
       authService.refreshToken(token, res);
 
       return res.status(200).json({
-        message: "Session extended.",
+        message: "Sesión extendida.",
         data: { user: userReturn },
       });
     } catch (error: any) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "Unauthorized." });
+        res.status(401).json({ message: "No autorizado." });
       else handleError(error, res);
     }
   },

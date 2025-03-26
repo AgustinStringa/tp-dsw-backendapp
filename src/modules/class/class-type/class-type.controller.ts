@@ -1,35 +1,39 @@
 import { Request, Response, NextFunction } from "express";
 import { ClassType } from "./class-type.entity.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const classtypes = await em.find(
-        ClassType,
-        {},
-        { populate: ["classes", "classes.trainer"] }
-      ); // TODO: Make sure to populate an related entitites if necessary
-      res
-        .status(200)
-        .json({ message: "All class types were found", data: classtypes });
+      const classtypes = await em.findAll(ClassType, {
+        populate: ["classes", "classes.trainer"],
+        populateWhere: { classes: { active: true } },
+      });
+
+      res.status(200).json({
+        message: "Todos los tipos de clases fueron encontrados.",
+        data: classtypes,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const classtype = await em.findOneOrFail(ClassType, { id });
-      res.status(200).json({ message: "Class Type found", data: classtype });
+
+      res
+        .status(200)
+        .json({ message: "Tipo de clase encontrado.", data: classtype });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
@@ -39,43 +43,48 @@ const controller = {
       validateEntity(classtype);
 
       await em.flush();
-      res.status(201).json({ message: "Class Type created", data: classtype });
+      res
+        .status(201)
+        .json({ message: "Tipo de clase creado.", data: classtype });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   update: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const classtype = await em.findOneOrFail(ClassType, { id });
 
       em.assign(classtype, req.body.sanitizedInput);
       validateEntity(classtype);
 
       await em.flush();
-      res.status(200).json({ message: "Class Type updated", data: classtype });
+      res
+        .status(200)
+        .json({ message: "Tipo de clase actualizado.", data: classtype });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   delete: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const classtype = em.getReference(ClassType, id);
+      const id = validateObjectId(req.params.id, "id");
+      const classtype = em.getReference(ClassType, id!);
       await em.removeAndFlush(classtype);
-      res.status(200).json({ message: "Class Type deleted", data: classtype });
+
+      res
+        .status(200)
+        .json({ message: "Tipo de clase eliminado.", data: classtype });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   sanitizeClassType: function (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ) {
     req.body.sanitizedInput = {
@@ -92,5 +101,3 @@ const controller = {
     next();
   },
 };
-
-export { controller };

@@ -9,6 +9,7 @@ export class ClassType extends BaseEntity {
   @Property({ nullable: false })
   name!: string; // pilates, zumba, boxeo, yoga, crossfit...
 
+  @IsNotEmpty()
   @Property({ nullable: false })
   description!: string;
 

@@ -1,11 +1,14 @@
 import "reflect-metadata";
-import express from "express";
+import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import express from "express";
 import { RequestContext } from "@mikro-orm/mongodb";
 import { authRouter } from "./modules/auth/auth/auth.routes.js";
 import { classesRouter } from "./modules/class/class-module.routes.js";
 import { clientsRouter } from "./modules/client/client-module.routes.js";
+import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
+import { environment } from "./config/env.config.js";
 import { membershipsRouter } from "./modules/membership/membership-module.routes.js";
 import { newsRouter } from "./modules/news/news/news.routes.js";
 import { orm } from "./config/db/mikro-orm.config.js";
@@ -15,8 +18,8 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import { messageRouter } from "./modules/chat/message.routes.js";
 import { setupSocket } from "./utils/socket/socket.js";
+import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
 
-const PORT = 3000;
 const app = express();
 
 const httpServer = createServer(app);
@@ -35,10 +38,16 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: environment.systemUrls.frontendUrl,
     optionsSuccessStatus: 200,
     credentials: true,
   })
+);
+
+app.post(
+  "/api/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  userPaymentController.handleWebhook
 );
 
 app.use(express.json());
@@ -51,15 +60,18 @@ app.use("/api/news", newsRouter);
 app.use("/api/routines", routinesRouter);
 app.use("/api/trainers", trainerRouter);
 app.use("/api/messages", messageRouter);
+app.use("/api/user-payment", userPaymentRouter);
 
-app.use((_, res) => {
+app.use((_req, res) => {
   return res.status(404).send({ message: "Resource not found" });
 });
 
 setupSocket(io);
 
-httpServer.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}/`);
+httpServer.listen(environment.systemUrls.port, () => {
+  console.log(
+    `Servidor corriendo en http://localhost:${environment.systemUrls.port}/`
+  );
 });
 
 /*

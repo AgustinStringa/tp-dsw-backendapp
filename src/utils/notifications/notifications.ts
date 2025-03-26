@@ -10,9 +10,9 @@ const emailListDev = [
 export const sendEmail = async (
   subject: string,
   htmlContent: string,
-  receivers?: string[]
+  receivers: string[]
 ) => {
-  receivers = receivers || emailListDev;
+  receivers = environment.production ? receivers : emailListDev;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -29,11 +29,5 @@ export const sendEmail = async (
     html: htmlContent,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
-  });
+  await transporter.sendMail(mailOptions);
 };

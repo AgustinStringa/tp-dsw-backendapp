@@ -29,7 +29,10 @@ export const authService = {
     const token = req.cookies.auth_token;
     if (token) {
       if (blacklistedTokens.has(token)) {
-        throw new HttpError(401, "Unauthorized. Token is blacklisted.");
+        throw new HttpError(
+          401,
+          "No autorizado. El token se encuentra bloqueado."
+        );
       }
 
       let decoded = jwt.verify(token, environment.session.jwtSecret) as {
@@ -45,7 +48,7 @@ export const authService = {
         exp: decoded.exp,
       };
     } else {
-      throw new HttpError(401, "Unauthorized. Void token.");
+      throw new HttpError(401, "No autorizado. Token nulo.");
     }
   },
 

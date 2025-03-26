@@ -7,6 +7,9 @@ const requiredEnvVars = [
   "MONGO_URI",
   "EMAIL",
   "EMAIL_PASSWORD",
+  "PORT",
+  "BACKEND_URL",
+  "FRONTEND_URL",
   "JWT_SECRET",
   "SESSION_DURATION_HOURS",
   "REFRESH_TIME_MINUTES",
@@ -22,9 +25,14 @@ requiredEnvVars.forEach((envVar) => {
 export const environment = {
   production: process.env.PRODUCTION === "true",
   mongoUri: process.env.MONGO_URI,
+  systemUrls: {
+    port: process.env.PORT,
+    backendUrl: process.env.BACKEND_URL,
+    frontendUrl: process.env.FRONTEND_URL,
+  },
   emailAccount: {
     email: process.env.EMAIL,
-    password: process.env.PASSWORD,
+    password: process.env.EMAIL_PASSWORD,
   },
   session: {
     jwtSecret: process.env.JWT_SECRET as string,

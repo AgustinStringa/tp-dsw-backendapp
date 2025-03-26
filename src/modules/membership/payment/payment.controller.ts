@@ -1,12 +1,20 @@
 import { Request, Response, NextFunction } from "express";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "../membership/membership.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Payment } from "./payment.entity.js";
+import { PaymentMethodEnum } from "../../../utils/enums/payment-method.enum.js";
+import { paymentService } from "./payment.service.js";
+import { PaymentStatusEnum } from "../../../utils/enums/payment-status.enum.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import {
+  validateEnum,
+  validateObjectId,
+} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
       const payments = await em.find(
@@ -14,87 +22,116 @@ const controller = {
         {},
         { populate: ["membership", "membership.client", "membership.type"] }
       );
-      res
-        .status(200)
-        .json({ message: "All payments were found", data: payments });
+      res.status(200).json({
+        message: "Todos los pagos fueron encontrados.",
+        data: payments,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const payment = await em.findOneOrFail(Payment, id, {
+      const id = validateObjectId(req.params.id, "id");
+      const payment = await em.findOneOrFail(Payment, id!, {
         populate: ["membership"],
       });
-      res.status(200).json({ message: "Payment found", data: payment });
+      res.status(200).json({ message: "Pago encontrado.", data: payment });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   add: async function (req: Request, res: Response) {
     try {
       const payment = em.create(Payment, req.body.sanitizedInput);
+      payment.status = PaymentStatusEnum.PAID;
       validateEntity(payment);
-
-      await em.findOneOrFail(Membership, payment.membership.id);
-
       await em.flush();
-      res.status(200).json({ message: "Payment created", data: payment });
+
+      await paymentService.updateMembershipDebt(
+        req.body.sanitizedInput.membership
+      );
+
+      res.status(200).json({ message: "Pago registrado.", data: payment });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   update: async function (req: Request, res: Response) {
     try {
-      const payment = await em.findOneOrFail(Payment, req.params.id);
+      const id = validateObjectId(req.params.id, "id");
+      const input = req.body.sanitizedInput;
+
+      const payment = await em.findOneOrFail(Payment, id!);
+
+      if (payment.paymentMethod === PaymentMethodEnum.STRIPE) {
+        res.status(403).json({
+          message:
+            "No se puede modificar un pago realizado con la plataforma Stripe.",
+        });
+        return;
+      }
+
+      if (input.membership && input.membership !== payment.membership.id)
+        await em.findOneOrFail(Membership, input.membership);
+
       em.assign(payment, req.body.sanitizedInput);
       validateEntity(payment);
-
-      if (req.body.sanitizedInput.membership !== undefined)
-        await em.findOneOrFail(Membership, req.body.sanitizedInput.membership);
-
       await em.flush();
-      res.status(200).json({ message: "Payment updated", data: payment });
+
+      await paymentService.updateMembershipDebt(payment.membership);
+
+      res.status(200).json({ message: "Pago actualizado.", data: payment });
     } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   delete: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const payment = em.getReference(Payment, id);
+      const id = validateObjectId(req.params.id, "id");
+      const payment = await em.findOneOrFail(Payment, id!);
       await em.removeAndFlush(payment);
-      res.status(200).json({ message: "Payment deleted", data: payment });
+
+      await paymentService.updateMembershipDebt(payment.membership);
+
+      res.status(200).json({ message: "Pago eliminado.", data: payment });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      handleError(error, res);
     }
   },
 
   sanitizePayment: function (req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-      payMethod: req.body.payMethod?.trim(),
-      amount: req.body.amount,
-      membership: req.body.membership,
-    };
+    try {
+      const allowUndefined = req.method === "PATCH";
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined)
-        delete req.body.sanitizedInput[key];
-    });
+      req.body.sanitizedInput = {
+        amount: req.body.amount,
 
-    next();
+        membership: validateObjectId(
+          req.body.membershipId,
+          "membershipId",
+          allowUndefined
+        ),
+        paymentMethod: validateEnum(
+          req.body.paymentMethod,
+          PaymentMethodEnum,
+          "paymentMethod",
+          true
+        ),
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined)
+          delete req.body.sanitizedInput[key];
+      });
+
+      next();
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 };
-
-export { controller };

@@ -10,11 +10,7 @@ membershipTypeRouter.get(
   controller.findOne
 );
 
-membershipTypeRouter.get(
-  "/",
-  authMiddlewares.verifyTrainer,
-  controller.findAll
-);
+membershipTypeRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
 
 membershipTypeRouter.post(
   "/",
