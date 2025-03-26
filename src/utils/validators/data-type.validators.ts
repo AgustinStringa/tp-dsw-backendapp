@@ -13,8 +13,12 @@ export function validateObjectId(
   throw new HttpError(400, `${field}: must be an ObjectId.`);
 }
 
-export function validateTime(time: any, field: string) {
-  if (time === undefined) return undefined;
+export function validateTime(
+  time: any,
+  field: string,
+  canBeUndefined: boolean = false
+) {
+  if (time === undefined && canBeUndefined) return undefined;
 
   const regex = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
 
@@ -26,8 +30,12 @@ export function validateTime(time: any, field: string) {
   );
 }
 
-export function validateDateTime(dateTime: any, field: string) {
-  if (dateTime === undefined) return undefined;
+export function validateDateTime(
+  dateTime: any,
+  field: string,
+  canBeUndefined: boolean = false
+) {
+  if (dateTime === undefined && canBeUndefined) return undefined;
 
   const aux = new Date(dateTime);
   if (!isNaN(aux.getTime())) return aux;
