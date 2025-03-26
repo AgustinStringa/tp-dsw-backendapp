@@ -4,6 +4,7 @@ import { Client } from "../client/client.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Progress } from "./progress.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -103,12 +104,14 @@ const controller = {
   },
 
   sanitizeProgress: function (req: Request, res: Response, next: NextFunction) {
+    const allowUndefined = req.method === "PATCH";
+
     req.body.sanitizedInput = {
       date: req.body.date,
       weight: req.body.weight,
       fatPercentage: req.body.fatPercentage,
       bodyMeasurements: req.body.bodyMeasurements?.trim(),
-      client: req.body.client,
+      client: validateObjectId(req.body.client, "clientId", allowUndefined),
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {

@@ -139,9 +139,11 @@ const controller = {
     next: NextFunction
   ) {
     try {
+      const allowUndefined = req.method === "PATCH";
+
       req.body.sanitizedInput = {
-        client: validateObjectId(req.body.clientId, "clientId"),
-        class: validateObjectId(req.body.classId, "classId"),
+        client: validateObjectId(req.body.clientId, "clientId", allowUndefined),
+        class: validateObjectId(req.body.classId, "classId", allowUndefined),
       };
 
       Object.keys(req.body.sanitizedInput).forEach((key) => {
