@@ -29,3 +29,6 @@ paymentRouter.patch(
 );
 
 paymentRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);
+
+export const paymentByMembershipRouter = Router({ mergeParams: true });
+paymentByMembershipRouter.get("/", controller.findByMembership);

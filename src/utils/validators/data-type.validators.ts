@@ -65,3 +65,37 @@ export function validateEnum(
 
   return normalizedValue;
 }
+
+export function validatePrice(
+  price: number | string,
+  maxDecimals: number,
+  field: string,
+  canBeUndefined: boolean,
+  allowZero: boolean
+) {
+  if (canBeUndefined === true && price === undefined) return undefined;
+
+  if (typeof price === "number" && price >= 0) {
+    if (!allowZero && price === 0)
+      throw new HttpError(400, `${field}: no se permite el valor 0.`);
+
+    const roundedPrice = parseFloat(price.toFixed(maxDecimals));
+    return roundedPrice;
+  }
+
+  const convertedPrice = Number(price);
+  if (!isNaN(convertedPrice) && convertedPrice >= 0) {
+    if (!allowZero && price === 0)
+      throw new HttpError(400, `${field}: no se permite el valor 0.`);
+
+    const roundedPrice = parseFloat(convertedPrice.toFixed(maxDecimals));
+    return roundedPrice;
+  }
+
+  if (allowZero)
+    throw new HttpError(
+      400,
+      `${field}: debe ser un número mayor o igual que 0.`
+    );
+  else throw new HttpError(400, `${field}: debe ser un número mayor que 0.`);
+}

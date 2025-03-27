@@ -1,12 +1,15 @@
 import Stripe from "stripe";
 import { NextFunction, Request, Response } from "express";
+import {
+  validateObjectId,
+  validatePrice,
+} from "../../../utils/validators/data-type.validators.js";
 import { environment } from "../../../config/env.config.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { MembershipType } from "./membership-type.entity.js";
+import { membershipTypeService } from "./membership-type.service.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
-import { membershipTypeService } from "./membership-type.service.js";
 
 const em = orm.em;
 const stripe = new Stripe(environment.stripe.apiKey as string);
@@ -102,20 +105,26 @@ export const controller = {
 
   sanitizeMembershipType: function (
     req: Request,
-    _res: Response,
+    res: Response,
     next: NextFunction
   ) {
-    req.body.sanitizedInput = {
-      name: req.body.name?.trim(),
-      description: req.body.description?.trim(),
-      price: req.body.price,
-    };
+    try {
+      const allowUndefined = req.method === "PATCH";
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined)
-        delete req.body.sanitizedInput[key];
-    });
+      req.body.sanitizedInput = {
+        name: req.body.name?.trim(),
+        description: req.body.description?.trim(),
+        price: validatePrice(req.body.price, 2, "price", allowUndefined, false),
+      };
 
-    next();
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined)
+          delete req.body.sanitizedInput[key];
+      });
+
+      next();
+    } catch (error) {
+      handleError(error, res);
+    }
   },
 };

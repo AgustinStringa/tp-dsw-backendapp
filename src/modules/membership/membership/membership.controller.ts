@@ -110,13 +110,13 @@ export const controller = {
 
   findActiveByClient: async function (req: Request, res: Response) {
     try {
-      const clientIdParam = validateObjectId(req.params.id, "clientId");
+      const clientIdParam = validateObjectId(req.params.clientId, "clientId");
       const { user } = await authService.getUser(req);
 
       if (clientIdParam !== user.id)
         return res.status(401).json({ message: "Cliente no autorizado." });
 
-      const membership = await em.findOneOrFail(
+      const membership = await em.findOne(
         Membership,
         {
           client: user,
@@ -125,10 +125,18 @@ export const controller = {
         },
         { populate: ["type"] }
       );
-
-      res
-        .status(200)
-        .json({ message: "Membresía encontrada.", data: membership });
+      if (membership) {
+        res
+          .status(200)
+          .json({ message: "Membresía encontrada.", data: membership });
+      } else {
+        res
+          .status(200)
+          .json({
+            message: "El cliente no tiene una membresía activa.",
+            data: null,
+          });
+      }
     } catch (error: any) {
       handleError(error, res);
     }
