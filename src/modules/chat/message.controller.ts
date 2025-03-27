@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { orm } from "../../config/db/mikro-orm.config.js";
 import { Message } from "./message.entity.js";
-
+import { validateObjectId } from "../../utils/validators/data-type.validators.js";
 export const messageController = {
   getMessages: async (req: Request, res: Response) => {
     try {
-      const sender = req.params.sender;
-      const receiver = req.params.receiver;
+      const sender = validateObjectId(req.params.sender, "Emisor");
+      const receiver = validateObjectId(req.params.receiver, "Receptor");
       const messages = await orm.em.find(
         Message,
         {
@@ -27,7 +27,7 @@ export const messageController = {
 
   getUnreadMessages: async (req: Request, res: Response) => {
     try {
-      const receiver = req.params.receiver;
+      const receiver = validateObjectId(req.params.receiver, "Receptor");
 
       const unreadMessages = await orm.em.find(
         Message,
@@ -49,8 +49,8 @@ export const messageController = {
 
   markMessagesAsRead: async (req: Request, res: Response) => {
     try {
-      const sender = req.params.sender;
-      const receiver = req.params.receiver;
+      const sender = validateObjectId(req.params.sender, "Emisor");
+      const receiver = validateObjectId(req.params.receiver, "Receptor");
 
       const unreadMessages = await orm.em.find(Message, {
         sender: sender,
