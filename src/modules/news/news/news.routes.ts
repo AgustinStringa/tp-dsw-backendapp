@@ -1,6 +1,6 @@
-import { Router } from "express";
 import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./news.controller.js";
+import { Router } from "express";
 
 export const newsRouter = Router();
 

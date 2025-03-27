@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ClassType } from "./class-type.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -19,7 +19,7 @@ export const controller = {
         message: "Todos los tipos de clases fueron encontrados.",
         data: classtypes,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -32,7 +32,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Tipo de clase encontrado.", data: classtype });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -46,7 +46,7 @@ export const controller = {
       res
         .status(201)
         .json({ message: "Tipo de clase creado.", data: classtype });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -63,7 +63,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Tipo de clase actualizado.", data: classtype });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -77,7 +77,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Tipo de clase eliminado.", data: classtype });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

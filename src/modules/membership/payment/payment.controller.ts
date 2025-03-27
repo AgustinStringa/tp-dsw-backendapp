@@ -1,4 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import {
+  validateEnum,
+  validateObjectId,
+  validatePrice,
+} from "../../../utils/validators/data-type.validators.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "../membership/membership.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -7,11 +12,6 @@ import { PaymentMethodEnum } from "../../../utils/enums/payment-method.enum.js";
 import { paymentService } from "./payment.service.js";
 import { PaymentStatusEnum } from "../../../utils/enums/payment-status.enum.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import {
-  validateEnum,
-  validateObjectId,
-  validatePrice,
-} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -27,7 +27,7 @@ export const controller = {
         message: "Todos los pagos fueron encontrados.",
         data: payments,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -41,7 +41,7 @@ export const controller = {
         message: "Todos los pagos de la membresía fueron encontrados.",
         data: payments,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -53,7 +53,7 @@ export const controller = {
         populate: ["membership"],
       });
       res.status(200).json({ message: "Pago encontrado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -70,7 +70,7 @@ export const controller = {
       );
 
       res.status(200).json({ message: "Pago registrado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -100,7 +100,7 @@ export const controller = {
       await paymentService.updateMembershipDebt(payment.membership);
 
       res.status(200).json({ message: "Pago actualizado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -114,7 +114,7 @@ export const controller = {
       await paymentService.updateMembershipDebt(payment.membership);
 
       res.status(200).json({ message: "Pago eliminado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -156,7 +156,7 @@ export const controller = {
       }
 
       next();
-    } catch (error) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

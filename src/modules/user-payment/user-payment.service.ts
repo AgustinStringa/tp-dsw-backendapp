@@ -1,9 +1,9 @@
-import Stripe from "stripe";
 import { environment } from "../../config/env.config.js";
 import { Membership } from "../membership/membership/membership.entity.js";
 import { orm } from "../../config/db/mikro-orm.config.js";
 import { Payment } from "../membership/payment/payment.entity.js";
 import { PaymentStatusEnum } from "../../utils/enums/payment-status.enum.js";
+import Stripe from "stripe";
 
 const em = orm.em;
 const stripe = new Stripe(environment.stripe.apiKey as string);
@@ -45,7 +45,7 @@ export const userPaymentService = {
       }
 
       em.flush();
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw error;
     }
   },

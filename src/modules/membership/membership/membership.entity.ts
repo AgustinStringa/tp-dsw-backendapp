@@ -1,12 +1,12 @@
+import { addMonths, startOfDay } from "date-fns";
 import {
+  Collection,
   Entity,
-  Property,
   ManyToOne,
   OneToMany,
-  Collection,
+  Property,
   Rel,
 } from "@mikro-orm/core";
-import { addMonths, startOfDay } from "date-fns";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { Client } from "../../client/client/client.entity.js";
 import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";

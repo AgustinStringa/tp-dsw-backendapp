@@ -1,10 +1,10 @@
 import {
-  Entity,
-  Property,
-  ManyToOne,
-  Rel,
   Embeddable,
   Embedded,
+  Entity,
+  ManyToOne,
+  Property,
+  Rel,
 } from "@mikro-orm/core";
 import { IsNotEmpty, IsNumber, Min } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";

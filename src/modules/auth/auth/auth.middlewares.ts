@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { NotFoundError } from "@mikro-orm/core";
 import { authService } from "./auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
+import { NotFoundError } from "@mikro-orm/core";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Trainer } from "../../trainer/trainer/trainer.entity.js";
 
@@ -22,7 +22,7 @@ export const authMiddlewares = {
 
       authService.refreshToken(token, res);
       return next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundError)
         res.status(401).json({ message: "Unauthorized." });
       else handleError(error, res);
@@ -42,7 +42,7 @@ export const authMiddlewares = {
 
       authService.refreshToken(token, res);
       return next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundError)
         res.status(401).json({ message: "Unauthorized." });
       else handleError(error, res);
@@ -57,7 +57,7 @@ export const authMiddlewares = {
       authService.refreshToken(token, res);
 
       return next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundError)
         res.status(401).json({ message: "Unauthorized." });
       else handleError(error, res);

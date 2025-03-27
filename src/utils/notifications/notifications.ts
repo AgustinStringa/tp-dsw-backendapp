@@ -1,5 +1,5 @@
-import nodemailer from "nodemailer";
 import { environment } from "../../config/env.config.js";
+import nodemailer from "nodemailer";
 
 const emailListDev = [
   "agustinstringa24@hotmail.com",

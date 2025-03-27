@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { Client } from "./client.entity.js";
 import { authService } from "../../auth/auth/auth.service.js";
+import bcrypt from "bcrypt";
+import { Client } from "./client.entity.js";
 import { clientService } from "./client.service.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -23,7 +23,7 @@ export const controller = {
         message: "Todos los clientes fueron encontrados.",
         data: clients,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -38,7 +38,7 @@ export const controller = {
       );
 
       res.status(200).json({ message: "Cliente encontrado.", data: client });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -71,7 +71,7 @@ export const controller = {
         message: "Cliente registrado.",
         data: { user: userReturn },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -103,7 +103,7 @@ export const controller = {
       await em.flush();
 
       res.status(200).json({ message: "Cliente actualizado.", data: client });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -114,7 +114,7 @@ export const controller = {
       const client = em.getReference(Client, id);
       await em.removeAndFlush(client);
       res.status(200).json({ message: "Cliente eliminado." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

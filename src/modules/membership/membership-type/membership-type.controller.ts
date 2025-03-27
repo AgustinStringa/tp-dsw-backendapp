@@ -1,4 +1,3 @@
-import Stripe from "stripe";
 import { NextFunction, Request, Response } from "express";
 import {
   validateObjectId,
@@ -9,6 +8,7 @@ import { handleError } from "../../../utils/errors/error-handler.js";
 import { MembershipType } from "./membership-type.entity.js";
 import { membershipTypeService } from "./membership-type.service.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
+import Stripe from "stripe";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
@@ -23,7 +23,7 @@ export const controller = {
         message: "Todos los tipos de membresías fueron encontrados.",
         data: membTypes,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -41,7 +41,7 @@ export const controller = {
         message: "Tipo de membresía encontrado.",
         data: membType,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -59,7 +59,7 @@ export const controller = {
         message: "Tipo de membresía creado.",
         data: membType,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -82,7 +82,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Tipo de membresía actualizado.", data: membType });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -98,7 +98,7 @@ export const controller = {
 
       await em.removeAndFlush(membType);
       res.status(200).json({ message: "Tipo de membresía eliminado." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -123,7 +123,7 @@ export const controller = {
       });
 
       next();
-    } catch (error) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

@@ -1,4 +1,4 @@
-import { Entity, Property, OneToMany, Collection } from "@mikro-orm/core";
+import { Collection, Entity, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { IsNotEmpty } from "class-validator";
 import { Membership } from "../membership/membership.entity.js";

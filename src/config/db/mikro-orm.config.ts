@@ -1,7 +1,7 @@
 import { defineConfig } from "@mikro-orm/mongodb";
+import { environment } from "../env.config.js";
 import { MikroORM } from "@mikro-orm/mongodb";
 import { MongoHighlighter } from "@mikro-orm/mongo-highlighter";
-import { environment } from "../env.config.js";
 
 const config = defineConfig({
   entities: ["dist/**/*.entity.js"],

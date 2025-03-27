@@ -21,7 +21,7 @@ const controller = {
         message: "Todas las inscripciones activas fueron encontradas.",
         data: registrations,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -37,7 +37,7 @@ const controller = {
       res
         .status(200)
         .json({ message: "Inscripción encontrada.", data: registration });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -55,7 +55,7 @@ const controller = {
         message: "Las inscripciones del cliente fueron encontradas.",
         data: registrations,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -102,7 +102,7 @@ const controller = {
       res
         .status(201)
         .json({ message: "Inscripción registrada.", data: registration });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -128,7 +128,7 @@ const controller = {
       res
         .status(200)
         .json({ message: "Inscripción cancelada.", data: registration });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -155,7 +155,7 @@ const controller = {
       if (isTrainer === false) req.body.sanitizedInput.client = user.id;
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

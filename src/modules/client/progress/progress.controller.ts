@@ -1,21 +1,22 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../client/client.entity.js";
+import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Progress } from "./progress.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
       const progresses = await em.find(Progress, {}, { populate: ["client"] });
       res
         .status(200)
         .json({ message: "All progresses were found", data: progresses });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -28,10 +29,8 @@ const controller = {
         { populate: ["client"] }
       );
       res.status(200).json({ message: "Progress found", data: progress });
-    } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -50,8 +49,8 @@ const controller = {
         message: "All progresses of the client were found.",
         data: progresses,
       });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -65,10 +64,8 @@ const controller = {
       await em.flush();
 
       res.status(201).json({ message: "Progress created", data: progress });
-    } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -84,10 +81,8 @@ const controller = {
 
       await em.flush();
       res.status(200).json({ message: "Progress updated", data: progress });
-    } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -97,8 +92,8 @@ const controller = {
       const progress = em.getReference(Progress, id);
       await em.removeAndFlush(progress);
       res.status(200).json({ message: "Progress deleted" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -120,5 +115,3 @@ const controller = {
     next();
   },
 };
-
-export { controller };

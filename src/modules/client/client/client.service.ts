@@ -1,14 +1,14 @@
+import { Request, Response } from "express";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "./client.entity.js";
 import { sendEmail } from "../../../utils/notifications/notifications.js";
-import { authService } from "../../auth/auth/auth.service.js";
-import { Request, Response } from "express";
 
 export const clientService = {
   startSessionOnRegister: (req: Request, res: Response, client: Client) => {
     let token;
     try {
       token = authService.decodeToken(req);
-    } catch (error: any) {}
+    } catch (error: unknown) {}
 
     if (token === undefined) {
       authService.startSession(res, client);
@@ -33,6 +33,6 @@ export const clientService = {
         `,
         [client.email]
       );
-    } catch (error: any) {}
+    } catch (error: unknown) {}
   },
 };

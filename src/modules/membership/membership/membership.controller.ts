@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from "express";
-import { startOfDay } from "date-fns";
+import { NextFunction, Request, Response } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
@@ -10,6 +9,7 @@ import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Payment } from "../payment/payment.entity.js";
 import { paymentService } from "../payment/payment.service.js";
+import { startOfDay } from "date-fns";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
@@ -26,7 +26,7 @@ export const controller = {
         message: "Todas las membresías fueron encontradas.",
         data: memberships,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -43,7 +43,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Membresía encontrada.", data: membership });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -74,7 +74,7 @@ export const controller = {
         message: "Todas las membresías activas fueron encontradas.",
         data: memberships,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -103,7 +103,7 @@ export const controller = {
         message: "Todas las membresías adeudadas fueron encontradas.",
         data: memberships,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -130,14 +130,12 @@ export const controller = {
           .status(200)
           .json({ message: "Membresía encontrada.", data: membership });
       } else {
-        res
-          .status(200)
-          .json({
-            message: "El cliente no tiene una membresía activa.",
-            data: null,
-          });
+        res.status(200).json({
+          message: "El cliente no tiene una membresía activa.",
+          data: null,
+        });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -183,7 +181,7 @@ export const controller = {
       res
         .status(201)
         .json({ message: "Membresía asignada al cliente.", data: membership });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -211,7 +209,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Membresía acualizada.", data: membership });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -224,7 +222,7 @@ export const controller = {
       await em.removeAndFlush(membership);
 
       res.status(200).json({ message: "Membresía eliminada." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -234,7 +232,6 @@ export const controller = {
     res: Response,
     next: NextFunction
   ) {
-
     try {
       const allowUndefined = req.method === "PATCH";
 
@@ -249,7 +246,7 @@ export const controller = {
       });
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

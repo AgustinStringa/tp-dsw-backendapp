@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Exercise } from "../exercise/exercise.entity.js";
 import { ExerciseRoutine } from "./exercise-routine.entity.js";
@@ -27,7 +27,7 @@ export const controller = {
         message: "Se agregó el ejercicio a la rutina.",
         data: exerciseRoutine,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -60,7 +60,7 @@ export const controller = {
         message: "Se registró la ejecución del ejercicio.",
         data: exerciseRoutine,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -84,7 +84,7 @@ export const controller = {
         message: "Se actualizó el ejercicio de la rutina.",
         data: exerciseRoutine,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -96,7 +96,7 @@ export const controller = {
       await em.removeAndFlush(exerciseRoutine);
 
       res.status(200).json({ message: "Se quitó el ejercicio de la rutina." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

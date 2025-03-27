@@ -1,8 +1,8 @@
 import { DriverException, NotFoundError } from "@mikro-orm/core";
-import { Response } from "express";
 import { HttpError } from "./http-error.js";
+import { Response } from "express";
 
-export function handleError(error: any, res: Response) {
+export function handleError(error: unknown, res: Response) {
   if (error instanceof HttpError) return error.send(res);
 
   if (error instanceof DriverException) {
@@ -17,5 +17,5 @@ export function handleError(error: any, res: Response) {
     });
   }
 
-  return res.status(500).json({ message: error.message });
+  return res.status(500).json({ message: (error as Error).message });
 }

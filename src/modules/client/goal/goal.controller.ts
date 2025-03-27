@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../client/client.entity.js";
 import { Goal } from "./goal.entity.js";
@@ -13,8 +13,8 @@ const controller = {
     try {
       const goals = await em.find(Goal, {}, { populate: ["client"] });
       res.status(200).json({ message: "All goals were found", data: goals });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -27,10 +27,8 @@ const controller = {
         { populate: ["client"] }
       );
       res.status(200).json({ message: "Goal found", data: goal });
-    } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -43,10 +41,8 @@ const controller = {
       await em.flush();
 
       res.status(201).json({ message: "Goal created", data: goal });
-    } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -64,7 +60,7 @@ const controller = {
       res
         .status(200)
         .json({ message: "All goals of the client were found.", data: goals });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -81,10 +77,8 @@ const controller = {
       await em.flush();
 
       res.status(200).json({ message: "Goal updated", data: goal });
-    } catch (error: any) {
-      let errorCode = 500;
-      if (error.message.match("not found")) errorCode = 404;
-      res.status(errorCode).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -94,8 +88,8 @@ const controller = {
       const goal = em.getReference(Goal, id);
       await em.removeAndFlush(goal);
       res.status(200).json({ message: "Goal deleted" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 

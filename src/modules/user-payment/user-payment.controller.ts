@@ -1,6 +1,4 @@
-import Stripe from "stripe";
 import { NextFunction, Request, Response } from "express";
-import { startOfDay } from "date-fns";
 import { authService } from "../auth/auth/auth.service.js";
 import { Client } from "../client/client/client.entity.js";
 import { environment } from "../../config/env.config.js";
@@ -12,6 +10,8 @@ import { MembershipType } from "../membership/membership-type/membership-type.en
 import { orm } from "../../config/db/mikro-orm.config.js";
 import { Payment } from "../membership/payment/payment.entity.js";
 import { PaymentMethodEnum } from "../../utils/enums/payment-method.enum.js";
+import { startOfDay } from "date-fns";
+import Stripe from "stripe";
 import { userPaymentService } from "./user-payment.service.js";
 import { validateObjectId } from "../../utils/validators/data-type.validators.js";
 
@@ -90,7 +90,7 @@ export const controller = {
       await em.flush();
 
       res.status(200).json(session.url);
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -133,7 +133,7 @@ export const controller = {
       };
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

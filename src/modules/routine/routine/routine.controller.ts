@@ -1,5 +1,9 @@
-import { startOfDay, getDay } from "date-fns";
-import { Request, Response, NextFunction } from "express";
+import { getDay, startOfDay } from "date-fns";
+import { NextFunction, Request, Response } from "express";
+import {
+  validateDateTime,
+  validateObjectId,
+} from "../../../utils/validators/data-type.validators.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import { ExerciseRoutine } from "../exercise-routine/exercise-routine.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
@@ -8,10 +12,6 @@ import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Routine } from "./routine.entity.js";
 import { routineService } from "./routine.service.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import {
-  validateDateTime,
-  validateObjectId,
-} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -29,8 +29,8 @@ export const controller = {
         message: "All routines were found",
         data: routines,
       });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -45,7 +45,7 @@ export const controller = {
         }
       );
       res.status(200).json({ message: "Rutina encontrada.", data: routine });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -63,7 +63,7 @@ export const controller = {
 
       await em.flush();
       res.status(201).json({ message: "Rutina creada.", data: routine });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -93,7 +93,7 @@ export const controller = {
 
       await em.flush();
       res.status(200).json({ message: "Rutina actualizada.", data: routine });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -105,8 +105,8 @@ export const controller = {
       await em.removeAndFlush(routine);
 
       res.status(200).json({ message: "Rutina eliminada." });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleError(error, res);
     }
   },
 
@@ -141,7 +141,7 @@ export const controller = {
       }
 
       res.status(200).json({ message: "Rutina encontrada", data: routine });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -197,7 +197,7 @@ export const controller = {
       );
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

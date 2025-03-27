@@ -1,4 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import {
+  validateObjectId,
+  validateTime,
+} from "../../../utils/validators/data-type.validators.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Class } from "./class.entity.js";
 import { classService } from "./class.service.js";
@@ -7,10 +11,6 @@ import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import {
-  validateObjectId,
-  validateTime,
-} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -25,7 +25,7 @@ export const controller = {
         message: "Todas las clases fueron encontradas.",
         data: classes,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -44,7 +44,7 @@ export const controller = {
         message: "Todas las clases activas fueron encontradas.",
         data: classes,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -59,7 +59,7 @@ export const controller = {
       );
 
       res.status(200).json({ message: "Clase encontrada.", data: classFound });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -89,7 +89,7 @@ export const controller = {
       await em.flush();
 
       res.status(201).json({ message: "Clase creada.", data: newClass });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -124,7 +124,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Clase actualizada.", data: classToUpdate });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -148,7 +148,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Clase eliminada.", data: classToDelete });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -177,7 +177,7 @@ export const controller = {
       });
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

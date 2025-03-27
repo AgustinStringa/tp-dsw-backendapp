@@ -1,4 +1,4 @@
-import { Entity, Property, ManyToOne, Rel } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property, Rel } from "@mikro-orm/core";
 import { IsNotEmpty, IsNumber } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { Client } from "../client/client.entity.js";

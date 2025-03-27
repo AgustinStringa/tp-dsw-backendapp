@@ -1,7 +1,7 @@
-import { Router } from "express";
 import { clientRouter } from "./client/client.routes.js";
 import { goalRouter } from "./goal/goal.routes.js";
 import { progressRouter } from "./progress/progress.routes.js";
+import { Router } from "express";
 
 export const clientsRouter = Router();
 
