@@ -5,7 +5,7 @@ import { controller } from "./trainer.controller.js";
 export const trainerRouter = express.Router();
 
 trainerRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
-trainerRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
+trainerRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
 
 trainerRouter.post(
   "/",
