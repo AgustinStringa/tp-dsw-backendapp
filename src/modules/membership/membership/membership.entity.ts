@@ -9,7 +9,6 @@ import {
 } from "@mikro-orm/core";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { Client } from "../../client/client/client.entity.js";
-import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { Payment } from "../payment/payment.entity.js";
 
@@ -23,9 +22,6 @@ export class Membership extends BaseEntity {
 
   @Property()
   debt!: number;
-
-  @Property()
-  createdBy!: MembershipCreatedByEnum;
 
   @ManyToOne(() => MembershipType)
   type!: Rel<MembershipType>;

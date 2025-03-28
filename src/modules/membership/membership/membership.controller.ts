@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "./membership.entity.js";
-import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";
 import { membershipService } from "./membership.service.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -22,10 +22,15 @@ export const controller = {
         {},
         { populate: ["type", "client", "payments"] }
       );
-      res.status(200).json({
-        message: "Todas las membresías fueron encontradas.",
-        data: memberships,
-      });
+
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todas las membresías fueron encontradas.",
+            memberships
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -42,7 +47,7 @@ export const controller = {
 
       res
         .status(200)
-        .json({ message: "Membresía encontrada.", data: membership });
+        .json(new ApiResponse("Membresía encontrada.", membership));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -70,10 +75,14 @@ export const controller = {
         }
       );
 
-      return res.status(200).json({
-        message: "Todas las membresías activas fueron encontradas.",
-        data: memberships,
-      });
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todas las membresías activas fueron encontradas.",
+            memberships
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -99,10 +108,14 @@ export const controller = {
         }
       );
 
-      return res.status(200).json({
-        message: "Todas las membresías adeudadas fueron encontradas.",
-        data: memberships,
-      });
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todas las membresías adeudadas fueron encontradas.",
+            memberships
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -114,7 +127,7 @@ export const controller = {
       const { user } = await authService.getUser(req);
 
       if (clientIdParam !== user.id)
-        return res.status(401).json({ message: "Cliente no autorizado." });
+        return res.status(401).json(new ApiResponse("Cliente no autorizado."));
 
       const membership = await em.findOne(
         Membership,
@@ -128,12 +141,11 @@ export const controller = {
       if (membership) {
         res
           .status(200)
-          .json({ message: "Membresía encontrada.", data: membership });
+          .json(new ApiResponse("Membresía encontrada.", membership));
       } else {
-        res.status(200).json({
-          message: "El cliente no tiene una membresía activa.",
-          data: null,
-        });
+        res
+          .status(200)
+          .json(new ApiResponse("El cliente no tiene una membresía activa."));
       }
     } catch (error: unknown) {
       handleError(error, res);
@@ -153,9 +165,9 @@ export const controller = {
       });
 
       if (existingMembership) {
-        res.status(403).json({
-          message: "El cliente posee una membresía activa.",
-        });
+        res
+          .status(403)
+          .json(new ApiResponse("El cliente posee una membresía activa."));
         return;
       }
 
@@ -163,9 +175,9 @@ export const controller = {
         req.body.sanitizedInput.client
       );
       if (debt) {
-        res.status(403).json({
-          message: "El cliente tiene una deuda de $" + debt,
-        });
+        res
+          .status(403)
+          .json(new ApiResponse("El cliente tiene una deuda de $" + debt));
         return;
       }
 
@@ -174,13 +186,12 @@ export const controller = {
       });
 
       const membership = em.create(Membership, req.body.sanitizedInput);
-      membership.createdBy = MembershipCreatedByEnum.TRAINER;
       membership.debt = membershipType.price;
       await em.flush();
 
       res
         .status(201)
-        .json({ message: "Membresía asignada al cliente.", data: membership });
+        .json(new ApiResponse("Membresía asignada al cliente.", membership));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -208,7 +219,7 @@ export const controller = {
 
       res
         .status(200)
-        .json({ message: "Membresía acualizada.", data: membership });
+        .json(new ApiResponse("Membresía acualizada.", membership));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -221,7 +232,7 @@ export const controller = {
       await em.nativeDelete(Payment, { membership });
       await em.removeAndFlush(membership);
 
-      res.status(200).json({ message: "Membresía eliminada." });
+      res.status(200).json(new ApiResponse("Membresía eliminada."));
     } catch (error: unknown) {
       handleError(error, res);
     }

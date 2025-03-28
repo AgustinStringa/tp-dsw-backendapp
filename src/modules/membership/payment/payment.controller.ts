@@ -10,7 +10,6 @@ import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Payment } from "./payment.entity.js";
 import { PaymentMethodEnum } from "../../../utils/enums/payment-method.enum.js";
 import { paymentService } from "./payment.service.js";
-import { PaymentStatusEnum } from "../../../utils/enums/payment-status.enum.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 
 const em = orm.em;
@@ -61,7 +60,6 @@ export const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const payment = em.create(Payment, req.body.sanitizedInput);
-      payment.status = PaymentStatusEnum.PAID;
       validateEntity(payment);
       await em.flush();
 
