@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { authService } from "../auth/auth/auth.service.js";
+import { CheckoutSessionStatusEnum } from "../../utils/enums/checkout-session-status.enum.js";
 import { Client } from "../client/client/client.entity.js";
 import { environment } from "../../config/env.config.js";
 import { handleError } from "../../utils/errors/error-handler.js";
@@ -23,14 +24,19 @@ export const controller = {
     // Si el cliente cuenta con una membresía activa, la misma se da de baja modificando su fecha de vencimiento.
 
     try {
-      const client = (await authService.getUser(req)).user;
+      const client = (await authService.getUser(req)).user as Client;
       if (client.id !== req.body.sanitizedInput.client) {
         res.status(401).json({ message: "Cliente no autorizado." });
         return;
       }
 
-      /*TODO si tiene abierta sesión de pagos, retomarla*/
-      const debt = await membershipService.calcleClientDebt(client as Client);
+      const openSession = await userPaymentService.findOpenSession(client);
+      if (openSession !== null) {
+        res.status(303).json(openSession.url);
+        return;
+      }
+
+      const debt = await membershipService.calcleClientDebt(client);
       if (debt) {
         res.status(403).json({
           message:
@@ -63,9 +69,9 @@ export const controller = {
         created: session.created,
         paymentIntent: undefined,
         status: session.payment_status as PaymentStatusEnum,
-        checkoutStatus: session.status as string,
+        checkoutSessionStatus: session.status as CheckoutSessionStatusEnum,
         membershipType: membType,
-        client: client as Client,
+        client: client,
       };
 
       em.create(StripePaymentIntent, stripePaymentIntent);

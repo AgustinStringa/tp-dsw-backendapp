@@ -1,5 +1,6 @@
 import { Entity, ManyToOne, OneToOne, Property, Rel } from "@mikro-orm/core";
 import { BaseEntity } from "../../config/db/base-entity.entity.js";
+import { CheckoutSessionStatusEnum } from "../../utils/enums/checkout-session-status.enum.js";
 import { Client } from "../client/client/client.entity.js";
 import { MembershipType } from "../membership/membership-type/membership-type.entity.js";
 import { Payment } from "../membership/payment/payment.entity.js";
@@ -20,7 +21,7 @@ export class StripePaymentIntent extends BaseEntity {
   status!: PaymentStatusEnum;
 
   @Property()
-  checkoutStatus!: string;
+  checkoutSessionStatus!: CheckoutSessionStatusEnum;
 
   @ManyToOne(() => MembershipType)
   membershipType!: Rel<MembershipType>;

@@ -1,4 +1,7 @@
+import { CheckoutSessionStatusEnum } from "../../utils/enums/checkout-session-status.enum.js";
+import { Client } from "../client/client/client.entity.js";
 import { environment } from "../../config/env.config.js";
+import { HttpError } from "../../utils/errors/http-error.js";
 import { Membership } from "../membership/membership/membership.entity.js";
 import { orm } from "../../config/db/mikro-orm.config.js";
 import { Payment } from "../membership/payment/payment.entity.js";
@@ -28,7 +31,8 @@ export const userPaymentService = {
     em.assign(stripePayment, {
       status: checkoutSession.payment_status as PaymentStatusEnum,
       paymentIntent: checkoutSession.payment_intent as string,
-      checkoutStatus: checkoutSession.status,
+      checkoutSessionStatus:
+        checkoutSession.status as CheckoutSessionStatusEnum,
     });
 
     if (checkoutSession.payment_status === "paid") {
@@ -65,5 +69,39 @@ export const userPaymentService = {
       stripePayment,
     };
     em.create(Payment, paymentAux as Payment);
+  },
+
+  findOpenSession: async (
+    client: Client
+  ): Promise<Stripe.Checkout.Session | null> => {
+    const stripePaymentIntent = await em.findOne(StripePaymentIntent, {
+      client,
+      checkoutSessionStatus: CheckoutSessionStatusEnum.OPEN,
+    });
+
+    if (stripePaymentIntent === null) {
+      return null;
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(
+      stripePaymentIntent.sessionId
+    );
+
+    if (session.status === "open") {
+      return session;
+    }
+
+    if (session.status === "expired") {
+      stripePaymentIntent.checkoutSessionStatus =
+        CheckoutSessionStatusEnum.EXPIRED;
+      await em.flush();
+      return null;
+    }
+
+    //"complete"
+    throw new HttpError(
+      500,
+      "Disculpe. Hubo un problema con uno de sus pagos. Comuníquese con uno de nuestros entrenadores."
+    );
   },
 };
