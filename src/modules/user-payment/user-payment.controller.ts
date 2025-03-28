@@ -3,15 +3,12 @@ import { authService } from "../auth/auth/auth.service.js";
 import { Client } from "../client/client/client.entity.js";
 import { environment } from "../../config/env.config.js";
 import { handleError } from "../../utils/errors/error-handler.js";
-import { Membership } from "../membership/membership/membership.entity.js";
-import { MembershipCreatedByEnum } from "../../utils/enums/membership-created-by.enum.js";
 import { membershipService } from "../membership/membership/membership.service.js";
 import { MembershipType } from "../membership/membership-type/membership-type.entity.js";
 import { orm } from "../../config/db/mikro-orm.config.js";
-import { Payment } from "../membership/payment/payment.entity.js";
-import { PaymentMethodEnum } from "../../utils/enums/payment-method.enum.js";
-import { startOfDay } from "date-fns";
+import { PaymentStatusEnum } from "../../utils/enums/payment-status.enum.js";
 import Stripe from "stripe";
+import { StripePaymentIntent } from "./stripe-payment-intent.entity.js";
 import { userPaymentService } from "./user-payment.service.js";
 import { validateObjectId } from "../../utils/validators/data-type.validators.js";
 
@@ -32,6 +29,7 @@ export const controller = {
         return;
       }
 
+      /*TODO si tiene abierta sesión de pagos, retomarla*/
       const debt = await membershipService.calcleClientDebt(client as Client);
       if (debt) {
         res.status(403).json({
@@ -45,19 +43,6 @@ export const controller = {
         MembershipType,
         req.body.sanitizedInput.type
       );
-
-      const today = startOfDay(new Date());
-
-      await em.nativeUpdate(
-        Membership,
-        { dateTo: { $gt: today }, client: req.body.sanitizedInput.client },
-        { dateTo: today }
-      );
-
-      const membership = em.create(Membership, req.body.sanitizedInput);
-      membership.createdBy = MembershipCreatedByEnum.STRIPE;
-      membership.debt = membType.price;
-      await em.flush();
 
       const session: Stripe.Checkout.Session =
         await stripe.checkout.sessions.create({
@@ -73,20 +58,17 @@ export const controller = {
           cancel_url: `${frontendUrl}/home`,
         });
 
-      const payment: any = {
-        paymentMethod: PaymentMethodEnum.STRIPE,
-        amount: membType.price,
-        membership: membership,
-        status: session.payment_status,
-        stripe: {
-          checkoutStatus: session.status,
-          created: session.created,
-          paymentIntent: undefined,
-          sessionId: session.id,
-        },
+      const stripePaymentIntent = {
+        sessionId: session.id,
+        created: session.created,
+        paymentIntent: undefined,
+        status: session.payment_status as PaymentStatusEnum,
+        checkoutStatus: session.status as string,
+        membershipType: membType,
+        client: client as Client,
       };
 
-      em.create(Payment, payment);
+      em.create(StripePaymentIntent, stripePaymentIntent);
       await em.flush();
 
       res.status(200).json(session.url);

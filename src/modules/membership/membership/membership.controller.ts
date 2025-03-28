@@ -3,7 +3,6 @@ import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "./membership.entity.js";
-import { MembershipCreatedByEnum } from "../../../utils/enums/membership-created-by.enum.js";
 import { membershipService } from "./membership.service.js";
 import { MembershipType } from "../membership-type/membership-type.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -174,7 +173,6 @@ export const controller = {
       });
 
       const membership = em.create(Membership, req.body.sanitizedInput);
-      membership.createdBy = MembershipCreatedByEnum.TRAINER;
       membership.debt = membershipType.price;
       await em.flush();
 
