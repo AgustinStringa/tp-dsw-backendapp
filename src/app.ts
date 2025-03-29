@@ -16,7 +16,7 @@ import { trainerRouter } from "./modules/trainer/trainer/trainer.routes.js";
 import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
 import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
 
-const app = express();
+export const app = express();
 
 app.use((_req, _res, next) => {
   RequestContext.create(orm.em, next);
@@ -51,6 +51,6 @@ app.use((_req, res) => {
   return res.status(404).send({ message: "Resource not found" });
 });
 
-app.listen(environment.systemUrls.port, () => {
+export const server = app.listen(environment.systemUrls.port, () => {
   console.log("Server runnning on " + environment.systemUrls.backendUrl);
 });
