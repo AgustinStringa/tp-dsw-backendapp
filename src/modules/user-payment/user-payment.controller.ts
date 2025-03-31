@@ -32,7 +32,7 @@ export const controller = {
 
       const openSession = await userPaymentService.findOpenSession(client);
       if (openSession !== null) {
-        res.status(303).json(openSession.url);
+        res.status(200).json(openSession.url);
         return;
       }
 
