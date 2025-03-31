@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
+import { EnvironmentTypeEnum } from "../utils/enums/environment-type.enum.js";
 
 dotenv.config();
 
 const requiredEnvVars = [
-  "PRODUCTION",
+  "ENVIRONMENT_TYPE",
   "MONGO_URI",
   "EMAIL",
   "EMAIL_PASSWORD",
@@ -23,7 +24,7 @@ requiredEnvVars.forEach((envVar) => {
 });
 
 export const environment = {
-  production: process.env.PRODUCTION === "true",
+  type: process.env.ENVIRONMENT_TYPE?.trim().toLowerCase() as EnvironmentTypeEnum,
   mongoUri: process.env.MONGO_URI,
   systemUrls: {
     port: process.env.PORT,
@@ -56,3 +57,6 @@ if (
   environment.session.refreshTimeInMinutes < 1
 )
   throw new Error("REFRESH_TIME_MINUTES debe ser un número entero positivo.");
+
+if (!Object.values(EnvironmentTypeEnum).includes(environment.type))
+  throw new Error("ENVIRONMENT_TYPE debe ser development, production o test.");

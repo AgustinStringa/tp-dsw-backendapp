@@ -1,5 +1,6 @@
 import { defineConfig } from "@mikro-orm/mongodb";
 import { environment } from "../env.config.js";
+import { EnvironmentTypeEnum } from "../../utils/enums/environment-type.enum.js";
 import { MikroORM } from "@mikro-orm/mongodb";
 import { MongoHighlighter } from "@mikro-orm/mongo-highlighter";
 
@@ -8,7 +9,7 @@ const config = defineConfig({
   entitiesTs: ["src/**/*.entity.ts"],
   dbName: "gimnasio",
   highlighter: new MongoHighlighter(),
-  debug: !environment.production,
+  debug: environment.type !== EnvironmentTypeEnum.PRODUCTION,
   clientUrl: environment.mongoUri,
   ensureIndexes: true,
 });
