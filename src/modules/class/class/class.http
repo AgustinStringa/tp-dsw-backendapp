@@ -1,0 +1,59 @@
+@id = id
+
+
+### get all Classes
+GET http://localhost:3000/api/classes/
+
+
+### get active classes
+GET http://localhost:3000/api/classes/active/
+
+
+### get one class
+GET http://localhost:3000/api/classes/{{id}}
+
+
+### create class
+POST http://localhost:3000/api/classes/
+Content-Type: application/json
+
+{
+  "day": 2,
+  "startTime": "09:00",
+  "endTime": "10:30",
+  "maxCapacity": 20,
+  "location": "gym",
+  "active": true,
+  "classTypeId": "{{id}}",
+  "trainerId": "{{id}}"
+}
+
+
+### put class
+PUT http://localhost:3000/api/classes/{{id}}
+Content-Type: application/json
+
+{
+  "day": 4,
+  "startTime": "08:00",
+  "endTime": "10:00",
+  "maxCapacity": 10,
+  "location": "sum",
+  "active": false,
+  "classTypeId": "{{id}}",
+  "trainerId": "{{id}}"
+}
+
+
+### patch class (parcial)
+PATCH http://localhost:3000/api/classes/{{id}}
+Content-Type: application/json
+
+{
+  "startTime": "07:30",
+  "maxCapacity": 25
+}
+
+
+### delete class
+DELETE http://localhost:3000/api/classes/{{id}}

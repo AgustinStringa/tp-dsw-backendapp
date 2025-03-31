@@ -1,0 +1,47 @@
+@id = id
+
+### get all clients
+GET http://localhost:3000/api/clients
+
+
+### get one client
+GET http://localhost:3000/api/clients/{{id}}
+
+
+### create client
+POST http://localhost:3000/api/clients/
+Content-Type: application/json
+
+{
+  "lastName": "Hernández",
+  "firstName": "Gastón",
+  "dni": "22741118",
+  "email": "lope1gustavo@yahoo.co",
+  "password": "1235"
+}
+
+
+### put client
+PUT http://localhost:3000/api/clients/{{id}}
+Content-Type: application/json
+
+{
+  "lastName": "Marchesín",
+  "firstName": "Agustín",
+  "dni": "14758963",
+  "email": "agus@lanus.com.ar",
+  "password": "encriptar"
+}
+
+
+### patch client
+PATCH http://localhost:3000/api/clients/{{id}}
+Content-Type: application/json
+
+{
+  "firstName": "Alejo"
+}
+
+
+### delete client
+DELETE http://localhost:3000/api/clients/{{id}}

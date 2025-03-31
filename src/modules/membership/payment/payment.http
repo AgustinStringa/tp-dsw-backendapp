@@ -1,0 +1,47 @@
+@id = {{id}}
+
+### get all payments
+GET http://localhost:3000/api/memberships/payments/
+
+
+### get all payments by membership
+GET http://localhost:3000/api/memberships/{{id}}/payments/
+
+
+### get one payment
+GET http://localhost:3000/api/memberships/payments/{{id}}
+
+
+### create a payment
+POST http://localhost:3000/api/memberships/payments/
+Content-Type: application/json
+
+{
+  "amount": 15000,
+  "membershipId": "{{id}}",
+  "paymentMethod": "Efectivo"
+}
+
+
+### put payment
+PUT http://localhost:3000/api/memberships/payments/{{id}}
+Content-Type: application/json
+
+{
+  "amount": 19500,
+  "membershipId": "{{id}}",
+  "paymentMethod": "Transferencia"
+}
+
+
+### patch payment
+PATCH http://localhost:3000/api/memberships/payments/{{id}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "Tarjeta de crédito"
+}
+
+
+### delete payment
+DELETE http://localhost:3000/api/memberships/payments/{{id}}

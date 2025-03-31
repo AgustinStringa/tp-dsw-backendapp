@@ -1,0 +1,47 @@
+@id = id
+
+### obtener todos los trainers
+GET http://localhost:3000/api/trainers
+
+
+### obtener un trainer
+GET http://localhost:3000/api/trainers/{{id}}
+
+
+### crear un nuevo trainer
+POST http://localhost:3000/api/trainers/
+Content-Type: application/json
+
+{
+  "lastName": "Stringa",
+  "firstName": "Agustin",
+  "dni": "44854963",
+  "email": "agu.stringa@gmail.com",
+  "password": "stri"
+}
+
+
+### modificar un trainer (PUT - recurso completo e idempotente)
+PUT http://localhost:3000/api/trainers/{{id}}
+Content-Type: application/json
+
+{
+  "lastName" : "Stringa",
+  "firstName": "Valentina",
+  "dni": "47854963",
+  "email": "vale.stringa@gmail.com",
+  "password" : "stri"
+}
+
+
+### modificar un trainer (PATCH - recurso parcial)
+PATCH http://localhost:3000/api/trainers/{{id}}
+Content-Type: application/json
+
+{
+  "password": "123456"
+}
+
+
+### borrar un trainer
+DELETE http://localhost:3000/api/trainers/{{id}}
