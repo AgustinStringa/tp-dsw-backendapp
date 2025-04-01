@@ -42,7 +42,7 @@ describe("POST /api/clients", () => {
       .post(url)
       .send(newClient)
       .set("Cookie", trainerCookie);
-    console.log(res.body);
+
     expect(res.statusCode).toBe(400);
   });
 

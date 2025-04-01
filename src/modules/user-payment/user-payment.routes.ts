@@ -10,5 +10,3 @@ userPaymentRouter.post(
   controller.sanitizeRequest,
   controller.initiatePayment
 );
-
-//TODO reembolsos, pagos cancelados??

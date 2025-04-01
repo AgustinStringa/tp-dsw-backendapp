@@ -30,11 +30,7 @@ export const controller = {
         return;
       }
 
-      const openSession = await userPaymentService.findOpenSession(client);
-      if (openSession !== null) {
-        res.status(303).json(openSession.url);
-        return;
-      }
+      await userPaymentService.closeOpenSession(client);
 
       const debt = await membershipService.calcleClientDebt(client);
       if (debt) {
@@ -99,6 +95,8 @@ export const controller = {
         event.type === "checkout.session.async_payment_succeeded"
       ) {
         await userPaymentService.fulfillCheckout(event.data.object.id);
+      } else if (event.type === "checkout.session.expired") {
+        await userPaymentService.expireSession(event.data.object.id);
       }
 
       res.status(200).end();
