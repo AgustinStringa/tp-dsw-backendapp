@@ -1,5 +1,5 @@
-import { validateSync } from "class-validator";
 import { HttpError } from "../errors/http-error.js";
+import { validateSync } from "class-validator";
 
 export function validateEntity(entity: any) {
   const errors = validateSync(entity);

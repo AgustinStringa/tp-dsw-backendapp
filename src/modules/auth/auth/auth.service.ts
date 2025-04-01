@@ -1,10 +1,11 @@
-import jwt from "jsonwebtoken";
-import { differenceInMinutes } from "date-fns";
 import { Request, Response } from "express";
 import { Client } from "../../client/client/client.entity.js";
+import { differenceInMinutes } from "date-fns";
 import { environment } from "../../../config/env.config.js";
+import { EnvironmentTypeEnum } from "../../../utils/enums/environment-type.enum.js";
 import { HttpError } from "../../../utils/errors/http-error.js";
 import { IToken } from "../../../utils/interfaces/token.interface.js";
+import jwt from "jsonwebtoken";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Trainer } from "../../trainer/trainer/trainer.entity.js";
 
@@ -19,7 +20,7 @@ export const authService = {
 
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: environment.production,
+      secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
       sameSite: "strict",
       maxAge: environment.session.durationInHours * 3600000,
     });
@@ -35,7 +36,7 @@ export const authService = {
         );
       }
 
-      let decoded = jwt.verify(token, environment.session.jwtSecret) as {
+      const decoded = jwt.verify(token, environment.session.jwtSecret) as {
         id: string;
         iat: number;
         exp: number;
@@ -101,7 +102,7 @@ export const authService = {
 
       res.cookie("auth_token", newToken, {
         httpOnly: true,
-        secure: environment.production,
+        secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
         sameSite: "strict",
         maxAge: environment.session.durationInHours * 3600000,
       });

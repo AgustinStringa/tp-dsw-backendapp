@@ -1,5 +1,6 @@
-import nodemailer from "nodemailer";
 import { environment } from "../../config/env.config.js";
+import { EnvironmentTypeEnum } from "../enums/environment-type.enum.js";
+import nodemailer from "nodemailer";
 
 const emailListDev = [
   "agustinstringa24@hotmail.com",
@@ -12,7 +13,10 @@ export const sendEmail = async (
   htmlContent: string,
   receivers: string[]
 ) => {
-  receivers = environment.production ? receivers : emailListDev;
+  receivers =
+    environment.type === EnvironmentTypeEnum.PRODUCTION
+      ? receivers
+      : emailListDev;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -29,5 +33,6 @@ export const sendEmail = async (
     html: htmlContent,
   };
 
-  await transporter.sendMail(mailOptions);
+  if (environment.type !== EnvironmentTypeEnum.TEST)
+    await transporter.sendMail(mailOptions);
 };

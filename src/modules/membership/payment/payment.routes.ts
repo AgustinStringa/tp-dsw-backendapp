@@ -1,6 +1,6 @@
-import { Router } from "express";
 import { authMiddlewares } from "../../auth/auth/auth.middlewares.js";
 import { controller } from "./payment.controller.js";
+import { Router } from "express";
 
 export const paymentRouter = Router();
 
@@ -29,3 +29,6 @@ paymentRouter.patch(
 );
 
 paymentRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);
+
+export const paymentByMembershipRouter = Router({ mergeParams: true });
+paymentByMembershipRouter.get("/", controller.findByMembership);

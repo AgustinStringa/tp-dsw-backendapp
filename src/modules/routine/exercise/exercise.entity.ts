@@ -1,6 +1,6 @@
 import { Entity, Property } from "@mikro-orm/core";
-import { IsNotEmpty } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
+import { IsNotEmpty } from "class-validator";
 
 @Entity()
 export class Exercise extends BaseEntity {

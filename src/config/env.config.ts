@@ -1,9 +1,19 @@
 import dotenv from "dotenv";
+import { EnvironmentTypeEnum } from "../utils/enums/environment-type.enum.js";
 
-dotenv.config();
+let environmentType;
+if (process.env.NODE_ENV?.trim() === "production") {
+  dotenv.config({ path: ".env.production" });
+  environmentType = EnvironmentTypeEnum.PRODUCTION;
+} else if (process.env.NODE_ENV?.trim() === "test") {
+  dotenv.config({ path: ".env.test" });
+  environmentType = EnvironmentTypeEnum.TEST;
+} else {
+  dotenv.config({ path: ".env" });
+  environmentType = EnvironmentTypeEnum.DEVELOPMENT;
+}
 
 const requiredEnvVars = [
-  "PRODUCTION",
   "MONGO_URI",
   "EMAIL",
   "EMAIL_PASSWORD",
@@ -23,7 +33,7 @@ requiredEnvVars.forEach((envVar) => {
 });
 
 export const environment = {
-  production: process.env.PRODUCTION === "true",
+  type: environmentType,
   mongoUri: process.env.MONGO_URI,
   systemUrls: {
     port: process.env.PORT,

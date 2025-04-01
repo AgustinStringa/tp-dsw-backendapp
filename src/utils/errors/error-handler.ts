@@ -1,14 +1,13 @@
 import { DriverException, NotFoundError } from "@mikro-orm/core";
-import { Response } from "express";
+import { ApiResponse } from "../classes/api-response.class.js";
 import { HttpError } from "./http-error.js";
+import { Response } from "express";
 
-export function handleError(error: any, res: Response) {
+export function handleError(error: unknown, res: Response) {
   if (error instanceof HttpError) return error.send(res);
 
   if (error instanceof DriverException) {
-    return res.status(500).json({
-      message: error.message,
-    });
+    return res.status(500).json(new ApiResponse(error.message, null, false));
   }
 
   if (error instanceof NotFoundError) {
@@ -17,5 +16,7 @@ export function handleError(error: any, res: Response) {
     });
   }
 
-  return res.status(500).json({ message: error.message });
+  return res
+    .status(500)
+    .json(new ApiResponse((error as Error).message, null, false));
 }

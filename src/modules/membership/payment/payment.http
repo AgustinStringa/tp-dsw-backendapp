@@ -4,6 +4,10 @@
 GET http://localhost:3000/api/memberships/payments/
 
 
+### get all payments by membership
+GET http://localhost:3000/api/memberships/{{id}}/payments/
+
+
 ### get one payment
 GET http://localhost:3000/api/memberships/payments/{{id}}
 

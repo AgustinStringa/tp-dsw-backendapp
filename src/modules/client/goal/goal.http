@@ -1,45 +1,41 @@
-@token = insertar_token
+@id = id
 
 ### get all
 GET http://localhost:3000/api/clients/goals
-Cookie: auth_token={{token}}
 
 
 ### get one
-GET http://localhost:3000/api/clients/goals/667ad85f462b348eed0715eb
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/clients/goals/{{id}}
 
-### get by user id
-GET http://localhost:3000/api/clients/goals/user-id/66f2fb46c89589b79fe56c13
-Cookie: auth_token={{token}}
+
+### get all by user id
+GET http://localhost:3000/api/clients/{{id}}/goals
+
 
 ### añadir uno
 POST  http://localhost:3000/api/clients/goals/
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
   "fatPercentage": "8",
   "bodyMeasurements": "",
-  "client": "667f4692dd0e068972898abc"
+  "clientId": "{{id}}"
 }
 
 
 ### modificación total
-PUT http://localhost:3000/api/clients/goals/667ad85f462b348eed0715eb
-Cookie: auth_token={{token}}
+PUT http://localhost:3000/api/clients/goals/{{id}}
 Content-Type: application/json
 
 {
   "fatPercentage": "22",
   "bodyMeasurements": "",
-  "client": "667f4692dd0e068972898abc"
+  "client": "{{id}}"
 }
 
 
 ### modificación parcial
-PATCH http://localhost:3000/api/clients/goals/667ad85f462b348eed0715eb
-Cookie: auth_token={{token}}
+PATCH http://localhost:3000/api/clients/goals/{{id}}
 Content-Type: application/json
 
 {
@@ -48,5 +44,4 @@ Content-Type: application/json
 
 
 ### borrar una meta
-DELETE http://localhost:3000/api/clients/goals/667f48579899199c6a75c763
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/clients/goals/{{id}}

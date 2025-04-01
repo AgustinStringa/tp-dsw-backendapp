@@ -1,10 +1,11 @@
-import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { NotFoundError } from "@mikro-orm/core";
 import { authService } from "./auth.service.js";
+import bcrypt from "bcrypt";
 import { Client } from "../../client/client/client.entity.js";
 import { environment } from "../../../config/env.config.js";
+import { EnvironmentTypeEnum } from "../../../utils/enums/environment-type.enum.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
+import { NotFoundError } from "@mikro-orm/core";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Trainer } from "../../trainer/trainer/trainer.entity.js";
 
@@ -53,7 +54,7 @@ export const controller = {
         message: "Sesión iniciada.",
         data: { user: userReturn },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundError)
         res.status(401).json({ message: "Email y/o contraseña incorrectos." });
       else handleError(error, res);
@@ -68,7 +69,7 @@ export const controller = {
 
       res.clearCookie("auth_token", {
         httpOnly: true,
-        secure: environment.production,
+        secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
         sameSite: "strict",
       });
 
@@ -111,7 +112,7 @@ export const controller = {
         message: "Sesión extendida.",
         data: { user: userReturn },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NotFoundError)
         res.status(401).json({ message: "No autorizado." });
       else handleError(error, res);

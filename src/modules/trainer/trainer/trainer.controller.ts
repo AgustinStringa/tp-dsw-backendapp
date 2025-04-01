@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import bcrypt from "bcrypt";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -17,7 +17,7 @@ export const controller = {
         message: "Todos los entrenadores fueron encontrados.",
         data: trainers,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -28,7 +28,7 @@ export const controller = {
       const trainer = await em.findOneOrFail(Trainer, { id });
 
       res.status(200).json({ message: "Entrenador encontrado", data: trainer });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -47,7 +47,7 @@ export const controller = {
 
       await em.flush();
       res.status(201).json({ message: "Entrenador creado.", data: trainer });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -71,7 +71,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Entrenador actualizado.", data: trainer });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -82,7 +82,7 @@ export const controller = {
       const trainer = em.getReference(Trainer, id);
       await em.removeAndFlush(trainer);
       res.status(200).json({ message: "Entrenador eliminado." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

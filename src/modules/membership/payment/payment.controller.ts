@@ -1,21 +1,21 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import {
+  validateEnum,
+  validateNumber,
+  validateObjectId,
+} from "../../../utils/validators/data-type.validators.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "../membership/membership.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Payment } from "./payment.entity.js";
 import { PaymentMethodEnum } from "../../../utils/enums/payment-method.enum.js";
 import { paymentService } from "./payment.service.js";
-import { PaymentStatusEnum } from "../../../utils/enums/payment-status.enum.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import {
-  validateEnum,
-  validateObjectId,
-} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
 export const controller = {
-  findAll: async function (req: Request, res: Response) {
+  findAll: async function (_req: Request, res: Response) {
     try {
       const payments = await em.find(
         Payment,
@@ -26,7 +26,21 @@ export const controller = {
         message: "Todos los pagos fueron encontrados.",
         data: payments,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      handleError(error, res);
+    }
+  },
+
+  findByMembership: async function (req: Request, res: Response) {
+    try {
+      const id = validateObjectId(req.params.membershipId, "membershipId");
+      const payments = await em.find(Payment, { membership: id });
+
+      res.status(200).json({
+        message: "Todos los pagos de la membresía fueron encontrados.",
+        data: payments,
+      });
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -38,7 +52,7 @@ export const controller = {
         populate: ["membership"],
       });
       res.status(200).json({ message: "Pago encontrado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -46,7 +60,6 @@ export const controller = {
   add: async function (req: Request, res: Response) {
     try {
       const payment = em.create(Payment, req.body.sanitizedInput);
-      payment.status = PaymentStatusEnum.PAID;
       validateEntity(payment);
       await em.flush();
 
@@ -55,7 +68,7 @@ export const controller = {
       );
 
       res.status(200).json({ message: "Pago registrado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -85,7 +98,7 @@ export const controller = {
       await paymentService.updateMembershipDebt(payment.membership);
 
       res.status(200).json({ message: "Pago actualizado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -99,7 +112,7 @@ export const controller = {
       await paymentService.updateMembershipDebt(payment.membership);
 
       res.status(200).json({ message: "Pago eliminado.", data: payment });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -109,7 +122,13 @@ export const controller = {
       const allowUndefined = req.method === "PATCH";
 
       req.body.sanitizedInput = {
-        amount: req.body.amount,
+        amount: validateNumber(
+          req.body.amount,
+          2,
+          "amount",
+          allowUndefined,
+          false
+        ),
 
         membership: validateObjectId(
           req.body.membershipId,
@@ -129,8 +148,13 @@ export const controller = {
           delete req.body.sanitizedInput[key];
       });
 
+      if (req.body.sanitizedInput.paymentMethod === PaymentMethodEnum.STRIPE) {
+        res.status(400).json({ message: "Método de pago no permitido." });
+        return;
+      }
+
       next();
-    } catch (error) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
