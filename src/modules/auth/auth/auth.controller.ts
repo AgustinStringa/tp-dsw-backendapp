@@ -3,6 +3,7 @@ import { authService } from "./auth.service.js";
 import bcrypt from "bcrypt";
 import { Client } from "../../client/client/client.entity.js";
 import { environment } from "../../../config/env.config.js";
+import { EnvironmentTypeEnum } from "../../../utils/enums/environment-type.enum.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { NotFoundError } from "@mikro-orm/core";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -68,7 +69,7 @@ export const controller = {
 
       res.clearCookie("auth_token", {
         httpOnly: true,
-        secure: environment.production,
+        secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
         sameSite: "strict",
       });
 
