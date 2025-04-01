@@ -3,6 +3,7 @@ import { handleError } from "../../../utils/errors/error-handler.js";
 import { News } from "./news.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import { validateDateTime } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -65,8 +66,13 @@ export const controller = {
   },
 
   sanitizeNews: function (req: Request, res: Response, next: NextFunction) {
+    const allowUndefined = req.method === "PATCH";
     req.body.sanitizedInput = {
-      expirationDateTime: req.body.expirationDateTime,
+      expirationDateTime: validateDateTime(
+        req.body.expirationDateTime,
+        "expirationDateTime",
+        allowUndefined
+      ),
       title: req.body.title?.trim(),
       body: req.body.body?.trim(),
     };

@@ -159,14 +159,23 @@ export const controller = {
     next: NextFunction
   ) {
     try {
+      const allowUndefined = req.method === "PATCH";
       req.body.sanitizedInput = {
         day: req.body.day,
-        startTime: validateTime(req.body.startTime, "startTime"),
-        endTime: validateTime(req.body.endTime, "endTime"),
+        startTime: validateTime(
+          req.body.startTime,
+          "startTime",
+          allowUndefined
+        ),
+        endTime: validateTime(req.body.endTime, "endTime", allowUndefined),
         maxCapacity: req.body.maxCapacity,
         location: req.body.location?.trim(),
         active: req.body.active,
-        classType: validateObjectId(req.body.classTypeId, "classTypeId", true),
+        classType: validateObjectId(
+          req.body.classTypeId,
+          "classTypeId",
+          allowUndefined
+        ),
         trainer: (await authService.getUser(req)).user,
       };
 
