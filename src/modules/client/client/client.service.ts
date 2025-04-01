@@ -16,10 +16,9 @@ export const clientService = {
   },
 
   sendRegistrationEmail: async (client: Client) => {
-    try {
-      sendEmail(
-        "Registro exitoso en Gimnasio Iron Haven",
-        `
+    sendEmail(
+      "Registro exitoso en Gimnasio Iron Haven",
+      `
         <h3>Felicitaciones. El registro en nuestra app se realizó exitosamente.</h3>
         <div>
           <p>Correo electrónico: ${client.email} (con él podrás iniciar sesión en nuestro sitio).</p>
@@ -31,8 +30,7 @@ export const clientService = {
           Gimnasio Iron Haven
         </div>
         `,
-        [client.email]
-      );
-    } catch (error: unknown) {}
+      [client.email]
+    ).catch(() => {});
   },
 };
