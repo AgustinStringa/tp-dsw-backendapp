@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import { EnvironmentTypeEnum } from "../utils/enums/environment-type.enum.js";
 
-console.log(process.env.NODE_ENV);
 let environmentType;
 if (process.env.NODE_ENV?.trim() === "production") {
   dotenv.config({ path: ".env.production" });

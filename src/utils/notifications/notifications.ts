@@ -35,5 +35,4 @@ export const sendEmail = async (
 
   if (environment.type !== EnvironmentTypeEnum.TEST)
     await transporter.sendMail(mailOptions);
-  //TODO si falla se rompe el programa
 };

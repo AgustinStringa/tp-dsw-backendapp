@@ -66,36 +66,51 @@ export function validateEnum(
   return normalizedValue;
 }
 
-export function validatePrice(
-  price: number | string,
+export function validateNumber(
+  value: number | string,
   maxDecimals: number,
   field: string,
   canBeUndefined: boolean,
-  allowZero: boolean
+  allowZero: boolean,
+  maxValue: number = Infinity
 ) {
-  if (canBeUndefined === true && price === undefined) return undefined;
+  if (canBeUndefined === true && value === undefined) return undefined;
 
-  if (typeof price === "number" && price >= 0) {
-    if (!allowZero && price === 0)
+  if (typeof value === "number" && value >= 0) {
+    if (value > maxValue)
+      throw new HttpError(400, `${field}: no puede ser mayor que ${maxValue}.`);
+
+    if (!allowZero && value === 0)
       throw new HttpError(400, `${field}: no se permite el valor 0.`);
 
-    const roundedPrice = parseFloat(price.toFixed(maxDecimals));
-    return roundedPrice;
+    const roundedValue = parseFloat(value.toFixed(maxDecimals));
+    return roundedValue;
   }
 
-  const convertedPrice = Number(price);
-  if (!isNaN(convertedPrice) && convertedPrice >= 0) {
-    if (!allowZero && price === 0)
+  const convertedValue = Number(value);
+  if (!isNaN(convertedValue) && convertedValue >= 0) {
+    if (convertedValue > maxValue)
+      throw new HttpError(400, `${field}: no puede ser mayor que ${maxValue}.`);
+
+    if (!allowZero && convertedValue === 0)
       throw new HttpError(400, `${field}: no se permite el valor 0.`);
 
-    const roundedPrice = parseFloat(convertedPrice.toFixed(maxDecimals));
-    return roundedPrice;
+    const roundedValue = parseFloat(convertedValue.toFixed(maxDecimals));
+    return roundedValue;
   }
 
-  if (allowZero)
+  let auxMessage = "";
+  if (maxValue !== Infinity) auxMessage = ` y menor o igual que ${maxValue}`;
+
+  if (allowZero) {
     throw new HttpError(
       400,
-      `${field}: debe ser un número mayor o igual que 0.`
+      `${field}: debe ser un número mayor o igual que 0${auxMessage}.`
     );
-  else throw new HttpError(400, `${field}: debe ser un número mayor que 0.`);
+  } else {
+    throw new HttpError(
+      400,
+      `${field}: debe ser un número mayor que 0${auxMessage}.`
+    );
+  }
 }
