@@ -71,31 +71,28 @@ export const userPaymentService = {
     em.create(Payment, paymentAux as Payment);
   },
 
-  findOpenSession: async (
-    client: Client
-  ): Promise<Stripe.Checkout.Session | null> => {
+  closeOpenSession: async (client: Client): Promise<void> => {
     const stripePaymentIntent = await em.findOne(StripePaymentIntent, {
       client,
       checkoutSessionStatus: CheckoutSessionStatusEnum.OPEN,
     });
 
-    if (stripePaymentIntent === null) {
-      return null;
-    }
+    if (stripePaymentIntent === null) return;
 
     const session = await stripe.checkout.sessions.retrieve(
       stripePaymentIntent.sessionId
     );
 
     if (session.status === "open") {
-      return session;
+      await stripe.checkout.sessions.expire(stripePaymentIntent.sessionId);
+      return;
     }
 
     if (session.status === "expired") {
       stripePaymentIntent.checkoutSessionStatus =
         CheckoutSessionStatusEnum.EXPIRED;
       await em.flush();
-      return null;
+      return;
     }
 
     //"complete"
@@ -103,5 +100,20 @@ export const userPaymentService = {
       500,
       "Disculpe. Hubo un problema con uno de sus pagos. Comuníquese con uno de nuestros entrenadores."
     );
+  },
+
+  expireSession: async (sessionId: string) => {
+    const stripePayment = await em.findOne(StripePaymentIntent, {
+      sessionId: sessionId,
+      checkoutSessionStatus: CheckoutSessionStatusEnum.OPEN,
+    });
+
+    if (stripePayment === null) return;
+
+    em.assign(stripePayment, {
+      checkoutSessionStatus: CheckoutSessionStatusEnum.EXPIRED,
+    });
+
+    await em.flush();
   },
 };
