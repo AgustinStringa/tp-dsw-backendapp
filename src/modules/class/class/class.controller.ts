@@ -3,7 +3,6 @@ import {
   validateObjectId,
   validateTime,
 } from "../../../utils/validators/data-type.validators.js";
-import { authService } from "../../auth/auth/auth.service.js";
 import { Class } from "./class.entity.js";
 import { classService } from "./class.service.js";
 import { ClassType } from "../class-type/class-type.entity.js";
@@ -101,11 +100,6 @@ export const controller = {
         id,
       });
 
-      if (classToUpdate.trainer !== req.body.sanitizedInput.trainer) {
-        res.status(401).json({ message: "Entrenador no autorizado." });
-        return;
-      }
-
       if (req.body.sanitizedInput.classType !== undefined)
         await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
 
@@ -132,17 +126,8 @@ export const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = validateObjectId(req.params.id, "id");
-      const trainer = (await authService.getUser(req)).user;
 
-      const classToDelete = await em.findOneOrFail(Class, {
-        id,
-      });
-
-      if (trainer !== classToDelete.trainer) {
-        res.status(401).json({ message: "Entrenador no autorizado." });
-        return;
-      }
-
+      const classToDelete = await em.findOneOrFail(Class, id!);
       await em.removeAndFlush(classToDelete);
 
       res
@@ -176,7 +161,11 @@ export const controller = {
           "classTypeId",
           allowUndefined
         ),
-        trainer: (await authService.getUser(req)).user,
+        trainer: validateObjectId(
+          req.body.trainerId,
+          "trainerId",
+          allowUndefined
+        ),
       };
 
       Object.keys(req.body.sanitizedInput).forEach((key) => {
