@@ -1,18 +1,16 @@
 import { Entity, ManyToOne, Property, Rel } from "@mikro-orm/core";
-import { IsNotEmpty, IsNumber } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";
 import { Client } from "../client/client.entity.js";
+import { IsNotEmpty } from "class-validator";
 
 @Entity()
 export class Progress extends BaseEntity {
   @Property({ nullable: false })
   date!: Date;
 
-  @IsNumber()
   @Property({ nullable: false })
   weight!: number;
 
-  @IsNumber()
   @Property({ nullable: false })
   fatPercentage!: number;
 

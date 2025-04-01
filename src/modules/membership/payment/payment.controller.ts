@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
   validateEnum,
+  validateNumber,
   validateObjectId,
-  validatePrice,
 } from "../../../utils/validators/data-type.validators.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "../membership/membership.entity.js";
@@ -122,7 +122,7 @@ export const controller = {
       const allowUndefined = req.method === "PATCH";
 
       req.body.sanitizedInput = {
-        amount: validatePrice(
+        amount: validateNumber(
           req.body.amount,
           2,
           "amount",

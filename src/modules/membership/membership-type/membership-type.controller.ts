@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  validateNumber,
   validateObjectId,
-  validatePrice,
 } from "../../../utils/validators/data-type.validators.js";
 import { environment } from "../../../config/env.config.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
@@ -114,7 +114,13 @@ export const controller = {
       req.body.sanitizedInput = {
         name: req.body.name?.trim(),
         description: req.body.description?.trim(),
-        price: validatePrice(req.body.price, 2, "price", allowUndefined, false),
+        price: validateNumber(
+          req.body.price,
+          2,
+          "price",
+          allowUndefined,
+          false
+        ),
       };
 
       Object.keys(req.body.sanitizedInput).forEach((key) => {

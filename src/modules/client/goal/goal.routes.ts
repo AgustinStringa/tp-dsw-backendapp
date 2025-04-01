@@ -6,31 +6,29 @@ export const goalRouter = Router();
 
 goalRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
 goalRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
-goalRouter.get(
-  "/client/:id",
-  authMiddlewares.verifyClient,
-  controller.findByClient
-);
 
 goalRouter.post(
   "/",
-  authMiddlewares.verifyTrainer,
+  authMiddlewares.verifyClient,
   controller.sanitizeGoal,
   controller.add
 );
 
 goalRouter.put(
   "/:id",
-  authMiddlewares.verifyTrainer,
+  authMiddlewares.verifyClient,
   controller.sanitizeGoal,
   controller.update
 );
 
 goalRouter.patch(
   "/:id",
-  authMiddlewares.verifyTrainer,
+  authMiddlewares.verifyClient,
   controller.sanitizeGoal,
   controller.update
 );
 
-goalRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);
+goalRouter.delete("/:id", authMiddlewares.verifyClient, controller.delete);
+
+export const goalByClientRouter = Router({ mergeParams: true });
+goalByClientRouter.get("/", authMiddlewares.verifyClient, controller.findByClient);
