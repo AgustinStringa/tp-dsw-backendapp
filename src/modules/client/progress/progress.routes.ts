@@ -6,11 +6,6 @@ export const progressRouter = Router();
 
 progressRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
 progressRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
-progressRouter.get(
-  "/client/:id",
-  authMiddlewares.verifyClient,
-  controller.findByClient
-);
 
 progressRouter.post(
   "/",
@@ -34,3 +29,10 @@ progressRouter.patch(
 );
 
 progressRouter.delete("/:id", authMiddlewares.verifyClient, controller.delete);
+
+export const progressByClientRouter = Router({ mergeParams: true });
+progressByClientRouter.get(
+  "/",
+  authMiddlewares.verifyClient,
+  controller.findByClient
+);

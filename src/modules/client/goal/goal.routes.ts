@@ -6,11 +6,6 @@ export const goalRouter = Router();
 
 goalRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
 goalRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
-goalRouter.get(
-  "/client/:id",
-  authMiddlewares.verifyClient,
-  controller.findByClient
-);
 
 goalRouter.post(
   "/",
@@ -34,3 +29,6 @@ goalRouter.patch(
 );
 
 goalRouter.delete("/:id", authMiddlewares.verifyClient, controller.delete);
+
+export const goalByClientRouter = Router({ mergeParams: true });
+goalByClientRouter.get("/", authMiddlewares.verifyClient, controller.findByClient);
