@@ -140,9 +140,15 @@ async function createClient(): Promise<Client> {
 }
 
 async function createMembership(clientId: string): Promise<void> {
-  const membershipType = await em.findOneOrFail(MembershipType, {
-    id: { $ne: "0" },
+  const membershipType = em.create(MembershipType, {
+    name: "Membresía de prueba",
+    description: "Válida de lunes a jueves",
+    price: 15000,
+    stripeId: "0000",
+    stripePriceId: "0000",
   });
+
+  await em.flush();
 
   await api
     .post("/api/memberships")

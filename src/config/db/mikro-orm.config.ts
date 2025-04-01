@@ -7,7 +7,10 @@ import { MongoHighlighter } from "@mikro-orm/mongo-highlighter";
 const config = defineConfig({
   entities: ["dist/**/*.entity.js"],
   entitiesTs: ["src/**/*.entity.ts"],
-  dbName: "gimnasio",
+  dbName:
+    environment.type === EnvironmentTypeEnum.TEST
+      ? "gimnasio-test"
+      : "gimnasio",
   highlighter: new MongoHighlighter(),
   debug: environment.type !== EnvironmentTypeEnum.PRODUCTION,
   clientUrl: environment.mongoUri,
