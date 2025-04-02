@@ -7,12 +7,6 @@ export const routineRouter = Router();
 routineRouter.get("/:id", authMiddlewares.verifyUser, controller.findOne);
 routineRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
 
-routineRouter.get(
-  "/:userId/current",
-  authMiddlewares.verifyClient,
-  controller.findCurrentRoutine
-);
-
 routineRouter.post(
   "/",
   authMiddlewares.verifyTrainer,
@@ -35,3 +29,10 @@ routineRouter.patch(
 );
 
 routineRouter.delete("/:id", authMiddlewares.verifyTrainer, controller.delete);
+
+export const routineByClientRouter = Router({ mergeParams: true });
+routineByClientRouter.get(
+  "/current",
+  authMiddlewares.verifyClient,
+  controller.findCurrentRoutine
+);

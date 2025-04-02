@@ -26,7 +26,7 @@ export const controller = {
         }
       );
       res.status(200).json({
-        message: "All routines were found",
+        message: "Todas las rutinas fueron encontradas.",
         data: routines,
       });
     } catch (error: unknown) {
@@ -112,14 +112,14 @@ export const controller = {
 
   findCurrentRoutine: async (req: Request, res: Response) => {
     try {
-      const userId = validateObjectId(req.params.userId, "userId");
+      const clientId = validateObjectId(req.params.clientId, "clientId");
       const today: Date = new Date();
 
       const routine = await em.findOne(
         Routine,
         {
           $and: [
-            { client: userId },
+            { client: clientId },
             { start: { $lte: today } },
             { end: { $gt: today } },
           ],
@@ -140,7 +140,7 @@ export const controller = {
           .json({ message: "No se encontró ninguna rutina actual." });
       }
 
-      res.status(200).json({ message: "Rutina encontrada", data: routine });
+      res.status(200).json({ message: "Rutina encontrada.", data: routine });
     } catch (error: unknown) {
       handleError(error, res);
     }
