@@ -1,0 +1,8 @@
+@id = id
+
+###
+GET http://localhost:3000/api/clients/home
+
+
+###
+GET http://localhost:3000/api/trainers/home

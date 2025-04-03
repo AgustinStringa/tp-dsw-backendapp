@@ -33,6 +33,6 @@ export const sendEmail = async (
     html: htmlContent,
   };
 
-  if (environment.type !== EnvironmentTypeEnum.TEST)
+  if (environment.type !== EnvironmentTypeEnum.PRODUCTION)
     await transporter.sendMail(mailOptions);
 };
