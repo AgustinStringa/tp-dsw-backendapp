@@ -52,10 +52,14 @@ export const controller = {
       const goals = await em.find(Goal, {
         client: user,
       });
-      res.status(200).json({
-        message: "Todas las metas del cliente fueron encontradas.",
-        data: goals,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todas las metas del cliente fueron encontradas.",
+            goals
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }

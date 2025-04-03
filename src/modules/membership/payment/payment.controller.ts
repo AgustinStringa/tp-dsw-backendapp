@@ -4,6 +4,7 @@ import {
   validateNumber,
   validateObjectId,
 } from "../../../utils/validators/data-type.validators.js";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { Membership } from "../membership/membership.entity.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -22,10 +23,9 @@ export const controller = {
         {},
         { populate: ["membership", "membership.client", "membership.type"] }
       );
-      res.status(200).json({
-        message: "Todos los pagos fueron encontrados.",
-        data: payments,
-      });
+      res
+        .status(200)
+        .json(new ApiResponse("Todos los pagos fueron encontrados.", payments));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -36,10 +36,14 @@ export const controller = {
       const id = validateObjectId(req.params.membershipId, "membershipId");
       const payments = await em.find(Payment, { membership: id });
 
-      res.status(200).json({
-        message: "Todos los pagos de la membresía fueron encontrados.",
-        data: payments,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todos los pagos de la membresía fueron encontrados.",
+            payments
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -51,7 +55,7 @@ export const controller = {
       const payment = await em.findOneOrFail(Payment, id!, {
         populate: ["membership"],
       });
-      res.status(200).json({ message: "Pago encontrado.", data: payment });
+      res.status(200).json(new ApiResponse("Pago encontrado.", payment));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -67,7 +71,7 @@ export const controller = {
         req.body.sanitizedInput.membership
       );
 
-      res.status(200).json({ message: "Pago registrado.", data: payment });
+      res.status(200).json(new ApiResponse("Pago registrado.", payment));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -81,10 +85,13 @@ export const controller = {
       const payment = await em.findOneOrFail(Payment, id!);
 
       if (payment.paymentMethod === PaymentMethodEnum.STRIPE) {
-        res.status(403).json({
-          message:
-            "No se puede modificar un pago realizado con la plataforma Stripe.",
-        });
+        res
+          .status(403)
+          .json(
+            new ApiResponse(
+              "No se puede modificar un pago realizado con la plataforma Stripe."
+            )
+          );
         return;
       }
 
@@ -97,7 +104,7 @@ export const controller = {
 
       await paymentService.updateMembershipDebt(payment.membership);
 
-      res.status(200).json({ message: "Pago actualizado.", data: payment });
+      res.status(200).json(new ApiResponse("Pago actualizado.", payment));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -111,7 +118,7 @@ export const controller = {
 
       await paymentService.updateMembershipDebt(payment.membership);
 
-      res.status(200).json({ message: "Pago eliminado.", data: payment });
+      res.status(200).json(new ApiResponse("Pago eliminado.", payment));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -149,7 +156,7 @@ export const controller = {
       });
 
       if (req.body.sanitizedInput.paymentMethod === PaymentMethodEnum.STRIPE) {
-        res.status(400).json({ message: "Método de pago no permitido." });
+        res.status(400).json(new ApiResponse("Método de pago no permitido."));
         return;
       }
 

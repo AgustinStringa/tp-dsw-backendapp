@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "./auth.service.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
@@ -24,7 +25,7 @@ export const authMiddlewares = {
       return next();
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "Unauthorized." });
+        res.status(401).json(new ApiResponse("Unauthorized.", null, false));
       else handleError(error, res);
     }
   },
@@ -44,7 +45,7 @@ export const authMiddlewares = {
       return next();
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "Unauthorized." });
+        res.status(401).json(new ApiResponse("Unauthorized.", null, false));
       else handleError(error, res);
     }
   },
@@ -59,7 +60,7 @@ export const authMiddlewares = {
       return next();
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "Unauthorized." });
+        res.status(401).json(new ApiResponse("Unauthorized.", null, false));
       else handleError(error, res);
     }
   },

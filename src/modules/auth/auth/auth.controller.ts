@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "./auth.service.js";
 import bcrypt from "bcrypt";
 import { Client } from "../../client/client/client.entity.js";
@@ -36,7 +37,7 @@ export const controller = {
       if (!auth) {
         return res
           .status(401)
-          .json({ message: "Email y/o contraseña incorrectos." });
+          .json(new ApiResponse("Email y/o contraseña incorrectos."));
       }
 
       authService.startSession(res, user);
@@ -50,13 +51,14 @@ export const controller = {
         isClient,
       };
 
-      return res.status(200).json({
-        message: "Sesión iniciada.",
-        data: { user: userReturn },
-      });
+      return res
+        .status(200)
+        .json(new ApiResponse("Sesión iniciada.", { user: userReturn }));
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "Email y/o contraseña incorrectos." });
+        res
+          .status(401)
+          .json(new ApiResponse("Email y/o contraseña incorrectos."));
       else handleError(error, res);
     }
   },
@@ -73,9 +75,9 @@ export const controller = {
         sameSite: "strict",
       });
 
-      res.status(200).json({ message: "Sesión finalizada." });
+      res.status(200).json(new ApiResponse("Sesión finalizada."));
     } catch {
-      res.status(200).json({ message: "La sesión expiró previamente." });
+      res.status(200).json(new ApiResponse("La sesión expiró previamente."));
     }
   },
 
@@ -108,13 +110,12 @@ export const controller = {
 
       authService.refreshToken(token, res);
 
-      return res.status(200).json({
-        message: "Sesión extendida.",
-        data: { user: userReturn },
-      });
+      return res
+        .status(200)
+        .json(new ApiResponse("Sesión extendida.", { user: userReturn }));
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json({ message: "No autorizado." });
+        res.status(401).json(new ApiResponse("No autorizado."));
       else handleError(error, res);
     }
   },

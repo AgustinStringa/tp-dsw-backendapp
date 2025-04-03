@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { Exercise } from "./exercise.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -11,10 +12,11 @@ export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
       const exercises = await em.findAll(Exercise);
-      res.status(200).json({
-        message: "Todos los ejercicios fueron encontrados.",
-        data: exercises,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse("Todos los ejercicios fueron encontrados.", exercises)
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -24,9 +26,7 @@ export const controller = {
     try {
       const id = validateObjectId(req.params.id, "id");
       const exercise = await em.findOneOrFail(Exercise, { id });
-      res
-        .status(200)
-        .json({ message: "Ejercicio encontrado.", data: exercise });
+      res.status(200).json(new ApiResponse("Ejercicio encontrado.", exercise));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -38,7 +38,7 @@ export const controller = {
       validateEntity(exercise);
 
       await em.flush();
-      res.status(201).json({ message: "Ejercicio creado.", data: exercise });
+      res.status(201).json(new ApiResponse("Ejercicio creado.", exercise));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -53,9 +53,7 @@ export const controller = {
       validateEntity(exercise);
       await em.flush();
 
-      res
-        .status(200)
-        .json({ message: "Ejercicio actualizado.", data: exercise });
+      res.status(200).json(new ApiResponse("Ejercicio actualizado.", exercise));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -66,7 +64,7 @@ export const controller = {
       const id = req.params.id;
       const exercise = em.getReference(Exercise, id);
       await em.removeAndFlush(exercise);
-      res.status(200).json({ message: "Ejercicio eliminado." });
+      res.status(200).json(new ApiResponse("Ejercicio eliminado."));
     } catch (error: unknown) {
       handleError(error, res);
     }

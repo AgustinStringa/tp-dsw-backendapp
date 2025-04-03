@@ -4,6 +4,7 @@ import {
   validateDateTime,
   validateObjectId,
 } from "../../../utils/validators/data-type.validators.js";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import { ExerciseRoutine } from "../exercise-routine/exercise-routine.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
@@ -12,7 +13,6 @@ import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Routine } from "./routine.entity.js";
 import { routineService } from "./routine.service.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-
 const em = orm.em;
 
 export const controller = {
@@ -25,10 +25,11 @@ export const controller = {
           populate: ["client", "trainer", "exercisesRoutine.exercise"],
         }
       );
-      res.status(200).json({
-        message: "Todas las rutinas fueron encontradas.",
-        data: routines,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse("Todas las rutinas fueron encontradas.", routines)
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -44,7 +45,7 @@ export const controller = {
           populate: ["client", "trainer", "exercisesRoutine.exercise"],
         }
       );
-      res.status(200).json({ message: "Rutina encontrada.", data: routine });
+      res.status(200).json(new ApiResponse("Rutina encontrada.", routine));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -62,7 +63,7 @@ export const controller = {
       await routineService.validateExercises(routine);
 
       await em.flush();
-      res.status(201).json({ message: "Rutina creada.", data: routine });
+      res.status(201).json(new ApiResponse("Rutina creada.", routine));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -92,7 +93,7 @@ export const controller = {
       await routineService.validateExercises(routine);
 
       await em.flush();
-      res.status(200).json({ message: "Rutina actualizada.", data: routine });
+      res.status(200).json(new ApiResponse("Rutina actualizada.", routine));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -104,7 +105,7 @@ export const controller = {
       const routine = em.getReference(Routine, id as string);
       await em.removeAndFlush(routine);
 
-      res.status(200).json({ message: "Rutina eliminada." });
+      res.status(200).json(new ApiResponse("Rutina eliminada."));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -137,10 +138,12 @@ export const controller = {
       if (!routine) {
         return res
           .status(404)
-          .json({ message: "No se encontró ninguna rutina actual." });
+          .json(new ApiResponse("No se encontró ninguna rutina actual."));
       }
 
-      res.status(200).json({ message: "Rutina encontrada.", data: routine });
+      res
+        .status(200)
+        .json(new ApiResponse("Rutina actual encontrada.", routine));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -158,9 +161,11 @@ export const controller = {
       if (start !== undefined) {
         start = startOfDay(start);
         if (getDay(start) !== 1) {
-          res.status(400).json({
-            message: "Las fechas de inicio y de fin deben ser lunes.",
-          });
+          res
+            .status(400)
+            .json(
+              new ApiResponse("Las fechas de inicio y de fin deben ser lunes.")
+            );
           return;
         }
       }
@@ -168,9 +173,11 @@ export const controller = {
       if (end !== undefined) {
         end = startOfDay(end);
         if (getDay(end) !== 1) {
-          res.status(400).json({
-            message: "Las fechas de inicio y de fin deben ser lunes.",
-          });
+          res
+            .status(400)
+            .json(
+              new ApiResponse("Las fechas de inicio y de fin deben ser lunes.")
+            );
           return;
         }
       }

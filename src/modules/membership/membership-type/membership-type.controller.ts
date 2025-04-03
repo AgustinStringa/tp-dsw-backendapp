@@ -3,6 +3,7 @@ import {
   validateNumber,
   validateObjectId,
 } from "../../../utils/validators/data-type.validators.js";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { environment } from "../../../config/env.config.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { MembershipType } from "./membership-type.entity.js";
@@ -19,10 +20,14 @@ export const controller = {
     try {
       const membTypes = await em.findAll(MembershipType);
 
-      res.status(200).json({
-        message: "Todos los tipos de membresías fueron encontrados.",
-        data: membTypes,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todos los tipos de membresías fueron encontrados.",
+            membTypes
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -37,10 +42,9 @@ export const controller = {
         { populate: ["memberships"] }
       );
 
-      res.status(200).json({
-        message: "Tipo de membresía encontrado.",
-        data: membType,
-      });
+      res
+        .status(200)
+        .json(new ApiResponse("Tipo de membresía encontrado.", membType));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -55,10 +59,9 @@ export const controller = {
       await membershipTypeService.createStripePrice(membType);
       await em.flush();
 
-      res.status(201).json({
-        message: "Tipo de membresía creado.",
-        data: membType,
-      });
+      res
+        .status(201)
+        .json(new ApiResponse("Tipo de membresía creado.", membType));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -81,7 +84,7 @@ export const controller = {
 
       res
         .status(200)
-        .json({ message: "Tipo de membresía actualizado.", data: membType });
+        .json(new ApiResponse("Tipo de membresía actualizado.", membType));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -97,7 +100,7 @@ export const controller = {
       });
 
       await em.removeAndFlush(membType);
-      res.status(200).json({ message: "Tipo de membresía eliminado." });
+      res.status(200).json(new ApiResponse("Tipo de membresía eliminado."));
     } catch (error: unknown) {
       handleError(error, res);
     }

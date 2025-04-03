@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { ClassType } from "./class-type.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
-
 const em = orm.em;
 
 export const controller = {
@@ -15,10 +15,14 @@ export const controller = {
         populateWhere: { classes: { active: true } },
       });
 
-      res.status(200).json({
-        message: "Todos los tipos de clases fueron encontrados.",
-        data: classtypes,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Todos los tipos de clase fueron encontrados.",
+            classtypes
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -31,7 +35,7 @@ export const controller = {
 
       res
         .status(200)
-        .json({ message: "Tipo de clase encontrado.", data: classtype });
+        .json(new ApiResponse("Tipo de clase encontrado.", classtype));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -43,9 +47,7 @@ export const controller = {
       validateEntity(classtype);
 
       await em.flush();
-      res
-        .status(201)
-        .json({ message: "Tipo de clase creado.", data: classtype });
+      res.status(201).json(new ApiResponse("Tipo de clase creado.", classtype));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -62,7 +64,7 @@ export const controller = {
       await em.flush();
       res
         .status(200)
-        .json({ message: "Tipo de clase actualizado.", data: classtype });
+        .json(new ApiResponse("Tipo de clase actualizado.", classtype));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -76,7 +78,7 @@ export const controller = {
 
       res
         .status(200)
-        .json({ message: "Tipo de clase eliminado.", data: classtype });
+        .json(new ApiResponse("Tipo de clase eliminado.", classtype));
     } catch (error: unknown) {
       handleError(error, res);
     }

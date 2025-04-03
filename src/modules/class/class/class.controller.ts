@@ -3,6 +3,7 @@ import {
   validateObjectId,
   validateTime,
 } from "../../../utils/validators/data-type.validators.js";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { Class } from "./class.entity.js";
 import { classService } from "./class.service.js";
 import { ClassType } from "../class-type/class-type.entity.js";
@@ -10,7 +11,6 @@ import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-
 const em = orm.em;
 
 export const controller = {
@@ -20,10 +20,9 @@ export const controller = {
         populate: ["classType", "trainer"],
       });
 
-      res.status(200).json({
-        message: "Todas las clases fueron encontradas.",
-        data: classes,
-      });
+      res
+        .status(200)
+        .json(new ApiResponse("Todas las clases fueron encontradas.", classes));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -39,10 +38,9 @@ export const controller = {
         }
       );
 
-      res.status(200).json({
-        message: "Todas las clases activas fueron encontradas.",
-        data: classes,
-      });
+      res
+        .status(200)
+        .json(new ApiResponse("Todas las clases fueron encontradas.", classes));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -57,7 +55,7 @@ export const controller = {
         { populate: ["classType", "trainer"] }
       );
 
-      res.status(200).json({ message: "Clase encontrada.", data: classFound });
+      res.status(200).json(new ApiResponse("Clase encontrada.", classFound));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -87,7 +85,7 @@ export const controller = {
       );
       await em.flush();
 
-      res.status(201).json({ message: "Clase creada.", data: newClass });
+      res.status(201).json(new ApiResponse("Clase creada.", newClass));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -117,7 +115,7 @@ export const controller = {
 
       res
         .status(200)
-        .json({ message: "Clase actualizada.", data: classToUpdate });
+        .json(new ApiResponse("Clase actualizada.", classToUpdate));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -130,9 +128,7 @@ export const controller = {
       const classToDelete = await em.findOneOrFail(Class, id!);
       await em.removeAndFlush(classToDelete);
 
-      res
-        .status(200)
-        .json({ message: "Clase eliminada.", data: classToDelete });
+      res.status(200).json(new ApiResponse("Clase eliminada.", classToDelete));
     } catch (error: unknown) {
       handleError(error, res);
     }
