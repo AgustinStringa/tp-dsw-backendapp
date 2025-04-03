@@ -11,7 +11,7 @@ trainerRouter.get(
   homeController.getDataForTrainer
 );
 trainerRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
-trainerRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
+trainerRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
 
 trainerRouter.post(
   "/",
