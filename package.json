@@ -60,6 +60,7 @@
     "nodemailer": "^6.9.15",
     "nodemailer-express-handlebars": "^7.0.0",
     "reflect-metadata": "0.2.2",
+    "socket.io": "^4.8.1",
     "stripe": "^17.3.1"
   }
 }
