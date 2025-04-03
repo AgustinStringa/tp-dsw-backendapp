@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Exercise } from "../exercise/exercise.entity.js";
 import { ExerciseRoutine } from "./exercise-routine.entity.js";
@@ -6,6 +6,7 @@ import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Routine } from "../routine/routine.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
+import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -27,7 +28,7 @@ export const controller = {
         message: "Se agregó el ejercicio a la rutina.",
         data: exerciseRoutine,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -60,7 +61,7 @@ export const controller = {
         message: "Se registró la ejecución del ejercicio.",
         data: exerciseRoutine,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -84,7 +85,7 @@ export const controller = {
         message: "Se actualizó el ejercicio de la rutina.",
         data: exerciseRoutine,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -96,7 +97,7 @@ export const controller = {
       await em.removeAndFlush(exerciseRoutine);
 
       res.status(200).json({ message: "Se quitó el ejercicio de la rutina." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -106,14 +107,20 @@ export const controller = {
     _res: Response,
     next: NextFunction
   ) {
+    const allowUndefined = req.method === "PATCH";
+
     req.body.sanitizedInput = {
       day: req.body.day,
       week: req.body.week,
       series: req.body.series,
       repetitions: req.body.repetitions,
       weight: req.body.weight,
-      routine: req.body.routine,
-      exercise: req.body.exercise,
+      routine: validateObjectId(req.body.routine, "routineId", allowUndefined),
+      exercise: validateObjectId(
+        req.body.exercise,
+        "exerciseId",
+        allowUndefined
+      ),
     };
 
     Object.keys(req.body.sanitizedInput).forEach((key) => {

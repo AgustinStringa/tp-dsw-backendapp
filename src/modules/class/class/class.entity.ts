@@ -1,10 +1,10 @@
 import {
-  Entity,
-  Property,
-  ManyToOne,
-  Rel,
-  OneToMany,
   Collection,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  Property,
+  Rel,
 } from "@mikro-orm/core";
 import { IsInt, IsNotEmpty, Max, Min } from "class-validator";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";

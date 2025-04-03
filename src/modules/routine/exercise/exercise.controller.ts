@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Exercise } from "./exercise.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -15,7 +15,7 @@ export const controller = {
         message: "Todos los ejercicios fueron encontrados.",
         data: exercises,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -27,7 +27,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Ejercicio encontrado.", data: exercise });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -39,7 +39,7 @@ export const controller = {
 
       await em.flush();
       res.status(201).json({ message: "Ejercicio creado.", data: exercise });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -56,7 +56,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Ejercicio actualizado.", data: exercise });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -67,7 +67,7 @@ export const controller = {
       const exercise = em.getReference(Exercise, id);
       await em.removeAndFlush(exercise);
       res.status(200).json({ message: "Ejercicio eliminado." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },

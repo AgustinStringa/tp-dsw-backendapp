@@ -1,10 +1,10 @@
 import {
   Cascade,
-  OneToMany,
   Collection,
   Entity,
-  Property,
   ManyToOne,
+  OneToMany,
+  Property,
   Rel,
 } from "@mikro-orm/core";
 import { BaseEntity } from "../../../config/db/base-entity.entity.js";

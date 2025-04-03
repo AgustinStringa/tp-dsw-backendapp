@@ -1,3 +1,4 @@
+import { ApiResponse } from "../classes/api-response.class.js";
 import { Response } from "express";
 
 export class HttpError extends Error {
@@ -9,6 +10,6 @@ export class HttpError extends Error {
   }
 
   send(res: Response) {
-    res.status(this.statusCode).json({ message: this.message });
+    res.status(this.statusCode).json(new ApiResponse(this.message, null, true));
   }
 }

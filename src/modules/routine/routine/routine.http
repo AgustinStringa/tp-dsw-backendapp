@@ -10,6 +10,10 @@ GET http://localhost:3000/api/routines/{{id}}
 Content-Type: application/json
 
 
+### Obtener rutina actual de un cliente
+GET http://localhost:3000/api/routines/clients/{{id}}/current
+
+
 ### Crear una nueva rutina
 POST http://localhost:3000/api/routines
 Content-Type: application/json

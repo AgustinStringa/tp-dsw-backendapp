@@ -1,26 +1,26 @@
 import "reflect-metadata";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import express from "express";
-import { RequestContext } from "@mikro-orm/mongodb";
 import { authRouter } from "./modules/auth/auth/auth.routes.js";
+import bodyParser from "body-parser";
 import { classesRouter } from "./modules/class/class-module.routes.js";
 import { clientsRouter } from "./modules/client/client-module.routes.js";
-import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import { environment } from "./config/env.config.js";
+import express from "express";
 import { membershipsRouter } from "./modules/membership/membership-module.routes.js";
 import { newsRouter } from "./modules/news/news/news.routes.js";
 import { orm } from "./config/db/mikro-orm.config.js";
+import { RequestContext } from "@mikro-orm/mongodb";
 import { routinesRouter } from "./modules/routine/routine-module.routes.js";
 import { trainerRouter } from "./modules/trainer/trainer/trainer.routes.js";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { messageRouter } from "./modules/chat/message.routes.js";
 import { setupSocket } from "./utils/socket/socket.js";
+import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
 import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
 
-const app = express();
+export const app = express();
 
 const httpServer = createServer(app);
 

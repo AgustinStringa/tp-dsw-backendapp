@@ -1,21 +1,19 @@
-@token = insertar_token
+@id = id
 
 ### get all
 GET http://localhost:3000/api/clients/progresses/
-Cookie: auth_token={{token}}
 
 
 ### get one
-GET http://localhost:3000/api/clients/progresses/667f4b73a78079beb55aa5fa
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/clients/progresses/{{id}}
+
 
 ### get by user id
-GET http://localhost:3000/api/clients/progresses/user-id/66f2fb46c89589b79fe56c13
-Cookie: auth_token={{token}}
+GET http://localhost:3000/api/clients/{{id}}/progresses/
+
 
 ### create
 POST http://localhost:3000/api/clients/progresses/
-Cookie: auth_token={{token}}
 Content-Type: application/json
 
 {
@@ -23,13 +21,12 @@ Content-Type: application/json
   "weight": 70,
   "fatPercentage": 8,
   "bodyMeasurements": "15 cm biceps derecho - 14 cm izquierdo",
-  "client":"66c8abd8cfede278ccb4edc1"
+  "client": "{{id}}"
 }
 
 
 ### patch
-PATCH http://localhost:3000/api/clients/progresses/66f5959d461681f1edcfbd4a
-Cookie: auth_token={{token}}
+PATCH http://localhost:3000/api/clients/progresses/{{id}}
 Content-Type: application/json
 
 {
@@ -38,5 +35,4 @@ Content-Type: application/json
 
 
 ### delete
-DELETE http://localhost:3000/api/clients/progresses/667f4b73a78079beb55aa5fa
-Cookie: auth_token={{token}}
+DELETE http://localhost:3000/api/clients/progresses/{{id}}

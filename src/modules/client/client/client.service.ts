@@ -1,14 +1,14 @@
+import { Request, Response } from "express";
+import { authService } from "../../auth/auth/auth.service.js";
 import { Client } from "./client.entity.js";
 import { sendEmail } from "../../../utils/notifications/notifications.js";
-import { authService } from "../../auth/auth/auth.service.js";
-import { Request, Response } from "express";
 
 export const clientService = {
   startSessionOnRegister: (req: Request, res: Response, client: Client) => {
     let token;
     try {
       token = authService.decodeToken(req);
-    } catch (error: any) {}
+    } catch (error: unknown) {}
 
     if (token === undefined) {
       authService.startSession(res, client);
@@ -16,10 +16,9 @@ export const clientService = {
   },
 
   sendRegistrationEmail: async (client: Client) => {
-    try {
-      sendEmail(
-        "Registro exitoso en Gimnasio Iron Haven",
-        `
+    sendEmail(
+      "Registro exitoso en Gimnasio Iron Haven",
+      `
         <h3>Felicitaciones. El registro en nuestra app se realizó exitosamente.</h3>
         <div>
           <p>Correo electrónico: ${client.email} (con él podrás iniciar sesión en nuestro sitio).</p>
@@ -31,8 +30,7 @@ export const clientService = {
           Gimnasio Iron Haven
         </div>
         `,
-        [client.email]
-      );
-    } catch (error: any) {}
+      [client.email]
+    ).catch(() => {});
   },
 };

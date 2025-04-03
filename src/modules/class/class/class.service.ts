@@ -72,7 +72,7 @@ export const classService = {
       `,
         receivers
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new HttpError(
         503,
         "No se pudo enviar el correo a los clientes. La clase no fue creada."

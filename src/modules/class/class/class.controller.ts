@@ -1,5 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import { authService } from "../../auth/auth/auth.service.js";
+import { NextFunction, Request, Response } from "express";
+import {
+  validateObjectId,
+  validateTime,
+} from "../../../utils/validators/data-type.validators.js";
 import { Class } from "./class.entity.js";
 import { classService } from "./class.service.js";
 import { ClassType } from "../class-type/class-type.entity.js";
@@ -7,10 +10,6 @@ import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import {
-  validateObjectId,
-  validateTime,
-} from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -25,7 +24,7 @@ export const controller = {
         message: "Todas las clases fueron encontradas.",
         data: classes,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -44,7 +43,7 @@ export const controller = {
         message: "Todas las clases activas fueron encontradas.",
         data: classes,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -59,7 +58,7 @@ export const controller = {
       );
 
       res.status(200).json({ message: "Clase encontrada.", data: classFound });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -89,7 +88,7 @@ export const controller = {
       await em.flush();
 
       res.status(201).json({ message: "Clase creada.", data: newClass });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -100,11 +99,6 @@ export const controller = {
       const classToUpdate = await em.findOneOrFail(Class, {
         id,
       });
-
-      if (classToUpdate.trainer !== req.body.sanitizedInput.trainer) {
-        res.status(401).json({ message: "Entrenador no autorizado." });
-        return;
-      }
 
       if (req.body.sanitizedInput.classType !== undefined)
         await em.findOneOrFail(ClassType, req.body.sanitizedInput.classType);
@@ -124,7 +118,7 @@ export const controller = {
       res
         .status(200)
         .json({ message: "Clase actualizada.", data: classToUpdate });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -132,23 +126,14 @@ export const controller = {
   delete: async function (req: Request, res: Response) {
     try {
       const id = validateObjectId(req.params.id, "id");
-      const trainer = (await authService.getUser(req)).user;
 
-      const classToDelete = await em.findOneOrFail(Class, {
-        id,
-      });
-
-      if (trainer !== classToDelete.trainer) {
-        res.status(401).json({ message: "Entrenador no autorizado." });
-        return;
-      }
-
+      const classToDelete = await em.findOneOrFail(Class, id!);
       await em.removeAndFlush(classToDelete);
 
       res
         .status(200)
         .json({ message: "Clase eliminada.", data: classToDelete });
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
@@ -159,15 +144,28 @@ export const controller = {
     next: NextFunction
   ) {
     try {
+      const allowUndefined = req.method === "PATCH";
       req.body.sanitizedInput = {
         day: req.body.day,
-        startTime: validateTime(req.body.startTime, "startTime"),
-        endTime: validateTime(req.body.endTime, "endTime"),
+        startTime: validateTime(
+          req.body.startTime,
+          "startTime",
+          allowUndefined
+        ),
+        endTime: validateTime(req.body.endTime, "endTime", allowUndefined),
         maxCapacity: req.body.maxCapacity,
         location: req.body.location?.trim(),
         active: req.body.active,
-        classType: validateObjectId(req.body.classTypeId, "classTypeId", true),
-        trainer: (await authService.getUser(req)).user,
+        classType: validateObjectId(
+          req.body.classTypeId,
+          "classTypeId",
+          allowUndefined
+        ),
+        trainer: validateObjectId(
+          req.body.trainerId,
+          "trainerId",
+          allowUndefined
+        ),
       };
 
       Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -177,7 +175,7 @@ export const controller = {
       });
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error, res);
     }
   },
