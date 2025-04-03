@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import bcrypt from "bcrypt";
+import { checkUsersUniqueIndexes } from "../../../utils/validators/indexes.validator.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -35,6 +36,8 @@ export const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
+      await checkUsersUniqueIndexes(req.body.sanitizedInput);
+
       const trainer = em.create(Trainer, req.body.sanitizedInput);
       validateEntity(trainer);
 
@@ -57,6 +60,8 @@ export const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const trainer = await em.findOneOrFail(Trainer, { id: req.params.id });
+      await checkUsersUniqueIndexes(req.body.sanitizedInput, trainer.id);
+
       em.assign(trainer, req.body.sanitizedInput);
       validateEntity(trainer);
 

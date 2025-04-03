@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import bcrypt from "bcrypt";
+import { checkUsersUniqueIndexes } from "../../../utils/validators/indexes.validator.js";
 import { Client } from "./client.entity.js";
 import { clientService } from "./client.service.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
-import { Trainer } from "../../trainer/trainer/trainer.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
+
 const em = orm.em;
 
 export const controller = {
@@ -46,17 +47,10 @@ export const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
+      await checkUsersUniqueIndexes(req.body.sanitizedInput);
+
       const client = em.create(Client, req.body.sanitizedInput);
       validateEntity(client);
-
-      const trainer = await em.findOne(Trainer, { email: client.email });
-      if (trainer !== null) {
-        return res
-          .status(409)
-          .send(
-            new ApiResponse("El correo electrónico ya se encuentra en uso.")
-          );
-      }
 
       await em.flush();
       clientService.startSessionOnRegister(req, res, client);
@@ -88,19 +82,9 @@ export const controller = {
         return;
       }
 
-      const email = req.body.sanitizedInput.email;
-      if (email !== undefined) {
-        const trainer = await em.findOne(Trainer, { email });
-        if (trainer !== null) {
-          return res
-            .status(409)
-            .send(
-              new ApiResponse("El correo electrónico ya se encuentra en uso.")
-            );
-        }
-      }
-
       const client = await em.findOneOrFail(Client, { id });
+      await checkUsersUniqueIndexes(req.body.sanitizedInput, client.id);
+
       em.assign(client, req.body.sanitizedInput);
 
       validateEntity(client);
