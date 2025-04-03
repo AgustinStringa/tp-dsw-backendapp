@@ -1,11 +1,12 @@
-import cookie from "cookie";
-import { Server } from "socket.io";
-import { environment } from "../../config/env.config.js";
-import jwt from "jsonwebtoken";
-import { RequestContext } from "@mikro-orm/core";
-import { orm } from "../../config/db/mikro-orm.config.js";
-import { Message } from "../../modules/chat/message.entity.js";
 import { Client } from "../../modules/client/client/client.entity.js";
+import cookie from "cookie";
+import { environment } from "../../config/env.config.js";
+import IMessageData from "../interfaces/messageData.interface.js";
+import jwt from "jsonwebtoken";
+import { Message } from "../../modules/chat/message.entity.js";
+import { orm } from "../../config/db/mikro-orm.config.js";
+import { RequestContext } from "@mikro-orm/core";
+import { Server } from "socket.io";
 import { Trainer } from "../../modules/trainer/trainer/trainer.entity.js";
 
 export function setupSocket(io: Server) {
@@ -24,13 +25,13 @@ export function setupSocket(io: Server) {
 
       next();
     } catch (err) {
-      next(new Error("Authentication error"));
+      next(new Error("Authentication error" + err));
     }
   });
 
   io.on("connection", (socket) => {
     socket.on("message", async (data) => {
-      const messageData = JSON.parse(data);
+      const messageData: IMessageData = data as IMessageData;
 
       RequestContext.create(orm.em, async () => {
         try {
