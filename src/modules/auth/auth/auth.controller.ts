@@ -53,7 +53,7 @@ export const controller = {
 
       return res
         .status(200)
-        .json(new ApiResponse("Sesión iniciada.", { user: userReturn }));
+        .json(new ApiResponse("Sesión iniciada.", userReturn));
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
         res

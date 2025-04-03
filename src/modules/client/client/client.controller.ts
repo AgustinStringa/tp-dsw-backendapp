@@ -57,6 +57,7 @@ export const controller = {
       clientService.sendRegistrationEmail(client);
 
       const userReturn = {
+        id: client.id,
         firstName: client.firstName,
         lastName: client.lastName,
         dni: client.dni,
@@ -66,7 +67,7 @@ export const controller = {
 
       return res
         .status(201)
-        .json(new ApiResponse("Cliente creado.", { user: userReturn }));
+        .json(new ApiResponse("Cliente creado.", userReturn));
     } catch (error: unknown) {
       handleError(error, res);
     }
