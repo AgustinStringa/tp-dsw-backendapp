@@ -8,6 +8,8 @@ import { orm } from "../../config/db/mikro-orm.config.js";
 import { RequestContext } from "@mikro-orm/core";
 import { Server } from "socket.io";
 import { Trainer } from "../../modules/trainer/trainer/trainer.entity.js";
+import { validateEntity } from "../validators/entity.validators.js";
+import { validateObjectId } from "../validators/data-type.validators.js";
 
 export function setupSocket(io: Server) {
   io.use((socket, next) => {
@@ -33,30 +35,39 @@ export function setupSocket(io: Server) {
     socket.on("message", async (data) => {
       const messageData: IMessageData = data as IMessageData;
 
-      RequestContext.create(orm.em, async () => {
+      await RequestContext.create(orm.em, async () => {
         try {
-          const newMessage = new Message();
-          newMessage.content = messageData.content;
-          newMessage.createdAt = new Date();
-          const id = messageData.receiver;
-          if (messageData.entity === "client") {
-            newMessage.sender = await orm.em.findOneOrFail(Client, {
-              id: socket.data.user.id,
-            });
-            newMessage.receiver = await orm.em.findOneOrFail(Trainer, { id });
-          } else {
-            newMessage.sender = await orm.em.findOneOrFail(Trainer, {
-              id: socket.data.user.id,
-            });
-            newMessage.receiver = await orm.em.findOneOrFail(Client, { id });
-          }
+          validateObjectId(messageData.receiver, "receiver ID");
+          const sender =
+            messageData.entity === "client"
+              ? await orm.em.findOneOrFail(Client, { id: socket.data.user.id })
+              : await orm.em.findOneOrFail(Trainer, {
+                  id: messageData.sender,
+                });
 
+          const receiver =
+            messageData.entity === "client"
+              ? await orm.em.findOneOrFail(Trainer, {
+                  id: messageData.receiver,
+                })
+              : await orm.em.findOneOrFail(Client, {
+                  id: messageData.receiver,
+                });
+          const newMessage = orm.em.create(Message, {
+            content: messageData.content,
+            createdAt: new Date(),
+            sender,
+            receiver,
+          });
+
+          validateEntity(newMessage);
           await orm.em.persistAndFlush(newMessage);
+
+          io.to(socket.id).emit("respuesta", newMessage);
         } catch (error) {
           console.error("Error al guardar mensaje:", error);
         }
       });
-
       io.emit("respuesta", messageData);
     });
 
