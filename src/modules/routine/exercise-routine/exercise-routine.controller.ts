@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import { Exercise } from "../exercise/exercise.entity.js";
 import { ExerciseRoutine } from "./exercise-routine.entity.js";
@@ -24,10 +25,14 @@ export const controller = {
       validateEntity(exerciseRoutine);
       await em.flush();
 
-      res.status(201).json({
-        message: "Se agregó el ejercicio a la rutina.",
-        data: exerciseRoutine,
-      });
+      res
+        .status(201)
+        .json(
+          new ApiResponse(
+            "Se agregó el ejercicio a la rutina.",
+            exerciseRoutine
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -43,13 +48,13 @@ export const controller = {
       );
 
       if (exerciseRoutine.routine.end <= new Date()) {
-        res.status(400).json({ message: "La rutina ya finalizó." });
+        res.status(400).json(new ApiResponse("La rutina ya finalizó."));
         return;
       }
 
       const { user } = await authService.getUser(req);
       if (exerciseRoutine.routine.client !== user) {
-        res.status(401).json({ message: "Cliente no autorizado." });
+        res.status(401).json(new ApiResponse("Cliente no autorizado."));
         return;
       }
 
@@ -57,10 +62,14 @@ export const controller = {
       validateEntity(exerciseRoutine);
       await em.flush();
 
-      res.status(200).json({
-        message: "Se registró la ejecución del ejercicio.",
-        data: exerciseRoutine,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Se registró la ejecución del ejercicio.",
+            exerciseRoutine
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -81,10 +90,14 @@ export const controller = {
       validateEntity(exerciseRoutine);
       await em.flush();
 
-      res.status(200).json({
-        message: "Se actualizó el ejercicio de la rutina.",
-        data: exerciseRoutine,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            "Se actualizó el ejercicio de la rutina.",
+            exerciseRoutine
+          )
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -96,7 +109,9 @@ export const controller = {
       const exerciseRoutine = em.getReference(ExerciseRoutine, id);
       await em.removeAndFlush(exerciseRoutine);
 
-      res.status(200).json({ message: "Se quitó el ejercicio de la rutina." });
+      res
+        .status(200)
+        .json(new ApiResponse("Se quitó el ejercicio de la rutina."));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -144,7 +159,7 @@ export const controller = {
       isNaN(req.body.sanitizedInput.weight) ||
       req.body.sanitizedInput.weight < 0
     ) {
-      res.status(401).json({ message: "El peso no es válido." });
+      res.status(401).json(new ApiResponse("El peso no es válido."));
       return;
     }
 

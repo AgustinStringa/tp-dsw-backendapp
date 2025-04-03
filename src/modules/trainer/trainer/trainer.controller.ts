@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import bcrypt from "bcrypt";
+import { checkUsersUniqueIndexes } from "../../../utils/validators/indexes.validator.js";
 import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
@@ -13,10 +15,9 @@ export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
       const trainers = await em.findAll(Trainer);
-      res.json({
-        message: "Todos los entrenadores fueron encontrados.",
-        data: trainers,
-      });
+      res.json(
+        new ApiResponse("Todos los entrenadores fueron encontrados.", trainers)
+      );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -27,7 +28,7 @@ export const controller = {
       const id = validateObjectId(req.params.id, "id");
       const trainer = await em.findOneOrFail(Trainer, { id });
 
-      res.status(200).json({ message: "Entrenador encontrado", data: trainer });
+      res.status(200).json(new ApiResponse("Entrenador encontrado", trainer));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -35,6 +36,8 @@ export const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
+      await checkUsersUniqueIndexes(req.body.sanitizedInput);
+
       const trainer = em.create(Trainer, req.body.sanitizedInput);
       validateEntity(trainer);
 
@@ -42,11 +45,13 @@ export const controller = {
       if (client !== null) {
         return res
           .status(409)
-          .send({ message: "El correo electrónico ya se encuentra en uso." });
+          .send(
+            new ApiResponse("El correo electrónico ya se encuentra en uso.")
+          );
       }
 
       await em.flush();
-      res.status(201).json({ message: "Entrenador creado.", data: trainer });
+      res.status(201).json(new ApiResponse("Entrenador creado.", trainer));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -55,6 +60,8 @@ export const controller = {
   update: async function (req: Request, res: Response) {
     try {
       const trainer = await em.findOneOrFail(Trainer, { id: req.params.id });
+      await checkUsersUniqueIndexes(req.body.sanitizedInput, trainer.id);
+
       em.assign(trainer, req.body.sanitizedInput);
       validateEntity(trainer);
 
@@ -63,14 +70,14 @@ export const controller = {
         if (client !== null) {
           return res
             .status(409)
-            .send({ message: "El correo electrónico ya se encuentra en uso." });
+            .send(
+              new ApiResponse("El correo electrónico ya se encuentra en uso.")
+            );
         }
       }
 
       await em.flush();
-      res
-        .status(200)
-        .json({ message: "Entrenador actualizado.", data: trainer });
+      res.status(200).json(new ApiResponse("Entrenador actualizado.", trainer));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -81,7 +88,7 @@ export const controller = {
       const id = req.params.id;
       const trainer = em.getReference(Trainer, id);
       await em.removeAndFlush(trainer);
-      res.status(200).json({ message: "Entrenador eliminado." });
+      res.status(200).json(new ApiResponse("Entrenador eliminado."));
     } catch (error: unknown) {
       handleError(error, res);
     }

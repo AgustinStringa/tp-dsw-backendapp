@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../utils/classes/api-response.class.js";
 import { authService } from "../auth/auth/auth.service.js";
 import { CheckoutSessionStatusEnum } from "../../utils/enums/checkout-session-status.enum.js";
 import { Client } from "../client/client/client.entity.js";
@@ -26,7 +27,7 @@ export const controller = {
     try {
       const client = (await authService.getUser(req)).user as Client;
       if (client.id !== req.body.sanitizedInput.client) {
-        res.status(401).json({ message: "Cliente no autorizado." });
+        res.status(401).json(new ApiResponse("Cliente no autorizado."));
         return;
       }
 
@@ -34,10 +35,14 @@ export const controller = {
 
       const debt = await membershipService.calcleClientDebt(client);
       if (debt) {
-        res.status(403).json({
-          message:
-            "No puede comprar una membresía. Usted posee una deuda de $" + debt,
-        });
+        res
+          .status(403)
+          .json(
+            new ApiResponse(
+              "No puede comprar una membresía. Usted posee una deuda de $" +
+                debt
+            )
+          );
         return;
       }
 
@@ -102,8 +107,13 @@ export const controller = {
       res.status(200).end();
     } catch (err) {
       if (err instanceof Stripe.errors.StripeError)
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-      else return res.status(500).send("Unexpected error occurred");
+        return res
+          .status(400)
+          .send(new ApiResponse(`Webhook Error: ${err.message}`, null, false));
+      else
+        return res
+          .status(500)
+          .send(new ApiResponse("Unexpected error occurred", null, false));
     }
   },
 

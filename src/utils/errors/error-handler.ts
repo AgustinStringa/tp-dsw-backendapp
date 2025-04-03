@@ -11,9 +11,15 @@ export function handleError(error: unknown, res: Response) {
   }
 
   if (error instanceof NotFoundError) {
-    return res.status(404).json({
-      message: "No se pudo encontrar una de las entidades.",
-    });
+    return res
+      .status(404)
+      .json(
+        new ApiResponse(
+          "No se pudo encontrar una de las entidades.",
+          null,
+          false
+        )
+      );
   }
 
   return res

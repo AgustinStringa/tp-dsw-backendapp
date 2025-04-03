@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "../../auth/auth/auth.service.js";
 import bcrypt from "bcrypt";
+import { checkUsersUniqueIndexes } from "../../../utils/validators/indexes.validator.js";
 import { Client } from "./client.entity.js";
 import { clientService } from "./client.service.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
-import { Trainer } from "../../trainer/trainer/trainer.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
 import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
@@ -19,10 +20,11 @@ export const controller = {
         orderBy: { lastName: "asc", firstName: "asc" }, //es sensible a mayúsculas y minúsculas
       });
 
-      res.status(200).json({
-        message: "Todos los clientes fueron encontrados.",
-        data: clients,
-      });
+      res
+        .status(200)
+        .json(
+          new ApiResponse("Todos los clientes fueron encontrados.", clients)
+        );
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -37,7 +39,7 @@ export const controller = {
         { populate: ["progresses", "goals"] }
       );
 
-      res.status(200).json({ message: "Cliente encontrado.", data: client });
+      res.status(200).json(new ApiResponse("Cliente encontrado.", client));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -45,21 +47,17 @@ export const controller = {
 
   add: async function (req: Request, res: Response) {
     try {
+      await checkUsersUniqueIndexes(req.body.sanitizedInput);
+
       const client = em.create(Client, req.body.sanitizedInput);
       validateEntity(client);
-
-      const trainer = await em.findOne(Trainer, { email: client.email });
-      if (trainer !== null) {
-        return res
-          .status(409)
-          .send({ message: "El correo electrónico ya se encuentra en uso." });
-      }
 
       await em.flush();
       clientService.startSessionOnRegister(req, res, client);
       clientService.sendRegistrationEmail(client);
 
       const userReturn = {
+        id: client.id,
         firstName: client.firstName,
         lastName: client.lastName,
         dni: client.dni,
@@ -67,10 +65,9 @@ export const controller = {
         isClient: true,
       };
 
-      return res.status(201).json({
-        message: "Cliente registrado.",
-        data: { user: userReturn },
-      });
+      return res
+        .status(201)
+        .json(new ApiResponse("Cliente creado.", userReturn));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -82,27 +79,19 @@ export const controller = {
       const { user, isTrainer } = await authService.getUser(req);
 
       if (!isTrainer && user.id !== id) {
-        res.status(401).json({ message: "Cliente no autorizado." });
+        res.status(401).json(new ApiResponse("Cliente no autorizado."));
         return;
       }
 
-      const email = req.body.sanitizedInput.email;
-      if (email !== undefined) {
-        const trainer = await em.findOne(Trainer, { email });
-        if (trainer !== null) {
-          return res.status(409).send({
-            message: "El correo electrónico ya se encuentra en uso.",
-          });
-        }
-      }
-
       const client = await em.findOneOrFail(Client, { id });
+      await checkUsersUniqueIndexes(req.body.sanitizedInput, client.id);
+
       em.assign(client, req.body.sanitizedInput);
 
       validateEntity(client);
       await em.flush();
 
-      res.status(200).json({ message: "Cliente actualizado.", data: client });
+      res.status(200).json(new ApiResponse("Cliente actualizado.", client));
     } catch (error: unknown) {
       handleError(error, res);
     }
@@ -113,7 +102,7 @@ export const controller = {
       const id = req.params.id;
       const client = em.getReference(Client, id);
       await em.removeAndFlush(client);
-      res.status(200).json({ message: "Cliente eliminado." });
+      res.status(200).json(new ApiResponse("Cliente eliminado."));
     } catch (error: unknown) {
       handleError(error, res);
     }
