@@ -5,7 +5,7 @@ import { Router } from "express";
 export const clientRouter = Router();
 
 clientRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
-clientRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
+clientRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
 clientRouter.post("/", controller.sanitizeClient, controller.add); //un visitante se puede registrar
 
 clientRouter.put(
