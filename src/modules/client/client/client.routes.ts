@@ -10,14 +10,21 @@ clientRouter.post("/", controller.sanitizeClient, controller.add); //un visitant
 
 clientRouter.put(
   "/:id",
-  authMiddlewares.verifyUser,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClient,
   controller.update
 );
 
 clientRouter.patch(
+  "/self-update/:id",
+  authMiddlewares.verifyClient,
+  controller.sanitizeSelfUpdate,
+  controller.update
+);
+
+clientRouter.patch(
   "/:id",
-  authMiddlewares.verifyUser,
+  authMiddlewares.verifyTrainer,
   controller.sanitizeClient,
   controller.update
 );

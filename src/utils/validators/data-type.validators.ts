@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { HttpError } from "../errors/http-error.js";
 import { ObjectId } from "@mikro-orm/mongodb";
 
@@ -121,4 +122,26 @@ export function validateNumber(
       `${field}: debe ser un número mayor que 0${auxMessage}.`
     );
   }
+}
+
+export function validatePassword(
+  password: string,
+  fieldName: string,
+  canBeUndefined: boolean = true
+) {
+  if (canBeUndefined && !password) return undefined;
+
+  if (!canBeUndefined && !password)
+    throw new HttpError(400, `El campo ${fieldName} es requerido.`);
+
+  if (typeof password !== "string")
+    throw new HttpError(400, `El campo ${fieldName} debe ser de tipo string.`);
+
+  if (password.length < 4)
+    throw new HttpError(
+      400,
+      `El campo ${fieldName} debe tener al menos 4 caracteres.`
+    );
+
+  return bcrypt.hashSync(password, 10);
 }
