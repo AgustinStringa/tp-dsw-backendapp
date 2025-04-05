@@ -1,14 +1,16 @@
 import { NextFunction, Request, Response } from "express";
+import {
+  validateObjectId,
+  validatePassword,
+} from "../../../utils/validators/data-type.validators.js";
 import { ApiResponse } from "../../../utils/classes/api-response.class.js";
 import { authService } from "../../auth/auth/auth.service.js";
-import bcrypt from "bcrypt";
 import { checkUsersUniqueIndexes } from "../../../utils/validators/indexes.validator.js";
 import { Client } from "./client.entity.js";
 import { clientService } from "./client.service.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -109,31 +111,54 @@ export const controller = {
   },
 
   sanitizeClient: function (req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-      lastName: req.body.lastName?.trim(),
-      firstName: req.body.firstName?.trim(),
-      dni: req.body.dni?.toString().trim(),
-      email: req.body.email?.trim(),
-      password: req.body.password,
-    };
+    try {
+      const canBeUndefined = req.method === "PATCH";
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined) {
-        delete req.body.sanitizedInput[key];
-      }
-    });
+      req.body.sanitizedInput = {
+        lastName: req.body.lastName?.trim(),
+        firstName: req.body.firstName?.trim(),
+        dni: req.body.dni?.toString().trim(),
+        email: req.body.email?.trim(),
 
-    if (req.body.sanitizedInput.password) {
-      if (req.body.sanitizedInput.password.length >= 4) {
-        req.body.sanitizedInput.password = bcrypt.hashSync(
-          req.body.sanitizedInput.password,
-          10
-        );
-      } else {
-        req.body.sanitizedInput.password = "";
-      }
+        password: validatePassword(
+          req.body.password,
+          "password",
+          canBeUndefined
+        ),
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined) {
+          delete req.body.sanitizedInput[key];
+        }
+      });
+
+      next();
+    } catch (error: unknown) {
+      handleError(error, res);
     }
+  },
 
-    next();
+  sanitizeSelfUpdate: function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      req.body.sanitizedInput = {
+        email: req.body.email?.trim(),
+        password: validatePassword(req.body.password, "password", true),
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined) {
+          delete req.body.sanitizedInput[key];
+        }
+      });
+
+      next();
+    } catch (error: unknown) {
+      handleError(error, res);
+    }
   },
 };

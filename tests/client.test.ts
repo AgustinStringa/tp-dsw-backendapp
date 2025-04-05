@@ -23,6 +23,8 @@ describe("GET " + url, () => {
 });
 
 describe("POST /api/clients", () => {
+  const validDni = "12345678";
+
   const newClient: {
     lastName: string;
     firstName: string;
@@ -36,6 +38,25 @@ describe("POST /api/clients", () => {
     email: "jorge@gomez.com.ar",
     password: undefined,
   };
+
+  beforeAll(async () => {
+    await em.nativeDelete(Client, {
+      $or: [
+        {
+          email: newClient.email,
+        },
+        { dni: validDni },
+      ],
+    });
+    await em.nativeDelete(Trainer, {
+      $or: [
+        {
+          email: newClient.email,
+        },
+        { dni: validDni },
+      ],
+    });
+  });
 
   it("debería devolver un error 400 por falta de atributos", async () => {
     const res = await api
@@ -59,14 +80,7 @@ describe("POST /api/clients", () => {
   });
 
   it("debería devolver un statusCode 201", async () => {
-    newClient.dni = "12345678";
-
-    await em.nativeDelete(Client, {
-      $or: [{ dni: newClient.dni }, { email: newClient.email }],
-    });
-    await em.nativeDelete(Trainer, {
-      $or: [{ dni: newClient.dni }, { email: newClient.email }],
-    });
+    newClient.dni = validDni;
 
     const res = await api
       .post(url)

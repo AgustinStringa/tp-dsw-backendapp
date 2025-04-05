@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import {
+  validateObjectId,
+  validatePassword,
+} from "../../../utils/validators/data-type.validators.js";
 import { ApiResponse } from "../../../utils/classes/api-response.class.js";
-import bcrypt from "bcrypt";
 import { checkUsersUniqueIndexes } from "../../../utils/validators/indexes.validator.js";
-import { Client } from "../../client/client/client.entity.js";
 import { handleError } from "../../../utils/errors/error-handler.js";
 import { orm } from "../../../config/db/mikro-orm.config.js";
 import { Trainer } from "./trainer.entity.js";
 import { validateEntity } from "../../../utils/validators/entity.validators.js";
-import { validateObjectId } from "../../../utils/validators/data-type.validators.js";
 
 const em = orm.em;
 
@@ -41,15 +42,6 @@ export const controller = {
       const trainer = em.create(Trainer, req.body.sanitizedInput);
       validateEntity(trainer);
 
-      const client = await em.findOne(Client, { email: trainer.email });
-      if (client !== null) {
-        return res
-          .status(409)
-          .send(
-            new ApiResponse("El correo electrónico ya se encuentra en uso.")
-          );
-      }
-
       await em.flush();
       res.status(201).json(new ApiResponse("Entrenador creado.", trainer));
     } catch (error: unknown) {
@@ -59,24 +51,15 @@ export const controller = {
 
   update: async function (req: Request, res: Response) {
     try {
-      const trainer = await em.findOneOrFail(Trainer, { id: req.params.id });
+      const id = validateObjectId(req.params.id, "id");
+
+      const trainer = await em.findOneOrFail(Trainer, id!);
       await checkUsersUniqueIndexes(req.body.sanitizedInput, trainer.id);
 
       em.assign(trainer, req.body.sanitizedInput);
       validateEntity(trainer);
-
-      if (req.body.sanitizedInput.email !== undefined) {
-        const client = await em.findOne(Client, { email: trainer.email });
-        if (client !== null) {
-          return res
-            .status(409)
-            .send(
-              new ApiResponse("El correo electrónico ya se encuentra en uso.")
-            );
-        }
-      }
-
       await em.flush();
+
       res.status(200).json(new ApiResponse("Entrenador actualizado.", trainer));
     } catch (error: unknown) {
       handleError(error, res);
@@ -94,32 +77,32 @@ export const controller = {
     }
   },
 
-  sanitizeTrainer: function (req: Request, _: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-      lastName: req.body.lastName?.trim(),
-      firstName: req.body.firstName?.trim(),
-      dni: req.body.dni?.toString().trim(),
-      email: req.body.email?.trim(),
-      password: req.body.password,
-    };
+  sanitizeTrainer: function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const canBeUndefined = req.method === "PATCH";
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body.sanitizedInput[key] === undefined) {
-        delete req.body.sanitizedInput[key];
-      }
-    });
+      req.body.sanitizedInput = {
+        lastName: req.body.lastName?.trim(),
+        firstName: req.body.firstName?.trim(),
+        dni: req.body.dni?.toString().trim(),
+        email: req.body.email?.trim(),
 
-    if (req.body.sanitizedInput.password) {
-      if (req.body.sanitizedInput.password.length >= 4) {
-        req.body.sanitizedInput.password = bcrypt.hashSync(
-          req.body.sanitizedInput.password,
-          10
-        );
-      } else {
-        req.body.sanitizedInput.password = "";
-      }
+        password: validatePassword(
+          req.body.password,
+          "password",
+          canBeUndefined
+        ),
+      };
+
+      Object.keys(req.body.sanitizedInput).forEach((key) => {
+        if (req.body.sanitizedInput[key] === undefined) {
+          delete req.body.sanitizedInput[key];
+        }
+      });
+
+      next();
+    } catch (error: unknown) {
+      handleError(error, res);
     }
-
-    next();
   },
 };

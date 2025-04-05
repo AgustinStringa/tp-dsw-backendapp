@@ -40,5 +40,5 @@ beforeAll(async () => {
     : [response.headers["set-cookie"]];
 
   trainerCookie = cookieHeader.find((c) => c.startsWith("auth_token="));
-  trainerId = response.body.data.user.id;
+  trainerId = response.body.data.id;
 });
