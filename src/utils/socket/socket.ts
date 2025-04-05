@@ -1,7 +1,7 @@
 import { Client } from "../../modules/client/client/client.entity.js";
 import cookie from "cookie";
 import { environment } from "../../config/env.config.js";
-import IMessageData from "../interfaces/messageData.interface.js";
+import IMessageData from "../interfaces/message-data.interface.js";
 import jwt from "jsonwebtoken";
 import { Message } from "../../modules/chat/message.entity.js";
 import { orm } from "../../config/db/mikro-orm.config.js";

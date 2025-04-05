@@ -56,10 +56,10 @@ app.use("/api/auth", authRouter);
 app.use("/api/classes", classesRouter);
 app.use("/api/clients", clientsRouter);
 app.use("/api/memberships", membershipsRouter);
+app.use("/api/messages", messageRouter);
 app.use("/api/news", newsRouter);
 app.use("/api/routines", routinesRouter);
 app.use("/api/trainers", trainerRouter);
-app.use("/api/messages", messageRouter);
 app.use("/api/user-payment", userPaymentRouter);
 
 app.use((_req, res) => {
