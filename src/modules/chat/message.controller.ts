@@ -21,7 +21,7 @@ export const messageController = {
         Client,
         { id: { $ne: userId } },
         {
-          fields: ["id", "firstName", "lastName"],
+          fields: ["id", "firstName", "lastName", "email"],
         }
       );
 
@@ -29,7 +29,7 @@ export const messageController = {
         Trainer,
         { id: { $ne: userId } },
         {
-          fields: ["id", "firstName", "lastName"],
+          fields: ["id", "firstName", "lastName", "email"],
         }
       );
 
@@ -55,7 +55,7 @@ export const messageController = {
   getMessages: async (req: Request, res: Response) => {
     try {
       const user1 = (await authService.getUser(req)).user;
-      const user2 = validateObjectId(req.params.user, "user");
+      const user2 = validateObjectId(req.params.userId, "user");
 
       const messages = await em.find(
         Message,
