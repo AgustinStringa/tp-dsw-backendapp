@@ -22,11 +22,11 @@ import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js
 
 export const app = express();
 
-const httpServer = createServer(app);
+export const server = createServer(app);
 
-const io = new Server(httpServer, {
+const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: environment.systemUrls.frontendUrl,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -68,14 +68,8 @@ app.use((_req, res) => {
 
 setupSocket(io);
 
-httpServer.listen(environment.systemUrls.port, () => {
+server.listen(environment.systemUrls.port, () => {
   console.log(
-    `Servidor corriendo en http://localhost:${environment.systemUrls.port}/`
+    `Servidor corriendo en ${environment.systemUrls.backendUrl}:${environment.systemUrls.port}/`
   );
 });
-
-/*
-app.listen(PORT, () => {
-  console.log("Server runnning on http://localhost:3000/");
-});
-*/
