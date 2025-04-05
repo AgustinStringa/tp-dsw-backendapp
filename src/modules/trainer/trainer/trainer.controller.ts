@@ -79,7 +79,7 @@ export const controller = {
 
   sanitizeTrainer: function (req: Request, res: Response, next: NextFunction) {
     try {
-      const canBeUndefined = req.method === "PATCH";
+      const canBeUndefined = req.method === "PATCH" || req.method === "PUT";
 
       req.body.sanitizedInput = {
         lastName: req.body.lastName?.trim(),

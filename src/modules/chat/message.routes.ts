@@ -16,8 +16,8 @@ messageRouter.get(
   messageController.getMessages
 );
 
-messageRouter.get(
-  "/user/:userId/unread",
+messageRouter.post(
+  "/user/unread",
   authMiddlewares.verifyUser,
   messageController.getUnreadMessages
 );
