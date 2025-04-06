@@ -81,7 +81,7 @@ export const controller = {
       const { user, isTrainer } = await authService.getUser(req);
 
       if (!isTrainer && user.id !== id) {
-        res.status(401).json(new ApiResponse("Cliente no autorizado."));
+        res.status(403).json(new ApiResponse("Cliente no autorizado."));
         return;
       }
 

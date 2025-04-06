@@ -27,7 +27,7 @@ export const controller = {
     try {
       const client = (await authService.getUser(req)).user as Client;
       if (client.id !== req.body.sanitizedInput.client) {
-        res.status(401).json(new ApiResponse("Cliente no autorizado."));
+        res.status(403).json(new ApiResponse("Cliente no autorizado."));
         return;
       }
 

@@ -127,7 +127,7 @@ export const controller = {
       const { user } = await authService.getUser(req);
 
       if (clientIdParam !== user.id)
-        return res.status(401).json(new ApiResponse("Cliente no autorizado."));
+        return res.status(403).json(new ApiResponse("Cliente no autorizado."));
 
       const membership = await em.findOne(
         Membership,

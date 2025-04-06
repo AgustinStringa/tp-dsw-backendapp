@@ -11,9 +11,9 @@ const em = orm.em.fork();
 const url = "/api/clients";
 
 describe("GET " + url, () => {
-  it("debería devolver un error 401 por no tener los permisos requeridos", async () => {
+  it("debería devolver un error 403 por no tener los permisos requeridos", async () => {
     const res = await api.get(url).set("Cookie", clientCookie);
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(403);
   });
 
   it("debería devolver un status 200", async () => {

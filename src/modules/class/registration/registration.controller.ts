@@ -47,8 +47,10 @@ const controller = {
       const clientIdParam = req.params.id;
       const { user } = await authService.getUser(req);
 
-      if (clientIdParam !== user.id)
-        return res.status(401).json({ message: "Cliente no autorizado." });
+      if (clientIdParam !== user.id) {
+        res.status(403).json({ message: "Cliente no autorizado." });
+        return;
+      }
 
       const registrations = await em.find(Registration, { client: user.id });
       res.status(200).json({
@@ -118,7 +120,7 @@ const controller = {
       const { user, isTrainer } = await authService.getUser(req);
 
       if (isTrainer === false && user !== registration.client) {
-        res.status(401).json({ message: "Cliente no autorizado." });
+        res.status(403).json({ message: "Cliente no autorizado." });
         return;
       }
 

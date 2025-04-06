@@ -25,7 +25,7 @@ export const authMiddlewares = {
       return next();
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json(new ApiResponse("Acceso denegado.", null, false));
+        res.status(403).json(new ApiResponse("Acceso denegado.", null, false));
       else handleError(error, res);
     }
   },
@@ -45,7 +45,7 @@ export const authMiddlewares = {
       return next();
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json(new ApiResponse("Acceso denegado.", null, false));
+        res.status(403).json(new ApiResponse("Acceso denegado.", null, false));
       else handleError(error, res);
     }
   },
@@ -60,7 +60,7 @@ export const authMiddlewares = {
       return next();
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json(new ApiResponse("Acceso denegado.", null, false));
+        res.status(403).json(new ApiResponse("Acceso denegado.", null, false));
       else handleError(error, res);
     }
   },

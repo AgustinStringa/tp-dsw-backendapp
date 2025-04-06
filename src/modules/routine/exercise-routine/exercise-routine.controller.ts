@@ -54,7 +54,7 @@ export const controller = {
 
       const { user } = await authService.getUser(req);
       if (exerciseRoutine.routine.client !== user) {
-        res.status(401).json(new ApiResponse("Cliente no autorizado."));
+        res.status(403).json(new ApiResponse("Cliente no autorizado."));
         return;
       }
 
@@ -159,7 +159,7 @@ export const controller = {
       isNaN(req.body.sanitizedInput.weight) ||
       req.body.sanitizedInput.weight < 0
     ) {
-      res.status(401).json(new ApiResponse("El peso no es válido."));
+      res.status(400).json(new ApiResponse("El peso no es válido."));
       return;
     }
 

@@ -46,7 +46,7 @@ export const controller = {
 
       if (clientId !== user.id)
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       const goals = await em.find(Goal, {
@@ -71,7 +71,7 @@ export const controller = {
 
       if (req.body.sanitizedInput.client !== user.id)
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       const goal = em.create(Goal, req.body.sanitizedInput);
@@ -96,7 +96,7 @@ export const controller = {
           req.body.sanitizedInput.client !== user.id)
       )
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       em.assign(goal, req.body.sanitizedInput);
@@ -119,7 +119,7 @@ export const controller = {
 
       if (goal.client.id !== user.id)
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       await em.removeAndFlush(goal);

@@ -49,7 +49,7 @@ export const controller = {
 
       if (clientId !== user.id)
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       const progresses = await em.find(Progress, {
@@ -75,7 +75,7 @@ export const controller = {
 
       if (req.body.sanitizedInput.client !== user.id)
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       const progress = em.create(Progress, req.body.sanitizedInput);
@@ -100,7 +100,7 @@ export const controller = {
           req.body.sanitizedInput.client !== user.id)
       )
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       em.assign(progress, req.body.sanitizedInput);
@@ -123,7 +123,7 @@ export const controller = {
 
       if (progress.client.id !== user.id)
         return res
-          .status(401)
+          .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
       await em.removeAndFlush(progress);
