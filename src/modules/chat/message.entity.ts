@@ -1,5 +1,6 @@
-import { Entity, Property, ManyToOne } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../../config/db/base-entity.entity.js";
+
 @Entity()
 export class Message extends BaseEntity {
   @Property({ nullable: false })

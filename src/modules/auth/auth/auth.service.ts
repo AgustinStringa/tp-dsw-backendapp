@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Client } from "../../client/client/client.entity.js";
+import cookie from "cookie";
 import { differenceInMinutes } from "date-fns";
 import { environment } from "../../../config/env.config.js";
 import { EnvironmentTypeEnum } from "../../../utils/enums/environment-type.enum.js";
@@ -107,5 +108,38 @@ export const authService = {
         maxAge: environment.session.durationInHours * 3600000,
       });
     }
+  },
+
+  decodeTokenFromWebsocket: async (cookies: string | undefined) => {
+    if (!cookies) throw new Error("Token nulo.");
+
+    const parsedCookies = cookie.parse(cookies);
+    const token = parsedCookies.auth_token;
+
+    if (!token) throw new Error("Token nulo.");
+
+    if (blacklistedTokens.has(token)) {
+      throw new Error("No autorizado. El token se encuentra bloqueado.");
+    }
+
+    const decoded = jwt.verify(token, environment.session.jwtSecret) as {
+      id: string;
+      iat: number;
+      exp: number;
+    };
+
+    let user: Trainer | Client | null;
+    const em = orm.em.fork();
+    user = await em.findOne(Trainer, {
+      id: decoded.id,
+    });
+
+    if (!user) {
+      user = await em.findOneOrFail(Client, {
+        id: decoded.id,
+      });
+    }
+
+    return { decoded, user };
   },
 };
