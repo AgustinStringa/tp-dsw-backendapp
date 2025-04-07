@@ -52,10 +52,10 @@ export const messageController = {
     }
   },
 
-  getMessages: async (req: Request, res: Response) => {
+  getMessagesWithUser: async (req: Request, res: Response) => {
     try {
       const user1 = (await authService.getUser(req)).user;
-      const user2 = validateObjectId(req.params.userId, "user");
+      const user2 = validateObjectId(req.params.userId, "userId");
 
       const messages = await em.find(
         Message,

@@ -5,7 +5,7 @@ import { Router } from "express";
 export const registrationRouter = Router();
 
 registrationRouter.get(
-  "/client/:id",
+  "/client/:clientId",
   authMiddlewares.verifyUser,
   controller.findByClient
 );
@@ -24,7 +24,7 @@ registrationRouter.post(
 );
 
 registrationRouter.patch(
-  "/cancel/:id",
+  "/:id/cancel",
   authMiddlewares.verifyUser,
   controller.cancel
 );

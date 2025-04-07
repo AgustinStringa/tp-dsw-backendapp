@@ -18,7 +18,7 @@ GET http://localhost:3000/api/memberships/outstanding
 
 
 ### get client's active membership
-GET http://localhost:3000/api/memberships/active/{{clientId}}
+GET http://localhost:3000/api/memberships/active/clients/{{clientId}}
 
 
 ### create membership

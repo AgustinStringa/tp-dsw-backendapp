@@ -9,7 +9,7 @@ import { validateObjectId } from "../../../utils/validators/data-type.validators
 
 const em = orm.em;
 
-const controller = {
+export const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
       const registrations = await em.find(
@@ -28,7 +28,7 @@ const controller = {
 
   findOne: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const registration = await em.findOneOrFail(
         Registration,
         { id },
@@ -44,7 +44,7 @@ const controller = {
 
   findByClient: async function (req: Request, res: Response) {
     try {
-      const clientIdParam = req.params.id;
+      const clientIdParam = validateObjectId(req.params.clientId, "clientId");
       const { user } = await authService.getUser(req);
 
       if (clientIdParam !== user.id) {
@@ -111,7 +111,7 @@ const controller = {
 
   cancel: async function (req: Request, res: Response) {
     try {
-      const id = req.params.id;
+      const id = validateObjectId(req.params.id, "id");
       const registration = await em.findOneOrFail(Registration, {
         id,
         cancelDateTime: null,
@@ -164,5 +164,3 @@ const controller = {
     }
   },
 };
-
-export { controller };

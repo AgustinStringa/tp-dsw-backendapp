@@ -23,4 +23,4 @@ Content-Type: application/json
 
 
 ### cancel a registration
-PATCH http://localhost:3000/api/classes/registration/cancel/{{id}}
+PATCH http://localhost:3000/api/classes/registration/{{id}}/cancel

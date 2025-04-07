@@ -11,7 +11,7 @@ membershipRouter.get(
 );
 
 membershipRouter.get(
-  "/active/:clientId",
+  "/active/clients/:clientId",
   authMiddlewares.verifyClient,
   controller.findActiveByClient
 );

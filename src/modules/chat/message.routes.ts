@@ -11,15 +11,15 @@ messageRouter.get(
 );
 
 messageRouter.get(
-  "/user/:userId",
-  authMiddlewares.verifyUser,
-  messageController.getMessages
-);
-
-messageRouter.post(
-  "/user/unread",
+  "/unread",
   authMiddlewares.verifyUser,
   messageController.getUnreadMessages
+);
+
+messageRouter.get(
+  "/user/:userId",
+  authMiddlewares.verifyUser,
+  messageController.getMessagesWithUser
 );
 
 messageRouter.patch(
