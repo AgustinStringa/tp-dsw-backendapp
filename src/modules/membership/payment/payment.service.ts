@@ -15,7 +15,9 @@ export const paymentService = {
     );
 
     membership.debt =
-      membership.type.price > totalPaid ? membership.type.price - totalPaid : 0;
+      membership.type.price > totalPaid
+        ? parseFloat((membership.type.price - totalPaid).toFixed(2))
+        : 0;
     await em.flush();
   },
 };

@@ -37,6 +37,29 @@ export const membershipService = {
       .find(Membership, { dateTo: tomorrow }, { populate: ["client", "type"] });
     memberships.forEach((m) => sendMembershipExpirationEmail(m));
   },
+
+  orderMembershipsByClient: (memberships: Membership[]) => {
+    memberships.sort((a, b) => {
+      const firstNameA = a.client.firstName.toLowerCase();
+      const firstNameB = b.client.firstName.toLowerCase();
+
+      if (firstNameA < firstNameB) {
+        return -1;
+      } else if (firstNameA > firstNameB) {
+        return 1;
+      } else {
+        const lastnameA = a.client.lastName.toLowerCase();
+        const lastnameB = b.client.lastName.toLowerCase();
+        if (lastnameA < lastnameB) {
+          return -1;
+        } else if (lastnameA > lastnameB) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  },
 };
 
 async function sendMembershipExpirationEmail(membership: Membership) {

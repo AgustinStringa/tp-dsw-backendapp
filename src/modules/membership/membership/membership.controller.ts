@@ -75,6 +75,8 @@ export const controller = {
         }
       );
 
+      membershipService.orderMembershipsByClient(memberships as Membership[]);
+
       return res
         .status(200)
         .json(

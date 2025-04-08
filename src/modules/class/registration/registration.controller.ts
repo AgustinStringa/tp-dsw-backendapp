@@ -31,7 +31,7 @@ export const controller = {
       const id = validateObjectId(req.params.id, "id");
       const registration = await em.findOneOrFail(
         Registration,
-        { id },
+        { id, cancelDateTime: null },
         { populate: ["client", "class"] }
       );
       res
@@ -52,10 +52,22 @@ export const controller = {
         return;
       }
 
-      const registrations = await em.find(Registration, { client: user.id });
+      const registrations = await em.find(
+        Registration,
+        {
+          client: user.id,
+          cancelDateTime: null,
+        },
+        { populate: ["class.classType", "class.trainer"] }
+      );
+
+      const filteredRegistrations = registrations.filter(
+        (r) => r.class.active !== false
+      );
+
       res.status(200).json({
         message: "Las inscripciones del cliente fueron encontradas.",
-        data: registrations,
+        data: filteredRegistrations,
       });
     } catch (error: unknown) {
       handleError(error, res);
