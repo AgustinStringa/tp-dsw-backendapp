@@ -17,6 +17,8 @@ import { routinesRouter } from "./modules/routine/routine-module.routes.js";
 import { Server } from "socket.io";
 import { setupCronJobs } from "./config/jobs/cron-job.config.js";
 import { setupSocket } from "./utils/socket/socket.js";
+import { swaggerDocs } from "./config/swagger/swagger.config.js";
+import swaggerUi from "swagger-ui-express";
 import { trainerRouter } from "./modules/trainer/trainer/trainer.routes.js";
 import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
 import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
@@ -44,6 +46,7 @@ app.use(
   })
 );
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.post(
   "/api/webhook",
   bodyParser.raw({ type: "application/json" }),

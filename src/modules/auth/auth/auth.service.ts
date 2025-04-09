@@ -31,10 +31,7 @@ export const authService = {
     const token = req.cookies.auth_token;
     if (token) {
       if (blacklistedTokens.has(token)) {
-        throw new HttpError(
-          401,
-          "No autorizado. El token se encuentra bloqueado."
-        );
+        throw new HttpError(401, "No autenticado. Su sesión ha expirado.");
       }
 
       const decoded = jwt.verify(token, environment.session.jwtSecret) as {
@@ -50,7 +47,7 @@ export const authService = {
         exp: decoded.exp,
       };
     } else {
-      throw new HttpError(401, "No autorizado. Token nulo.");
+      throw new HttpError(401, "No autenticado.");
     }
   },
 

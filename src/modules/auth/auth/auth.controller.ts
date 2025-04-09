@@ -115,7 +115,7 @@ export const controller = {
         .json(new ApiResponse("Sesión extendida.", { user: userReturn }));
     } catch (error: unknown) {
       if (error instanceof NotFoundError)
-        res.status(401).json(new ApiResponse("No autorizado."));
+        res.status(401).json(new ApiResponse("No autenticado."));
       else handleError(error, res);
     }
   },
