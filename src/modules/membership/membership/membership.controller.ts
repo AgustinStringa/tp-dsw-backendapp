@@ -144,7 +144,7 @@ export const controller = {
           .json(new ApiResponse("Membresía encontrada.", membership));
       } else {
         res
-          .status(200)
+          .status(404)
           .json(new ApiResponse("El cliente no tiene una membresía activa."));
       }
     } catch (error: unknown) {

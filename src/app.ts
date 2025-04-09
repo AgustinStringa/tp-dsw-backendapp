@@ -15,13 +15,13 @@ import { orm } from "./config/db/mikro-orm.config.js";
 import { RequestContext } from "@mikro-orm/mongodb";
 import { routinesRouter } from "./modules/routine/routine-module.routes.js";
 import { Server } from "socket.io";
+import { setupCronJobs } from "./config/jobs/cron-job.config.js";
 import { setupSocket } from "./utils/socket/socket.js";
 import { trainerRouter } from "./modules/trainer/trainer/trainer.routes.js";
 import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
 import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
 
 export const app = express();
-
 export const server = createServer(app);
 
 const io = new Server(server, {
@@ -67,9 +67,8 @@ app.use((_req, res) => {
 });
 
 setupSocket(io);
+setupCronJobs();
 
 server.listen(environment.systemUrls.port, () => {
-  console.log(
-    `Servidor corriendo en ${environment.systemUrls.backendUrl}:${environment.systemUrls.port}/`
-  );
+  console.log(`Servidor corriendo en ${environment.systemUrls.backendUrl}/`);
 });

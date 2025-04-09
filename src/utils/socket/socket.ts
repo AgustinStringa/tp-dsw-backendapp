@@ -74,7 +74,6 @@ export function setupSocket(io: Server) {
           io.to(receiverSocketId).emit("message-received", newMessage);
         }
       } catch (error) {
-        console.log(error);
         io.emit("error", error);
       }
     });
