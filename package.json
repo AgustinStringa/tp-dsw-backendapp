@@ -14,7 +14,24 @@
     "url": "git+https://github.com/AgustinStringa/tp-dsw-backendapp.git"
   },
   "keywords": [],
-  "author": "",
+   "authors": [
+    {
+      "name": "Aarón De Bernardo",
+      "email": "aarondebernardo@gmail.com"
+    },
+    {
+      "name": "Agustín Stringa",
+      "email": "stringaagustin1@gmail.com"
+    },
+    {
+      "name": "Elías Danteo",
+      "email": "elias.danteo.tomas@hotmail.com"
+    },
+    {
+      "name": "Francisca Gramaglia",
+      "email": "franciscagramaglia714@gmail.com"
+    }
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AgustinStringa/tp-dsw-backendapp/issues"
