@@ -38,7 +38,7 @@ trainerRouter.get(
  *     summary: Obtener un entrenador por ID
  *     operationId: getTrainerById
  *     tags:
- *       - Trainers
+ *       - Entrenadores
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -62,7 +62,7 @@ trainerRouter.get("/:id", authMiddlewares.verifyTrainer, controller.findOne);
  *     summary: Obtener todos los entrenadores
  *     operationId: getAllTrainers
  *     tags:
- *       - Trainers
+ *       - Entrenadores
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -84,7 +84,7 @@ trainerRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
  *     summary: Crear un nuevo entrenador
  *     operationId: createTrainer
  *     tags:
- *       - Trainers
+ *       - Entrenadores
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -115,7 +115,7 @@ trainerRouter.post(
  *     summary: Actualizar completamente un entrenador
  *     operationId: updateTrainer
  *     tags:
- *       - Trainers
+ *       - Entrenadores
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -148,7 +148,7 @@ trainerRouter.put(
  *     summary: Actualizar parcialmente un entrenador
  *     operationId: patchTrainer
  *     tags:
- *       - Trainers
+ *       - Entrenadores
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -181,7 +181,7 @@ trainerRouter.patch(
  *     summary: Eliminar un entrenador
  *     operationId: deleteTrainer
  *     tags:
- *       - Trainers
+ *       - Entrenadores
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -191,8 +191,6 @@ trainerRouter.patch(
  *         description: No autenticado
  *       403:
  *         description: Acceso denegado
- *       404:
- *         description: Entrenador no encontrado
  *       500:
  *         description: Error en el servidor
  */

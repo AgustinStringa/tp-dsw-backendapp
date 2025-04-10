@@ -11,7 +11,7 @@ export const routineRouter = Router();
  *     summary: Obtener una rutina por ID
  *     operationId: getRoutineById
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -19,6 +19,8 @@ export const routineRouter = Router();
  *         description: Rutina encontrada
  *       401:
  *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado (requiere ser entrenador)
  *       404:
  *         description: Rutina no encontrada
  *       500:
@@ -33,7 +35,7 @@ routineRouter.get("/:id", authMiddlewares.verifyUser, controller.findOne);
  *     summary: Obtener todas las rutinas (solo entrenador)
  *     operationId: getAllRoutines
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -55,7 +57,7 @@ routineRouter.get("/", authMiddlewares.verifyTrainer, controller.findAll);
  *     summary: Crear una nueva rutina (solo entrenador)
  *     operationId: createRoutine
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -86,7 +88,7 @@ routineRouter.post(
  *     summary: Actualizar completamente una rutina (solo entrenador)
  *     operationId: updateRoutine
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -119,7 +121,7 @@ routineRouter.put(
  *     summary: Actualizar parcialmente una rutina (solo entrenador)
  *     operationId: patchRoutine
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -152,7 +154,7 @@ routineRouter.patch(
  *     summary: Eliminar una rutina (solo entrenador)
  *     operationId: deleteRoutine
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -173,12 +175,12 @@ export const routineByClientRouter = Router({ mergeParams: true });
 
 /**
  * @swagger
- * /api/clients/{clientId}/routines/current:
+ * /api/routines/clients/{clientId}/current:
  *   get:
  *     summary: Obtener la rutina actual de un cliente
  *     operationId: getCurrentClientRoutine
  *     tags:
- *       - Routines
+ *       - Rutinas
  *     security:
  *       - bearerAuth: []
  *     responses:

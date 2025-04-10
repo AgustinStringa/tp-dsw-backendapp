@@ -6,12 +6,12 @@ export const exerciseRoutineRouter = Router();
 
 /**
  * @swagger
- * /api/exercise-routines/:
+ * /api/routines/exerciseroutines/:
  *   post:
  *     summary: Agregar un ejercicio a una rutina
  *     operationId: addExerciseToRoutine
  *     tags:
- *       - ExerciseRoutines
+ *       - EjercicioRutina
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -37,12 +37,12 @@ exerciseRoutineRouter.post(
 
 /**
  * @swagger
- * /api/exercise-routines/{id}:
+ * /api/routines/exerciseroutines/{id}:
  *   put:
  *     summary: Actualizar completamente un ejercicio en una rutina
  *     operationId: updateExerciseRoutine
  *     tags:
- *       - ExerciseRoutines
+ *       - EjercicioRutina
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -70,12 +70,12 @@ exerciseRoutineRouter.put(
 
 /**
  * @swagger
- * /api/exercise-routines/{id}/record-execution/:
+ * /api/routines/exerciseroutines/{id}/record-execution/:
  *   patch:
  *     summary: Registrar la ejecución de un ejercicio por el cliente
  *     operationId: recordExerciseExecution
  *     tags:
- *       - ExerciseRoutines
+ *       - EjercicioRutina
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -103,12 +103,12 @@ exerciseRoutineRouter.patch(
 
 /**
  * @swagger
- * /api/exercise-routines/{id}:
+ * /api/routines/exerciseroutines/{id}:
  *   patch:
  *     summary: Actualizar parcialmente un ejercicio en una rutina (entrenador)
  *     operationId: patchExerciseRoutine
  *     tags:
- *       - ExerciseRoutines
+ *       - EjercicioRutina
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -140,12 +140,12 @@ exerciseRoutineRouter.patch(
 
 /**
  * @swagger
- * /api/exercise-routines/{id}:
+ * /api/routines/exerciseroutines/{id}:
  *   delete:
  *     summary: Eliminar un ejercicio de una rutina
  *     operationId: deleteExerciseRoutine
  *     tags:
- *       - ExerciseRoutines
+ *       - EjercicioRutina
  *     security:
  *       - bearerAuth: []
  *     responses:
