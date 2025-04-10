@@ -10,3 +10,9 @@ userPaymentRouter.post(
   controller.sanitizeRequest,
   controller.initiatePayment
 );
+
+userPaymentRouter.post(
+  "/:checkoutSessionId",
+  authMiddlewares.verifyClient,
+  controller.userFullfill
+);
