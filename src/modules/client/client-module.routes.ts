@@ -16,7 +16,25 @@ clientsRouter.use("/:clientId/goals", goalByClientRouter);
 clientsRouter.use("/progresses", progressRouter);
 clientsRouter.use("/:clientId/progresses", progressByClientRouter);
 
-clientsRouter.use(
+/**
+ * @swagger
+ * /api/clients/home:
+ *   get:
+ *     summary: Obtener información para el home del cliente autenticado
+ *     operationId: getHomeInformationForClient
+ *     tags:
+ *       - Home
+ *     responses:
+ *       200:
+ *         description: Información obtenida exitosamente
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado
+ *       500:
+ *         description: Error en el servidor
+ */
+clientsRouter.get(
   "/home",
   authMiddlewares.verifyClient,
   homeController.getDataForClient

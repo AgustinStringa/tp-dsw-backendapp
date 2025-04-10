@@ -5,6 +5,24 @@ import { controller as homeController } from "../../home/home.controller.js";
 
 export const trainerRouter = express.Router();
 
+/**
+ * @swagger
+ * /api/trainers/home:
+ *   get:
+ *     summary: Obtener información para el home del entrenador autenticado
+ *     operationId: getHomeInformationForTrainer
+ *     tags:
+ *       - Home
+ *     responses:
+ *       200:
+ *         description: Información obtenida exitosamente
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado
+ *       500:
+ *         description: Error en el servidor
+ */
 trainerRouter.get(
   "/home",
   authMiddlewares.verifyTrainer,
