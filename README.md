@@ -117,7 +117,7 @@ npm run test
 
 ## Autores
 
-- **Colaborador 1** - _Aarón De Bernardo_ - [aarondebernardo@gmail.com]
-- **Colaborador 2** - _Agustín Stringa_ - [stringaagustin1@gmail.com]
-- **Colaborador 3** - _Elías Danteo_ - [elias.danteo.tomas@hotmail.com]
-- **Colaborador 4** - _Francisca Gramaglia_ - [franciscagramaglia714@gmail.com]
+- **Aarón De Bernardo** - [aarondebernardo@gmail.com]
+- **Agustín Stringa** - [stringaagustin1@gmail.com]
+- **Elías Danteo** - [elias.danteo.tomas@hotmail.com]
+- **Francisca Gramaglia** - [franciscagramaglia714@gmail.com]
