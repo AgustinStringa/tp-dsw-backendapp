@@ -9,6 +9,13 @@ export const classTypeRouter = Router();
  * /api/classes/types/{id}:
  *   get:
  *     summary: Obtener un tipo de clase
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: id del tipo de clase
  *     operationId: getClassTypeById
  *     tags:
  *       - Tipos de Clases
@@ -58,6 +65,20 @@ classTypeRouter.get("/", authMiddlewares.verifyUser, controller.findAll);
  *       - Tipos de Clases
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                  type: string
+ *                  example: yoga
+ *              description:
+ *                  type: string
+ *                  example: descripcion de clase de yoga
+ *            required:
+ *              - name
+ *              - description
  *     responses:
  *       201:
  *         description: Tipo de clase creado exitosamente
@@ -82,9 +103,32 @@ classTypeRouter.post(
  * /api/classes/types/{id}:
  *   put:
  *     summary: Actualizar un tipo de clase
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: id del tipo de clase
  *     operationId: updateClassTypeById
  *     tags:
  *       - Tipos de Clases
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                  type: string
+ *                  example: yoga
+ *              description:
+ *                  type: string
+ *                  example: descripcion de clase de yoga
+ *            required:
+ *              - name
+ *              - description
  *     responses:
  *       200:
  *         description: Tipo de clase actualizado exitosamente
@@ -111,9 +155,29 @@ classTypeRouter.put(
  * /api/classes/types/{id}:
  *   patch:
  *     summary: Actualizar parcialmente un tipo de clase
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: id del tipo de clase
  *     operationId: patchClassTypeById
  *     tags:
  *       - Tipos de Clases
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                  type: string
+ *                  example: yoga
+ *              description:
+ *                  type: string
+ *                  example: descripcion de clase de yoga
  *     responses:
  *       200:
  *         description: Tipo de clase actualizado parcialmente
@@ -140,6 +204,13 @@ classTypeRouter.patch(
  * /api/classes/types/{id}:
  *   delete:
  *     summary: Eliminar un tipo de clase
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: id del tipo de clase
  *     operationId: deleteClassTypeById
  *     tags:
  *       - Tipos de Clases

@@ -9,6 +9,15 @@ const swaggerOptions = {
       description:
         "Documentación backend Gimnasio IronHaven - Trabajo Práctico Desarrollo de Software - UTN FRRo",
     },
+    components: {
+      securitySchemes: {
+        cookieAuth: {
+          type: "apiKey",
+          in: "cookie",
+          name: "auth_token",
+        },
+      },
+    },
     servers: [{ url: "http://localhost:3000" }],
   },
   apis: ["./dist/**/*.routes.js"],
