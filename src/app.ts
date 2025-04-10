@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { createServer } from "http";
 import { environment } from "./config/env.config.js";
+import { EnvironmentTypeEnum } from "./utils/enums/environment-type.enum.js";
 import express from "express";
 import { membershipsRouter } from "./modules/membership/membership-module.routes.js";
 import { messageRouter } from "./modules/chat/message.routes.js";
@@ -46,7 +47,9 @@ app.use(
   })
 );
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+if (environment.type === EnvironmentTypeEnum.DEVELOPMENT)
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 app.post(
   "/api/webhook",
   bodyParser.raw({ type: "application/json" }),
