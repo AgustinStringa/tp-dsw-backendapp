@@ -15,23 +15,32 @@ export const messageController = {
     try {
       const userId = (await authService.getUser(req)).user.id;
 
-      type Recipient = { id: string; firstName: string; lastName: string };
+      type Recipient = {
+        id: string;
+        firstName: string;
+        lastName: string;
+        userType: string;
+      };
 
-      const clients: Recipient[] = await em.find(
-        Client,
-        { id: { $ne: userId } },
-        {
-          fields: ["id", "firstName", "lastName", "email"],
-        }
-      );
+      const clients: Recipient[] = (
+        await em.find(
+          Client,
+          { id: { $ne: userId } },
+          {
+            fields: ["id", "firstName", "lastName", "email"],
+          }
+        )
+      ).map((c) => ({ ...c, userType: "client" }));
 
-      const trainers: Recipient[] = await em.find(
-        Trainer,
-        { id: { $ne: userId } },
-        {
-          fields: ["id", "firstName", "lastName", "email"],
-        }
-      );
+      const trainers: Recipient[] = (
+        await em.find(
+          Trainer,
+          { id: { $ne: userId } },
+          {
+            fields: ["id", "firstName", "lastName", "email"],
+          }
+        )
+      ).map((c) => ({ ...c, userType: "trainer" }));
 
       const recipients: Recipient[] = trainers.concat(clients);
 
