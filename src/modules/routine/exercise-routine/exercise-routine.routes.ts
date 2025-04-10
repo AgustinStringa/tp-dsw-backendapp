@@ -4,6 +4,30 @@ import { Router } from "express";
 
 export const exerciseRoutineRouter = Router();
 
+/**
+ * @swagger
+ * /api/exercise-routines/:
+ *   post:
+ *     summary: Agregar un ejercicio a una rutina
+ *     operationId: addExerciseToRoutine
+ *     tags:
+ *       - ExerciseRoutines
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       201:
+ *         description: Ejercicio agregado a la rutina exitosamente
+ *       400:
+ *         description: Datos inválidos o rutina/ejercicio no encontrados
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado (requiere ser entrenador)
+ *       500:
+ *         description: Error en el servidor
+ */
 exerciseRoutineRouter.post(
   "/",
   authMiddlewares.verifyTrainer,
@@ -11,6 +35,32 @@ exerciseRoutineRouter.post(
   controller.add
 );
 
+/**
+ * @swagger
+ * /api/exercise-routines/{id}:
+ *   put:
+ *     summary: Actualizar completamente un ejercicio en una rutina
+ *     operationId: updateExerciseRoutine
+ *     tags:
+ *       - ExerciseRoutines
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       200:
+ *         description: Ejercicio en rutina actualizado exitosamente
+ *       400:
+ *         description: Datos inválidos o rutina/ejercicio no encontrados
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado (requiere ser entrenador)
+ *       404:
+ *         description: Ejercicio en rutina no encontrado
+ *       500:
+ *         description: Error en el servidor
+ */
 exerciseRoutineRouter.put(
   "/:id",
   authMiddlewares.verifyTrainer,
@@ -18,6 +68,32 @@ exerciseRoutineRouter.put(
   controller.update
 );
 
+/**
+ * @swagger
+ * /api/exercise-routines/{id}/record-execution/:
+ *   patch:
+ *     summary: Registrar la ejecución de un ejercicio por el cliente
+ *     operationId: recordExerciseExecution
+ *     tags:
+ *       - ExerciseRoutines
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       200:
+ *         description: Ejecución del ejercicio registrada exitosamente
+ *       400:
+ *         description: Peso inválido o rutina ya finalizada
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado (solo el cliente puede registrar su ejecución)
+ *       404:
+ *         description: Ejercicio en rutina no encontrado
+ *       500:
+ *         description: Error en el servidor
+ */
 exerciseRoutineRouter.patch(
   "/:id/record-execution/",
   authMiddlewares.verifyClient,
@@ -25,6 +101,36 @@ exerciseRoutineRouter.patch(
   controller.markAsDone
 );
 
+/**
+ * @swagger
+ * /api/exercise-routines/{id}:
+ *   patch:
+ *     summary: Actualizar parcialmente un ejercicio en una rutina (entrenador)
+ *     operationId: patchExerciseRoutine
+ *     tags:
+ *       - ExerciseRoutines
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *     responses:
+ *       200:
+ *         description: Ejercicio en rutina actualizado parcialmente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ExerciseRoutine'
+ *       400:
+ *         description: Datos inválidos o rutina/ejercicio no encontrados
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado (requiere ser entrenador)
+ *       404:
+ *         description: Ejercicio en rutina no encontrado
+ *       500:
+ *         description: Error en el servidor
+ */
 exerciseRoutineRouter.patch(
   "/:id",
   authMiddlewares.verifyTrainer,
@@ -32,6 +138,30 @@ exerciseRoutineRouter.patch(
   controller.update
 );
 
+/**
+ * @swagger
+ * /api/exercise-routines/{id}:
+ *   delete:
+ *     summary: Eliminar un ejercicio de una rutina
+ *     operationId: deleteExerciseRoutine
+ *     tags:
+ *       - ExerciseRoutines
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Ejercicio eliminado de la rutina exitosamente
+ *       400:
+ *         description: ID inválido
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Acceso denegado (requiere ser entrenador)
+ *       404:
+ *         description: Ejercicio en rutina no encontrado
+ *       500:
+ *         description: Error en el servidor
+ */
 exerciseRoutineRouter.delete(
   "/:id",
   authMiddlewares.verifyTrainer,
