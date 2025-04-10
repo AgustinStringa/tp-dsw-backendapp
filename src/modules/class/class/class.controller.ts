@@ -18,6 +18,7 @@ export const controller = {
     try {
       const classes = await em.findAll(Class, {
         populate: ["classType", "trainer"],
+        orderBy: { day: "asc" },
       });
 
       res

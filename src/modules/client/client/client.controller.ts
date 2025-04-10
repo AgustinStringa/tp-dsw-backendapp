@@ -19,7 +19,7 @@ export const controller = {
     try {
       const clients = await em.findAll(Client, {
         fields: ["lastName", "firstName", "dni", "email"],
-        orderBy: { lastName: "asc", firstName: "asc" }, //es sensible a mayúsculas y minúsculas
+        orderBy: { lastName: "asc", firstName: "asc" },
       });
 
       res

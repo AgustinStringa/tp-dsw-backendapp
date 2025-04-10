@@ -13,6 +13,7 @@ export const controller = {
       const classtypes = await em.findAll(ClassType, {
         populate: ["classes", "classes.trainer"],
         populateWhere: { classes: { active: true } },
+        orderBy: { name: "asc" },
       });
 
       res

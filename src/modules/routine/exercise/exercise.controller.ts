@@ -11,7 +11,10 @@ const em = orm.em;
 export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const exercises = await em.findAll(Exercise);
+      const exercises = await em.findAll(Exercise, {
+        orderBy: { name: "asc" },
+      });
+
       res
         .status(200)
         .json(

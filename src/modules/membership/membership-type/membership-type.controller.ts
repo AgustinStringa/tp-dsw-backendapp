@@ -18,7 +18,9 @@ const stripe = new Stripe(environment.stripe.apiKey as string);
 export const controller = {
   findAll: async function (_req: Request, res: Response) {
     try {
-      const membTypes = await em.findAll(MembershipType);
+      const membTypes = await em.findAll(MembershipType, {
+        orderBy: { name: "asc" },
+      });
 
       res
         .status(200)

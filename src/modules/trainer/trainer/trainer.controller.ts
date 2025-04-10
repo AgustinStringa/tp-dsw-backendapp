@@ -15,7 +15,10 @@ const em = orm.em;
 export const controller = {
   findAll: async function (req: Request, res: Response) {
     try {
-      const trainers = await em.findAll(Trainer);
+      const trainers = await em.findAll(Trainer, {
+        orderBy: { lastName: "asc", firstName: "asc" },
+      });
+
       res.json(
         new ApiResponse("Todos los entrenadores fueron encontrados.", trainers)
       );

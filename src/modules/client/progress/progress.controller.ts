@@ -16,7 +16,10 @@ const em = orm.em;
 export const controller = {
   findAll: async function (_: Request, res: Response) {
     try {
-      const progresses = await em.findAll(Progress, { populate: ["client"] });
+      const progresses = await em.findAll(Progress, {
+        populate: ["client"],
+        orderBy: { date: "asc" },
+      });
       res
         .status(200)
         .json(
@@ -52,9 +55,13 @@ export const controller = {
           .status(403)
           .json(new ApiResponse("Cliente no autorizado.", null, false));
 
-      const progresses = await em.find(Progress, {
-        client: user.id,
-      });
+      const progresses = await em.find(
+        Progress,
+        {
+          client: user.id,
+        },
+        { orderBy: { date: "asc" } }
+      );
 
       res
         .status(200)
