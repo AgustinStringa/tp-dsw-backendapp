@@ -61,7 +61,6 @@ export const controller = {
           ],
           mode: "payment", //subscription es para pagos recurrentes
           success_url: `${frontendUrl}/home?stripe_id={CHECKOUT_SESSION_ID}`,
-          //TODO call a fullfill desde el front
           cancel_url: `${frontendUrl}/home`,
         });
 

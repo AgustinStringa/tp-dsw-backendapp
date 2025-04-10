@@ -30,7 +30,7 @@ A continuación se detallan los pasos para instalar y ejecutar el proyecto de ma
 1. Clona este repositorio en tu computadora:
 
 ```
-git clone https://github.com/AgustinStringa/tp-dsw-frontendapp.git
+git clone https://github.com/AgustinStringa/tp-dsw-backendapp.git
 ```
 
 2. Accede al directorio del proyecto:
@@ -45,11 +45,51 @@ cd tp-dsw-frontendapp
 npm install
 ```
 
+## Creación de un usuario inicial
+
+Antes de acceder al sistema, es necesario que crees manualmente una entidad de tipo Trainer en la base de datos MongoDB. Puedes hacerlo utilizando MongoDB Compass o cualquier cliente de Mongo.
+Ejemplo del documento:
+
+```
+{
+  "firstName": "Entrenador",
+  "lastName": "IronHaven",
+  "email": "admin@ironhaven.com",
+  // Hash de bcrypt para la contraseña 1234
+  "password": "$2b$10$.i2P17aQ4jE4a7e9PJwCNei8lh6woj7ZJ5Cb4AM7f2i8Cbm19Vf7.",
+  "dni": "12345678"
+}
+```
+
+## Variables de entorno
+
+Debes crear un archivo .env en la raíz del proyecto con las siguientes variables.
+
+```
+MONGO_URI=
+
+EMAIL=
+EMAIL_PASSWORD=
+
+PORT=3000
+BACKEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:4200
+
+JWT_SECRET=your_jwt_secret
+SESSION_DURATION_HOURS=1
+REFRESH_TIME_MINUTES=10
+
+STRIPE_API_KEY=
+STRIPE_WEBHOOK=
+```
+
+Si quieres puedes omitir las variables del email o de Stripe ingresando cualquier string. Sin embargo, el sistema no podrá procesar pagos del usuario ni enviar notificaciones por correo electrónico.
+
 ## Ejecución
 
-Puedes elegir cualquiera de los siguientes modos según tus necesidades. Sólo ejecuta la el comando mostrado.
+Puedes elegir cualquiera de los siguientes modos según tus necesidades. Sólo ejecuta el comando mostrado.
 
-### Modo de Desarrollo
+### Modo de desarrollo
 
 ```
 npm run start:dev
@@ -57,13 +97,17 @@ npm run start:dev
 
 El servidor normalmente estará disponible en `http://localhost:3000/` o el puerto que configures en tu archivo de configuración.
 
-### Modo de Producción
+### Modo de producción
 
 ```
 npm run build
 ```
 
-Esto compilará los archivos de TypeScript. Los archivos generados se encontrarán en el directorio `dist/` listos para ser ejecutados por Node en tu servidor.
+Esto compilará los archivos de TypeScript. Los archivos generados se encontrarán en el directorio `dist/` listos para ser ejecutados por Node en tu servidor mediante el siguiente comando.
+
+```
+npm run start:prod
+```
 
 ### Ejecutar tests
 

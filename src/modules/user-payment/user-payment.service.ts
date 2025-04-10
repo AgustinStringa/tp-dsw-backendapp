@@ -37,7 +37,6 @@ export const userPaymentService = {
 
     if (checkoutSession.payment_status === "paid") {
       await userPaymentService.registerPayment(stripePayment, checkoutSession);
-      //TODO send receipt to client
     }
 
     await em.flush();
