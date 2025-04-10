@@ -9,7 +9,10 @@ const swaggerOptions = {
       description:
         "Documentación backend Gimnasio IronHaven - Trabajo Práctico Desarrollo de Software - UTN FRRo",
     },
-    servers: [{ url: "http://localhost:3000" }],
+    servers: [
+      { url: "http://localhost:3000" },
+      { url: "https://gimnasio-iron-haven.onrender.com" },
+    ],
   },
   apis: ["./dist/**/*.routes.js"],
 };

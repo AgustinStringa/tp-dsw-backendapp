@@ -39,7 +39,7 @@ git clone https://github.com/AgustinStringa/tp-dsw-frontendapp.git
 cd tp-dsw-frontendapp
 ```
 
-2. Instala las dependencias:
+3. Instala las dependencias:
 
 ```
 npm install
