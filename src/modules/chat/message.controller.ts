@@ -19,6 +19,7 @@ export const messageController = {
         id: string;
         firstName: string;
         lastName: string;
+        email: string;
         userType: string;
       };
 
@@ -30,7 +31,13 @@ export const messageController = {
             fields: ["id", "firstName", "lastName", "email"],
           }
         )
-      ).map((c) => ({ ...c, userType: "client" }));
+      ).map((c) => ({
+        id: c.id,
+        firstName: c.firstName,
+        lastName: c.lastName,
+        email: c.email,
+        userType: "client",
+      }));
 
       const trainers: Recipient[] = (
         await em.find(
@@ -40,7 +47,13 @@ export const messageController = {
             fields: ["id", "firstName", "lastName", "email"],
           }
         )
-      ).map((c) => ({ ...c, userType: "trainer" }));
+      ).map((t) => ({
+        id: t.id,
+        firstName: t.firstName,
+        lastName: t.lastName,
+        email: t.email,
+        userType: "trainer",
+      }));
 
       const recipients: Recipient[] = trainers.concat(clients);
 
