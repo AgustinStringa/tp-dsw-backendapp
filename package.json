@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
-    "start:prod": "node ./dist/app.js",
+    "start:prod": "set NODE_ENV=production && node ./dist/app.js",
     "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\"",
     "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --detectOpenHandles"
   },
