@@ -22,7 +22,8 @@ export const authService = {
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
-      sameSite: "strict",
+      sameSite:
+        environment.type === EnvironmentTypeEnum.PRODUCTION ? "none" : "strict",
       maxAge: environment.session.durationInHours * 3600000,
     });
   },
@@ -31,10 +32,7 @@ export const authService = {
     const token = req.cookies.auth_token;
     if (token) {
       if (blacklistedTokens.has(token)) {
-        throw new HttpError(
-          401,
-          "No autorizado. El token se encuentra bloqueado."
-        );
+        throw new HttpError(401, "No autenticado. Su sesión ha expirado.");
       }
 
       const decoded = jwt.verify(token, environment.session.jwtSecret) as {
@@ -50,7 +48,7 @@ export const authService = {
         exp: decoded.exp,
       };
     } else {
-      throw new HttpError(401, "No autorizado. Token nulo.");
+      throw new HttpError(401, "No autenticado.");
     }
   },
 
@@ -104,7 +102,10 @@ export const authService = {
       res.cookie("auth_token", newToken, {
         httpOnly: true,
         secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
-        sameSite: "strict",
+        sameSite:
+          environment.type === EnvironmentTypeEnum.PRODUCTION
+            ? "none"
+            : "strict",
         maxAge: environment.session.durationInHours * 3600000,
       });
     }

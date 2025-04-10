@@ -61,7 +61,6 @@ export const controller = {
           ],
           mode: "payment", //subscription es para pagos recurrentes
           success_url: `${frontendUrl}/home?stripe_id={CHECKOUT_SESSION_ID}`,
-          //TODO call a fullfill desde el front
           cancel_url: `${frontendUrl}/home`,
         });
 
@@ -114,6 +113,31 @@ export const controller = {
         return res
           .status(500)
           .send(new ApiResponse("Unexpected error occurred", null, false));
+    }
+  },
+
+  userFullfill: async (req: Request, res: Response) => {
+    const sessionId = req.params.checkoutSessionId;
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      const paymentIntent = await em.findOneOrFail(StripePaymentIntent, {
+        sessionId: sessionId,
+        status: { $ne: PaymentStatusEnum.PAID },
+      });
+
+      if (paymentIntent && session.payment_status === "paid") {
+        await userPaymentService.fulfillCheckout(session.id);
+        return res
+          .status(200)
+          .json(new ApiResponse("Pago procesado exitosamente."));
+      } else if (paymentIntent === null) {
+        return res.status(200);
+      } else {
+        return res.status(402);
+      }
+    } catch (err: unknown) {
+      handleError(err, res);
     }
   },
 

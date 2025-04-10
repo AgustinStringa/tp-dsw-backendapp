@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { createServer } from "http";
 import { environment } from "./config/env.config.js";
+import { EnvironmentTypeEnum } from "./utils/enums/environment-type.enum.js";
 import express from "express";
 import { membershipsRouter } from "./modules/membership/membership-module.routes.js";
 import { messageRouter } from "./modules/chat/message.routes.js";
@@ -17,6 +18,8 @@ import { routinesRouter } from "./modules/routine/routine-module.routes.js";
 import { Server } from "socket.io";
 import { setupCronJobs } from "./config/jobs/cron-job.config.js";
 import { setupSocket } from "./utils/socket/socket.js";
+import { swaggerDocs } from "./config/swagger/swagger.config.js";
+import swaggerUi from "swagger-ui-express";
 import { trainerRouter } from "./modules/trainer/trainer/trainer.routes.js";
 import { controller as userPaymentController } from "./modules/user-payment/user-payment.controller.js";
 import { userPaymentRouter } from "./modules/user-payment/user-payment.routes.js";
@@ -43,6 +46,9 @@ app.use(
     credentials: true,
   })
 );
+
+if (environment.type === EnvironmentTypeEnum.DEVELOPMENT)
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.post(
   "/api/webhook",
