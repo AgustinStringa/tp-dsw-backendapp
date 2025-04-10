@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
+    "start:prod": "set NODE_ENV=production && node ./dist/app.js",
     "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\"",
     "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --detectOpenHandles"
   },
@@ -14,7 +15,7 @@
     "url": "git+https://github.com/AgustinStringa/tp-dsw-backendapp.git"
   },
   "keywords": [],
-   "authors": [
+  "authors": [
     {
       "name": "Aarón De Bernardo",
       "email": "aarondebernardo@gmail.com"

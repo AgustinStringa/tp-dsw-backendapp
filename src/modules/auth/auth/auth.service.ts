@@ -22,7 +22,7 @@ export const authService = {
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: environment.session.durationInHours * 3600000,
     });
   },
@@ -101,7 +101,7 @@ export const authService = {
       res.cookie("auth_token", newToken, {
         httpOnly: true,
         secure: environment.type === EnvironmentTypeEnum.PRODUCTION,
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: environment.session.durationInHours * 3600000,
       });
     }
